@@ -3,7 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Game = mongoose.model('Game');
 var Person = mongoose.model('Person');
-var GameVM = require('./../viewModels/GameVM');
+var GameVM = require('./../viewmodels/GameVM');
 
 module.exports = router;
 

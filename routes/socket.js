@@ -1,4 +1,4 @@
-var GameVM = require('./../viewModels/GameVM');
+var GameVM = require('./../viewmodels/GameVM');
 
 var ConnectedGame = function(pGameId) {
 	this.gameId = pGameId;
