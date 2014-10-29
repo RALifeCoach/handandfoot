@@ -1,0 +1,379 @@
+﻿<html>
+<head>
+    <title>Hand and Foot</title>
+    <link href="../public/stylesheets/bootstrap.css" rel="stylesheet">
+    <link href="../public/stylesheets/cards.css" rel="stylesheet">
+	<script type='text/javascript' src='../public/javascripts/jquery-1.11.1.js'></script>
+    <style>
+        .glyphicon-thumbs-up {
+            cursor: pointer;
+        }
+    </style>
+	<script type='text/javascript'>
+	// add function to array class
+	Array.prototype.move = function(fromIndex, toIndex) {
+		var element = this[fromIndex];
+		this.splice(fromIndex, 1);
+		this.splice(toIndex, 0, element);
+	};
+
+	// define global variables
+	var piles = [];
+	var playerCards = [];
+	var startCard, endCard, displayPlayer, handFoot;
+	var startMove = false;
+
+	// shuffle and deal the cards
+	function doCards() {
+		var allCards = [];
+		var suits = ['Club', 'Diamond', 'Heart', 'Spade'];
+		var suitsCard = ['clubs', 'diams', 'hearts', 'spades'];
+		var suitsImage = ['&clubs;', '&diams;', '&hearts;', '&spades;'];
+		var cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+		var deckIndex, cardIndex, suitIndex;
+		var back = '<li><div class="card back">*</div></li>';
+		for (deckIndex = 0; deckIndex < 6; deckIndex++) {
+			for (suitIndex = 0; suitIndex < 4; suitIndex++) {
+				for (cardIndex = 0; cardIndex < 13; cardIndex++) {
+					var front = '<li class="thisCard"><a href="#" class="card rank-' + 
+						cards[cardIndex] + ' ' + suitsCard[suitIndex] + 
+						'"><span class="rank">' + cards[cardIndex] + 
+						'</span><span class="suit">' + suitsImage[suitIndex] +
+						'</span></a></li>';
+					var discard = '<li><div class="card rank-' + 
+						cards[cardIndex] + ' ' + suitsCard[suitIndex] + 
+						'"><span class="rank">' + cards[cardIndex] + 
+						'</span><span class="suit">' + suitsImage[suitIndex] +
+						'</span></div></li>';
+					allCards.push({ suit: suits[suitIndex], number: cards[cardIndex], front: front, back: back, discard: discard });
+				}
+			}
+			allCards.push({ suit: 'Joker', 
+				number: 0, 
+				front: '<li class="thisCard"><a href="#" class="card little joker"><span class="rank">-</span><span class="suit">Joker</span></a></li>',
+				discard: '<li><div class="card little joker"><span class="rank">-</span><span class="suit">Joker</span></div></li>',
+				back: back});
+			allCards.push({ suit: 'Joker', 
+				number: 0, 
+				front: '<li class="thisCard"><a href="#" class="card little joker"><span class="rank">-</span><span class="suit">Joker</span></a></li>',
+				discard: '<li><div class="card little joker"><span class="rank">-</span><span class="suit">Joker</span></div></li>',
+				back: back});
+		}
+
+		var playerIndex, handIndex, cardPosition;
+		for (playerIndex = 0; playerIndex < 4; playerIndex++) {
+			playerCards.push({player: playerIndex, hands: []});
+			for (handIndex = 0; handIndex < 2; handIndex++) {
+				var hand = {cards:[]};
+				for (cardIndex = 0; cardIndex < 11; cardIndex++) {
+					cardPosition = Math.floor(Math.random() * allCards.length);
+					hand.cards.push(allCards[cardPosition]);
+					allCards.splice(cardPosition, 1);
+				}
+				playerCards[playerIndex].hands.push(hand);
+			}
+		}
+
+		var pileMax = Math.floor(allCards.length / 4);
+		var pileIndex;
+		piles = [ {direction: 'North', cards: [] },
+			{direction: 'East', cards: [] },
+			{direction: 'South', cards: [] },
+			{direction: 'West', cards: [] },
+			{direction: 'Discard', cards: [] }
+		];
+		for (pileIndex = 0; pileIndex < 4; pileIndex++) {
+			for (cardIndex = 0; cardIndex < pileMax; cardIndex++) {
+				cardPosition = Math.floor(Math.random() * allCards.length);
+				piles[pileIndex].cards.push(allCards[cardPosition]);
+				allCards.splice(cardPosition, 1);
+			}
+		}
+		
+		displayPlayer = 0;
+		handFoot = 0;
+	}
+	
+	// show the cards in the hand or foot
+	function showCards() {
+		var cards = '<ul class="hand">';
+		for (cardIndex = 0; cardIndex < playerCards[displayPlayer].hands[handFoot].cards.length; cardIndex++) {
+			cards += playerCards[displayPlayer].hands[handFoot].cards[cardIndex].front;
+		}
+		cards += "</ul>";
+		
+		$("#myCards").html(cards);
+		
+		$(".thisCard").click(function(event) {
+			var card = $(this);
+			if (!startMove) {
+				startCard = Math.floor(card.position().left / 15);
+				card.children().addClass('highlight');
+				startMove = true;
+			} else {
+				endCard = Math.floor($(this).position().left / 15);
+				playerCards[displayPlayer].hands[handFoot].cards.move(startCard, endCard);
+				showCards();
+				startMove = false;
+			}
+		});
+	}
+	
+	function showPileBack(pile, show) {
+		var cards = '<ul class="deck">';
+		var height = pile.length;
+		if (height > 20)
+			height = 20;
+		for (cardIndex = pile.length - height; cardIndex < pile.length; cardIndex++) {
+			cards += pile[cardIndex].back;
+		}
+		cards += "</ul>";
+		
+		return cards;
+	}
+	
+	function showPileFront(pile, show) {
+		var cards = '<ul class="deck">';
+		var height = pile.length;
+		if (height > 20)
+			height = 20;
+		for (cardIndex = pile.length - height; cardIndex < pile.length; cardIndex++) {
+		console.log(cardIndex);
+			cards += pile[cardIndex].discard;
+		}
+		cards += "</ul>";
+		
+		return cards;
+	}
+	</script>
+</head>
+<body ng-app="handAndFoot">
+	<script type='text/javascript'>
+	$(document).ready(function() {
+		doCards();
+		showCards();
+		
+		$("#northPile").html(showPileBack(piles[0].cards));
+		$("#eastPile").html(showPileBack(piles[1].cards));
+		$("#southPile").html(showPileBack(piles[2].cards));
+		$("#westPile").html(showPileBack(piles[3].cards));
+		$("#discardPile").html(showPileFront(piles[4].cards));
+
+		$("#player1Hand").html(showPileBack(playerCards[1].hands[0].cards));
+		$("#player2Hand").html(showPileBack(playerCards[2].hands[0].cards));
+		$("#player3Hand").html(showPileBack(playerCards[3].hands[0].cards));
+		
+		$("#discardPile").click(function(event) {
+			// discard a card
+			if (startMove) {
+				card = playerCards[displayPlayer].hands[handFoot].cards[startCard];
+				playerCards[displayPlayer].hands[handFoot].cards.splice(startCard, 1);
+				piles[4].cards.push(card);
+				$("#discardPile").html(showPileFront(piles[4].cards));
+				showCards();
+				startMove = false;
+			} 
+			// draw from the pile
+			else {
+				var cardIndex;
+				for (cardIndex = 0; cardIndex < 7; cardIndex++) {
+					if (piles[4].cards.length === 0)
+						break;
+					playerCards[displayPlayer].hands[handFoot].cards.push(piles[4].cards.pop());
+				}
+				$("#discardPile").html(showPileFront(piles[4].cards));
+				showCards();
+			}
+		});
+		$("#northPile").click(function(event) {
+			// discard a card
+			if (startMove) {
+			} 
+			// draw from the pile
+			else {
+				playerCards[displayPlayer].hands[handFoot].cards.push(piles[0].cards.pop());
+				$("#northPile").html(showPileBack(piles[0].cards));
+				showCards();
+			}
+		});
+		$("#eastPile").click(function(event) {
+			// discard a card
+			if (startMove) {
+				
+			} 
+			// draw from the pile
+			else {
+				playerCards[displayPlayer].hands[handFoot].cards.push(piles[1].cards.pop());
+				$("#northPile").html(showPileBack(piles[1].cards));
+				showCards();
+			}
+		});
+		$("#southPile").click(function(event) {
+			// discard a card
+			if (startMove) {
+				
+			} 
+			// draw from the pile
+			else {
+				playerCards[displayPlayer].hands[handFoot].cards.push(piles[2].cards.pop());
+				$("#northPile").html(showPileBack(piles[2].cards));
+				showCards();
+			}
+		});
+		$("#westPile").click(function(event) {
+			// discard a card
+			if (startMove) {
+				
+			} 
+			// draw from the pile
+			else {
+				playerCards[displayPlayer].hands[handFoot].cards.push(piles[3].cards.pop());
+				$("#northPile").html(showPileBack(piles[3].cards));
+				showCards();
+			}
+		});
+	});
+	</script>
+		<div class='row'>
+			<div class='col-md-9'>
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div name='myCards' id='myCards' class="playingCards simpleCards">
+						</div>
+					</div>
+				</div>
+				<div class="panel-close panel-default">
+					<div class="panel-body">
+						our melds
+					</div>
+				</div>
+				<div class="panel-close panel-default">
+					<div class="row">
+						<div class='col-md-1'>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<div name='northPile' id='northPile' class="playingCards simpleCards">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<div name='westPile' id='westPile' class="playingCards simpleCards">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<div name='discardPile' id='discardPile' class="playingCards simpleCards">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<div name='eastPile' id='eastPile' class="playingCards simpleCards">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<div name='southPile' id='southPile' class="playingCards simpleCards">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-body">
+						their melds
+					</div>
+				</div>
+					<div class="row">
+						<div class='col-md-3'>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<span ng-show="game.players[1]">{{game.players[1].person.name}}</span>
+									<span ng-show="!game.players[1]">Waiting</span>
+								</div>
+							</div>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<span ng-show="game.players[2]">{{game.players[2].person.name}}</span>
+									<span ng-show="!game.players[2]">Waiting</span>
+								</div>
+							</div>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<span ng-show="game.players[3]">{{game.players[3].person.name}}</span>
+									<span ng-show="!game.players[3]">Waiting</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class='col-md-3'>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<div name='player1Hand' id='player1Hand' class="playingCards simpleCards">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<div name='player2Hand' id='player2Hand' class="playingCards simpleCards">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='col-md-2'>
+							<div class="panel-close panel-default">
+								<div class="panel-body-close">
+									<div name='player3Hand' id='player3Hand' class="playingCards simpleCards">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+			</div>
+			<div class='col-md-3'>
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<span ng-click="leaveGame()" class="btn btn-default btn-sm" role="button">Leave Game</span>
+						<span ng-show="game.playersFull && !game.inProgress" ng-click="startGame()" class="btn btn-default btn-sm" role="button">Start Game</span>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-body" style="height:400px">
+						chat
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-body" style="height:50px">
+						chat
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+</html>

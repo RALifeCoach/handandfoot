@@ -1,0 +1,143 @@
+﻿<html>
+<head>
+    <title>Hand and Foot</title>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
+    <script src="/javascripts/socket.io/socket.io.js"></script>
+    <script src="/javascripts/socket.io/socket.js"></script>
+    <script src="/javascripts/angularApp.js"></script>
+    <script src="/javascripts/angularAuthenticate.js"></script>
+    <script src="/javascripts/angularGame.js"></script>
+    <script src="/javascripts/angularPlay.js"></script>
+    <style>
+        .glyphicon-thumbs-up {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body ng-app="handAndFoot">
+	<script type="text/javascript">
+		var login = {};
+	</script>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <ui-view></ui-view>
+        </div>
+    </div>
+
+    <script type="text/ng-template" id="/login.html">
+		<form name="loginForm" class="form-horizontal" role="form">
+			<h3>Sign In</h3>
+
+			<div class='row'>
+				<div class="col-xs-3">
+					<div class="form-group">
+						<input type="email" class="form-control" placeholder="User Id" ng-model="user.userId" required />
+					</div>
+				</div>
+			</div>
+			<div class='row'>
+				<div class="col-xs-3">
+					<div class="form-group">
+						<input type="password" class="form-control" placeholder="Password" ng-model="user.password" required />
+					</div>
+				</div>
+				<span ng-show="user.failed">User Id/Password Invalid</span>
+			</div>
+			<button type="submit" class="btn btn-primary" ng-click="signIn()">LogIn</button>
+			<a href="#/register">Register</a>
+		</form>
+    </script>
+
+    <script type="text/ng-template" id="/register.html">
+		<form name="registerForm" class="form-horizontal" role="form">
+			<h3>Register</h3>
+
+			<div class='row'>
+				<div class="col-xs-3">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Name" ng-model="user.name" required />
+					</div>
+				</div>
+			</div>
+			<div class='row'>
+				<div class="col-xs-3">
+					<div class="form-group">
+						<input type="email" class="form-control" placeholder="User Id" ng-model="user.userId" required />
+					</div>
+				</div>
+			</div>
+			<div class='row'>
+				<div class="col-xs-3">
+					<div class="form-group">
+						<input type="password" class="form-control" placeholder="Password" ng-model="user.password" required />
+					</div>
+				</div>
+			</div>
+			<div class='row'>
+				<div class="col-xs-3">
+					<div class="form-group">
+						<input type="password" class="form-control" placeholder="Confirm Password" ng-model="user.confirmPassword" required />
+					</div>
+				</div>
+				<span ng-show="user.failed">{{user.failed}}</span>
+			</div>
+			<button type="submit" class="btn btn-primary" ng-click="register()">Register</button>
+		</form>
+    </script>
+
+    <script type="text/ng-template" id="/games.html">
+		<div class="page-header">
+			<h3>
+				Games Awaiting Players
+			</h3>
+		</div>
+
+		<div ng-repeat="game in games | orderBy:'-startDate'">
+			{{game.name}} - {{game.startDate}} - 
+				<span ng-hide="game.players[0]">North <span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'North')"></span></span>
+				<span ng-show="game.players[0]">North {{game.players[0].person.name}}</span>&nbsp;-
+				<span ng-hide="game.players[1]">East <span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'East')"></span></span>
+				<span ng-show="game.players[1]">East {{game.players[1].person.name}}</span>&nbsp;-
+				<span ng-hide="game.players[2]">South <span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'South')"></span></span>
+				<span ng-show="game.players[2]">South {{game.players[2].person.name}}</span>&nbsp;-
+				<span ng-hide="game.players[3]">West <span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'West')"></span></span>
+				<span ng-show="game.players[3]">West {{game.players[3].person.name}}</span>
+		</div>
+
+		<form ng-submit="addGame()" style="margin-top:30px;">
+			<h3>Add a new game</h3>
+
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="name" ng-model="name"></input>
+			</div>
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="password" ng-model="password"></input>
+			</div>
+			<button type="submit" class="btn btn-primary">Post</button>
+		</form>
+    </script>
+
+    <script type="text/ng-template" id="/play.html">
+		<div class="page-header">
+			<span ng-click="leaveGame()"  ng-click="leaveGame()" class="btn btn-default btn-lg" role="button">Leave Game</span>
+			<span ng-show="game.playersFull && !gameInProgress" ng-click="startGame()" class="btn btn-default btn-lg" role="button">Start Game</span>
+		</div>
+		<div class='row'>
+			<div class='col-md-10'>
+				<div class='row'>
+					<div class="panel panel-default">
+						<div class="panel-body">
+							Panel content
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class='col-md-2'>
+			</div>
+		</div>
+    </script>
+</body>
+</html>
