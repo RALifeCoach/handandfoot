@@ -62,120 +62,138 @@
     </div>
 
     <script type="text/ng-template" id="/login.html">
-		<form name="loginForm" class="form-horizontal" role="form">
-			<h3>Sign In</h3>
+		<div class='row'>
+			<div class='col-md-3'>
+			</div>
+			<div class='col-md-6'>
+				<form name="loginForm" class="form-horizontal" role="form">
+					<h3>Sign In</h3>
 
-			<div class='row'>
-				<div class="col-md-3">
-					<div class="form-group">
-						<input type="email" class="form-control" placeholder="User Id" ng-model="user.userId" required />
+					<div class='row'>
+						<div class="col-md-3">
+							<div class="form-group">
+								<input type="email" class="form-control" placeholder="User Id" ng-model="user.userId" required />
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
-			<div class='row'>
-				<div class="col-md-3">
-					<div class="form-group">
-						<input type="password" class="form-control" placeholder="Password" ng-model="user.password" required />
+					<div class='row'>
+						<div class="col-md-3">
+							<div class="form-group">
+								<input type="password" class="form-control" placeholder="Password" ng-model="user.password" required />
+							</div>
+						</div>
+						<span ng-show="user.failed">User Id/Password Invalid</span>
 					</div>
-				</div>
-				<span ng-show="user.failed">User Id/Password Invalid</span>
+					<button type="submit" class="btn btn-primary" ng-click="signIn()">LogIn</button>
+					<a href="#/register">Register</a>
+				</form>
 			</div>
-			<button type="submit" class="btn btn-primary" ng-click="signIn()">LogIn</button>
-			<a href="#/register">Register</a>
-		</form>
+		</div>
     </script>
 
     <script type="text/ng-template" id="/register.html">
-		<form name="registerForm" class="form-horizontal" role="form">
-			<h3>Register</h3>
+		<div class='row'>
+			<div class='col-md-3'>
+			</div>
+			<div class='col-md-6'>
+				<form name="registerForm" class="form-horizontal" role="form">
+					<h3>Register</h3>
 
-			<div class='row'>
-				<div class="col-md-3">
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Name" ng-model="user.name" required />
+					<div class='row'>
+						<div class="col-md-3">
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Name" ng-model="user.name" required />
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
-			<div class='row'>
-				<div class="col-md-3">
-					<div class="form-group">
-						<input type="email" class="form-control" placeholder="User Id" ng-model="user.userId" required />
+					<div class='row'>
+						<div class="col-md-3">
+							<div class="form-group">
+								<input type="email" class="form-control" placeholder="User Id" ng-model="user.userId" required />
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
-			<div class='row'>
-				<div class="col-md-3">
-					<div class="form-group">
-						<input type="password" class="form-control" placeholder="Password" ng-model="user.password" required />
+					<div class='row'>
+						<div class="col-md-3">
+							<div class="form-group">
+								<input type="password" class="form-control" placeholder="Password" ng-model="user.password" required />
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
-			<div class='row'>
-				<div class="col-md-3">
-					<div class="form-group">
-						<input type="password" class="form-control" placeholder="Confirm Password" ng-model="user.confirmPassword" required />
+					<div class='row'>
+						<div class="col-md-3">
+							<div class="form-group">
+								<input type="password" class="form-control" placeholder="Confirm Password" ng-model="user.confirmPassword" required />
+							</div>
+						</div>
+						<span ng-show="user.failed">{{user.failed}}</span>
 					</div>
-				</div>
-				<span ng-show="user.failed">{{user.failed}}</span>
+					<button type="submit" class="btn btn-primary" ng-click="register()">Register</button>
+				</form>
 			</div>
-			<button type="submit" class="btn btn-primary" ng-click="register()">Register</button>
-		</form>
+		</div>
     </script>
 
     <script type="text/ng-template" id="/games.html">
-		<div class="page-header">
-			<h3>
-				Games Awaiting Players
-			</h3>
-		</div>
-
-		<div ng-repeat="game in games | orderBy:'-startDate'">
-			{{game.name}} - {{game.startDate}} - 
-				North
-				<span ng-if="!game.players[0] && !game.playerAttached">
-					<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
-				</span>
-				<span ng-if="game.players[0] && game.players[0].person.id.toString() === person._id.toString()">
-					- {{game.players[0].person.name}}
-					<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
-				</span>
-				- East
-				<span ng-if="!game.players[1] && !game.playerAttached">
-					<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'East')"></span>
-				</span>
-				<span ng-if="game.players[1] && game.players[1].person.id.toString() === person._id.toString()">
-					- {{game.players[1].person.name}}
-					<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'East')"></span>
-				</span>
-				- South
-				<span ng-if="!game.players[2] && !game.playerAttached">
-					<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'South')"></span>
-				</span>
-				<span ng-if="game.players[2] && game.players[0].person.id.toString() === person._id.toString()">
-					- {{game.players[2].person.name}}
-					<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'South')"></span>
-				</span>
-				- West
-				<span ng-if="!game.players[3] && !game.playerAttached">
-					<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'West')"></span>
-				</span>
-				<span ng-if="game.players[3] && game.players[3].person.id.toString() === person._id.toString()">
-					- {{game.players[0].person.name}}
-					<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'West')"></span>
-				</span>
-		</div>
-
-		<form ng-submit="addGame()" style="margin-top:30px;">
-			<h3>Add a new game</h3>
-
-			<div class="form-group">
-				<input type="text" class="form-control" placeholder="name" ng-model="name"></input>
+		<div class='row'>
+			<div class='col-md-3'>
 			</div>
-			<div class="form-group">
-				<input type="text" class="form-control" placeholder="password" ng-model="password"></input>
+			<div class='col-md-6'>
+				<div class="page-header">
+					<h3>
+						Games Awaiting Players
+					</h3>
+				</div>
+
+				<div ng-repeat="game in games | orderBy:'-startDate'">
+					{{game.name}} - {{game.startDate}} - 
+						North
+						<span ng-if="!game.players[0] && !game.playerAttached">
+							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
+						</span>
+						<span ng-if="game.players[0] && game.players[0].person.id.toString() === person._id.toString()">
+							- {{game.players[0].person.name}}
+							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
+						</span>
+						- East
+						<span ng-if="!game.players[1] && !game.playerAttached">
+							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'East')"></span>
+						</span>
+						<span ng-if="game.players[1] && game.players[1].person.id.toString() === person._id.toString()">
+							- {{game.players[1].person.name}}
+							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'East')"></span>
+						</span>
+						- South
+						<span ng-if="!game.players[2] && !game.playerAttached">
+							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'South')"></span>
+						</span>
+						<span ng-if="game.players[2] && game.players[0].person.id.toString() === person._id.toString()">
+							- {{game.players[2].person.name}}
+							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'South')"></span>
+						</span>
+						- West
+						<span ng-if="!game.players[3] && !game.playerAttached">
+							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'West')"></span>
+						</span>
+						<span ng-if="game.players[3] && game.players[3].person.id.toString() === person._id.toString()">
+							- {{game.players[0].person.name}}
+							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'West')"></span>
+						</span>
+				</div>
+
+				<form ng-submit="addGame()" style="margin-top:30px;">
+					<h3>Add a new game</h3>
+
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="name" ng-model="name"></input>
+					</div>
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="password" ng-model="password"></input>
+					</div>
+					<button type="submit" class="btn btn-primary">Post</button>
+				</form>
 			</div>
-			<button type="submit" class="btn btn-primary">Post</button>
-		</form>
+		</div>
     </script>
 
     <script type="text/ng-template" id="/play.html">
