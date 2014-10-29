@@ -19,5 +19,9 @@
     "karma": "^0.12.24",
     "karma-jasmine": "^0.1.5",
     "karma-chrome-launcher": "^0.1.5"
+  },
+  "engines": {
+    "node": "0.10.26",
+    "npm": "1.4.3"
   }
 }
