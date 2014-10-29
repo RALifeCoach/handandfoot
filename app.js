@@ -73,8 +73,8 @@ app.use(function(err, req, res, next) {
     });
 });
 
-server.listen(3030);
+server.listen(process.env.PORT || 3030);
 
 module.exports = app;
 
-console.log('Listening on port 3030');
+console.log('started');
