@@ -27,12 +27,12 @@ router.post('/getAll', function(req, res, next) {
 						var gamesVM = [];
 						var mapper = new GameVM();
 						var ctr = games.length;
-						for (game in games) {
-							mapper.mapToVM(games[game], function(err, gameVM) {
+						for (var gameIndex = 0; gameIndex < games.length; gameIndex++) {
+							mapper.mapToVM(games[gameIndex], function(err, gameVM) {
 								if (err) { return next(err); }
 
 								gameVM.playerAttached = false;
-								for (playerIndex in gameVM.players) {
+								for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
 									if (gameVM.players[playerIndex].person 
 									&& gameVM.players[playerIndex].person.id.toString() === req.body.personId.toString()) {
 										gameVM.playerAttached = true;
@@ -40,6 +40,7 @@ router.post('/getAll', function(req, res, next) {
 									}
 								}
 								
+		console.log(gameVM.playersFull, gameVM.playerAttached);
 								// add game if it is still awaiting players
 								if (!gameVM.playersFull || gameVM.playerAttached)
 									gamesVM.push(gameVM);
