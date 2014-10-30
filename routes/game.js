@@ -25,7 +25,7 @@ router.post('/getAll', function(req, res, next) {
 						if(err){ return next(err); }
 
 						var gamesVM = [];
-						var mapper = new GameVM();
+						var mapper = new GameVM.GameVM();
 						var ctr = games.length;
 						for (var gameIndex = 0; gameIndex < games.length; gameIndex++) {
 							mapper.mapToVM(games[gameIndex], function(err, gameVM) {
@@ -75,7 +75,7 @@ router.post('/', function(req, res, next) {
 	game.save(function(err, game){
 		if(err){ return next(err); }
 
-		new GameVM().mapToVM(game, function(err, gameVM) {
+		new GameVM.GameVM().mapToVM(game, function(err, gameVM) {
 			if (err) { return next(err); }
 			res.json(gameVM);
 		});
