@@ -16,6 +16,7 @@
 	<script src='/javascripts/ngDraggable/ngDraggable.js'></script>
     <link href="/stylesheets/bootstrap.css" rel="stylesheet">
     <link href="/stylesheets/cards.css" rel="stylesheet">
+    <link href="/stylesheets/cards-ie9.css" rel="stylesheet">
     <style>
         .glyphicon-thumbs-up {
             cursor: pointer;
@@ -509,22 +510,26 @@
 						<span ng-click="resign()" class="btn btn-default btn-sm" role="button">Resign</span>
 					</div>
 					<div class="panel-body">
-						<span ng-click="endTurn()" class="btn btn-default btn-sm" 
-						ng-class="{disabled: !players[0].turn}" role="button">End Turn</span>
-					</div>
-					<div class="panel-body">
 						<span ng-click="applyUndo()" class="btn btn-default btn-sm" 
 						ng-class="{disabled: undo.length === 0}" role="button">Undo</span>
 					</div>
 				</div>
 				<div class="panel panel-default">
 					<div class="panel-body" style="height:400px">
-						chat
+						<textarea style='width: 100%; height: 100%'
+							ng-disable='true' ng-model='chatText'></textarea>
 					</div>
 				</div>
 				<div class="panel panel-default">
 					<div class="panel-body" style="height:50px">
-						chat
+						<div class="input-group">
+							<input type="text" class="form-control input-sm" ng-model="chatLine" 
+								placeholder="Type your message here..." />
+							<span class="input-group-btn">
+								<button class="btn btn-warning btn-sm" ng-click="sendChat()">
+									Send</button>
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>

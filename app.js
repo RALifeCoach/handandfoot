@@ -16,6 +16,12 @@ else
 require('./models/Person');
 require('./models/Game');
 
+// define classes
+var PlayGame = require('./classes/playGame');
+var playGame = new PlayGame.PlayGame();
+var GameVM = require('./viewmodels/GameVM');
+var mapper = new GameVM.GameVM();
+
 // include routes
 var people = require('./routes/person');
 var games = require('./routes/game');
@@ -25,7 +31,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 // for socket communications
-var socket = require('./routes/socket')(io, games);
+var socket = require('./routes/socket')(io, playGame, mapper);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

@@ -79,6 +79,7 @@ angular.module('handAndFoot')
 		function (socketFactory) {
 			var playSocket = socketFactory();
 			playSocket.forward('gameUpdate');
+			playSocket.forward('chatUpdate');
 			playSocket.forward('error');
 			return playSocket;
 		}

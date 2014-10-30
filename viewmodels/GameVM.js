@@ -766,4 +766,4 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, turnS
 	});
 };
 
-module.exports = GameVM;
+module.exports.GameVM = GameVM;

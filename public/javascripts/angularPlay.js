@@ -226,6 +226,14 @@ angular.module('handAndFoot')
 				scope.control = undo.control;
 				scope.drawFromDiscard = undo.drawFromDiscard;
 			};
+
+			// send an update to the server
+			o.sendChat = function(chat) {
+				var data = {
+					chat: chat
+				};
+				chatSocket.emit('sendChat', data);
+			};
 			
 			return o;
 		}
@@ -275,10 +283,22 @@ angular.module('handAndFoot')
 				$scope.control.turnState = data.game.turnState;
 				$scope.control.hasMelds = data.teams[0].melds.length > 0;
 				$scope.control.pointsNeeded = roundPoints[data.game.round];
+				
+				$scope.chatLine = '';
+				$scope.chatText = '';
 
 				$scope.undo = [];
 				
 				player.resetHighlight($scope.players[0], $scope);
+			});
+
+			// listen for game update message
+			$scope.$on('socket:chatUpdate', function(event, data) {
+				console.log('chatUpdate');
+				
+				if ($scope.chatText !== '')
+					$scope.chatText += '\n';
+				$scope.chatText += data.chatText;
 			});
 
 			// listen for game update message
@@ -473,11 +493,13 @@ angular.module('handAndFoot')
 			$scope.resign = function() {
 			};
 
-			// TESTING - end turn
-			$scope.endTurn = function() {
-				$scope.control.turnState = 'end';
-				player.resetHighlight($scope.players[0], $scope);
-				player.sendUpdate($scope);
+			$scope.sendChat = function() {
+				console.log('send chat');
+
+				if ($scope.chatLine === '')
+					return;
+				player.sendChat($scope.chatLine);
+				$scope.chatLine= '';
 			};
 		}
 	]);
