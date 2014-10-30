@@ -66,14 +66,16 @@ angular.module('handAndFoot')
 			$scope.signIn = function () {
 				var promise = authenticate.signIn($scope.user);
 				promise.success(function (data, status, header) {
-					authenticate.isAuthenticated = true
-					$location.path( "/games" );
-					$scope.user.failed = false;
-					authenticate.savePerson(data.person);
-				}).error(function (status, data) {
-					$scope.user.userId = '';
-					$scope.user.password = '';
-					$scope.user.failed = true;
+					if (data.error) {
+						$scope.user.userId = '';
+						$scope.user.password = '';
+						$scope.user.failed = true;
+					} else {
+						authenticate.isAuthenticated = true;
+						$location.path( "/games" );
+						$scope.user.failed = false;
+						authenticate.savePerson(data.person);
+					}
 				});
 			};
 			

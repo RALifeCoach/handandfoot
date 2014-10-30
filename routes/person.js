@@ -25,7 +25,7 @@ router.post('/login', function(req, res, next) {
 		console.log('password does not match');
 		console.log(req.body);
 		console.log(person);
-		return next(new Error("user id/password invalid"));
+		res.json({error: true });
 	}
 	
     res.json({error: false, person: person });
