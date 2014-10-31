@@ -186,13 +186,17 @@ var GameVM = function() {
 	}
 
 	// score the game
-	this.scoreTheGame = function(game) {
+	this.scoreTheGame = function(game, winningTeam) {
 		var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 10];
 
 		for (var teamIndex = 0; teamIndex < 2; teamIndex++) {
 			var team = teamIndex === 0 ? game.nsTeam[0] : game.ewTeam[0];
 			
 			var baseScore = 0;
+			// add 100 points for going out first
+			if (team == winningTeam)
+				baseScore += 100;
+				
 			var cardsScore = 0;
 			// score the team's melds
 			for (var meldIndex = 0; meldIndex < team.melds.length; meldIndex++) {
@@ -726,7 +730,7 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 			// if the hand has ended then perform end of hand routines
 			switch (control.turnState) {
 				case 'endHand':
-					_this.scoreTheGame(game);
+					_this.scoreTheGame(game, team);
 					_this.endTheHand(game);
 					
 					// increment the round and end the game if the final round has been played
