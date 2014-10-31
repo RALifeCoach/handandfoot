@@ -46,7 +46,8 @@ angular.module('handAndFoot')
 	.controller('AuthenticateCtrl', ['$scope', 
 		'$location', 
 		'authenticate',
-		function ($scope, $location, authenticate) {
+		'sharedProperties',
+		function ($scope, $location, authenticate, sharedProperties) {
 			var isSignedIn = false;
 		 
 			$scope.isError = false;
