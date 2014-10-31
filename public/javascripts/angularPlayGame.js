@@ -100,7 +100,30 @@ angular.module('handAndFoot')
 				if (!pileLocked && sameNumber < 2 && wildCards < 1)
 					return "You need two naturals or one natural and one wild card.";
 
-				// TODO - two other cards for a run
+				// does the card fit for a run
+				var cards = [ false, false, false, false, false, false, false, false, false, false, false, false, false ];
+				// begin by looping through the hand for all the cards in the same suit
+				for (cardIndex = 0; cardIndex < hand.cards.length; cardIndex++) {
+					if (hand.cards[cardIndex].suitNumber === topCard.suitNumber)
+						cards[hand.cards[cardIndex].cardNumber] = true;
+				}
+				
+				// check for 2 cards lower than the top card
+				if (topCard.cardNumber > 3 // the top card is a 6 or higher
+				&& cards[topCard.cardNumber - 2] && cards[topCard.cardNumber - 1])
+					return true;
+				
+				// check for 2 cards higher than the top card
+				if (topCard.cardNumber < 11 // the top card is a Q or lower
+				&& cards[topCard.cardNumber + 2] && cards[topCard.cardNumber + 1])
+					return true;
+				
+				// check for 1 card higher and 1 lower
+				if (topCard.cardNumber > 2 // the top card is a 5 or higher
+				&& topCard.cardNumber < 12 // the top card is a W or lower
+				&& cards[topCard.cardNumber - 1] && cards[topCard.cardNumber + 1])
+					return true;
+				
 				return false;
 			};
 			
