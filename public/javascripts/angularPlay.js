@@ -15,7 +15,6 @@ angular.module('handAndFoot')
 				person: sharedProperties.getPerson(),
 				direction: sharedProperties.getDirection()
 			};
-console.log(o);
 			
 			// join game message
 			o.joinGame = function() {

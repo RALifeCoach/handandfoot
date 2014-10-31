@@ -29,7 +29,8 @@ angular.module('handAndFoot')
 		'$location',
 		'games',
 		'sharedProperties',
-		function($scope, $location, games, sharedProperties){
+		'gamePasswordService',
+		function($scope, $location, games, sharedProperties, gamePasswordService){
 			// if user not set then go to login
 			$scope.person = sharedProperties.getPerson();
 			if (!$scope.person) {
@@ -54,11 +55,27 @@ angular.module('handAndFoot')
 			};
 
 			// join an existing game
-			$scope.joinGame = function(gameId, direction) {
-				sharedProperties.setGameId(gameId);
-				sharedProperties.setDirection(direction);
+			$scope.joinGame = function(game, direction, existingPlayer) {
+				if (!existingPlayer && game.password !== '') {
+					// show the model to get the password
+					var modalOptions = {
+						closeButtonText: 'Cancel',
+						actionButtonText: 'Continue',
+						headerText: 'Enter the game password'
+					};
 
-				$location.path("/play");
+					gamePasswordService.showModal({}, modalOptions, game.password).then(function (result) {
+						sharedProperties.setGameId(game._id);
+						sharedProperties.setDirection(direction);
+
+						$location.path('/play');
+					});
+				} else {
+					sharedProperties.setGameId(game._id);
+					sharedProperties.setDirection(direction);
+
+					$location.path("/play");
+				}
 			};
 		}
 	]);

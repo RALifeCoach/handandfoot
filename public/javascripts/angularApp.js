@@ -1,4 +1,4 @@
-angular.module('handAndFoot', ['ui.router', 'ngCookies', 'btford.socket-io', 'ngDraggable']);
+angular.module('handAndFoot', ['ui.router', 'ngCookies', 'btford.socket-io', 'ngDraggable', 'ui.bootstrap']);
 
 // add config to hand the various page states
 angular.module('handAndFoot')
@@ -57,7 +57,10 @@ angular.module('handAndFoot')
 				},
 				setPerson: function(person) { 
 					sharedPerson = person; 
-					$cookieStore.put('person', person);
+					if (person === null)
+						$cookieStore.remove('person');
+					else
+						$cookieStore.put('person', person);
 				},
 				getDirection: function() { 
 					if (!sharedDirection) {

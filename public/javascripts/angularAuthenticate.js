@@ -58,12 +58,15 @@ angular.module('handAndFoot')
 				var promise = authenticate.signOut();
 				promise.success(function () {
 					authenticate.isAuthenticated = false;
-				}).error(function () {
+				}).error(function (status, data) {
+					console.log(status);
+                    console.log(data);
 				});
 			};
 			
 			// sign in
 			$scope.signIn = function () {
+				sharedProperties.setPerson(null);
 				var promise = authenticate.signIn($scope.user);
 				promise.success(function (data, status, header) {
 					if (data.error) {
@@ -76,11 +79,15 @@ angular.module('handAndFoot')
 						$scope.user.failed = false;
 						authenticate.savePerson(data.person);
 					}
+				}).error(function (status, data) {
+					console.log(status);
+                    console.log(data);
 				});
 			};
 			
 			// register user contains id (email), password and name
 			$scope.register = function () {
+				sharedProperties.setPerson(null);
 				var promise = authenticate.register($scope.user);
 				promise.success(function (data, status, header) {
 					if (data.error) {
@@ -91,6 +98,7 @@ angular.module('handAndFoot')
 						authenticate.isAuthenticated = true;
 						$location.path( "/games" );
 						$scope.user.failed = false;
+						authenticate.savePerson(data.person);
 					}
 				}).error(function (status, data) {
 					console.log(status);

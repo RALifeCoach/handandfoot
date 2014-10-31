@@ -354,6 +354,7 @@ GameVM.prototype.mapToVM = function(game, callback) {
 	var gameVM = {
 		_id: game._id,
 		name: game.name,
+		password: game.password,
 		startDate: game.startDate,
 		lastPlayedDate: game.lastPlayedDate,
 		round: game.round,

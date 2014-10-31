@@ -72,7 +72,7 @@ module.exports = function(mapper) {
 		game.save(function(err, game){
 			if(err){ return next(err); }
 
-			new GameVM.GameVM().mapToVM(game, function(err, gameVM) {
+			new mapper.mapToVM(game, function(err, gameVM) {
 				if (err) { return next(err); }
 				res.json(gameVM);
 			});

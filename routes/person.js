@@ -54,7 +54,7 @@ module.exports = function(mapper) {
 
 			person = new Person( req.body );
 			person.save();
-			res.json( {error: false, person: person } );
+			res.json( {error: false, person: mapper.mapToVM(person) } );
 		});
 	});
 
