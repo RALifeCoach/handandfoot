@@ -15,6 +15,7 @@ angular.module('handAndFoot')
 				person: sharedProperties.getPerson(),
 				direction: sharedProperties.getDirection()
 			};
+console.log(o);
 			
 			// join game message
 			o.joinGame = function() {
@@ -105,7 +106,7 @@ angular.module('handAndFoot')
 			};
 			
 			// check to see if the player is allowed to end their turn
-			o.canEndTurn = function(scope, card) {
+			o.canEndTurn = function(scope, card, melds) {
 				// if there were no melds and now there are melds, ensure that the score
 				// is high enough
 				if (!scope.control.hasMelds && scope.teams[0].melds.length > 0)
@@ -193,7 +194,7 @@ angular.module('handAndFoot')
 					player: scope.players[0],
 					piles: scope.piles,
 					melds: scope.teams[0].melds,
-					turnState: scope.control.turnState
+					control: scope.control
 				};
 				chatSocket.emit('updateGame', data);
 			};
@@ -250,11 +251,14 @@ angular.module('handAndFoot')
 			$scope.game = {};
 			$scope.piles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []}, {cards: []} ];
 			$scope.players = [];
-			$scope.teams = [ { counts: [], melds: [] }, { counts: [], melds: [] } ];
+			$scope.teams = [ 
+				{ basePoints: 0, counts: [], melds: [] }, 
+				{ basePoints: 0, counts: [], melds: [] } 
+			];
 			$scope.control = {
 				turnState: 'draw1',
 				hasMelds: false,
-				drawcards: 0, // used when playing 3 threes
+				drawCards: 0, // used when playing 3 threes
 				pointsNeeded: 0,
 				pointsSoFar: 0
 			};
@@ -282,6 +286,7 @@ angular.module('handAndFoot')
 				$scope.teams[1].basePoints = melds.calculateBase($scope.teams[1]);
 				$scope.control.turnState = data.game.turnState;
 				$scope.control.hasMelds = data.teams[0].melds.length > 0;
+				//$scope.control.drawCards = data.game.drawCards;
 				$scope.control.pointsNeeded = roundPoints[data.game.round];
 				
 				$scope.chatLine = '';
@@ -364,7 +369,7 @@ angular.module('handAndFoot')
 						$scope.control.turnState = 'play'
 						break;
 					case 'draw3':
-						if (--$scope.control.drawCards === 0)
+						if (--$scope.control.drawCards <= 0)
 							$scope.control.turnState = 'play'
 						break;
 					default:
@@ -396,6 +401,11 @@ angular.module('handAndFoot')
 						// set the topCard in scope to the top card from the pile
 						// do not draw the 7 cards until the meld (or melds) have been played
 						$scope.drawFromDiscard.topCard = $scope.piles[4].cards[$scope.piles[4].cards.length - 1];
+						$scope.drawFromDiscard.topCard.highlight = true;
+						if ($scope.players[0].inFoot)
+							$scope.players[0].footCards.push($scope.drawFromDiscard.topCard);
+						else
+							$scope.players[0].handCards.push($scope.drawFromDiscard.topCard);
 						$scope.control.turnState = 'play';
 						break;
 					case 'play':
@@ -413,7 +423,7 @@ angular.module('handAndFoot')
 						}
 						
 						// must be in a valid state to end turn
-						$scope.message = player.canEndTurn($scope, selectedCards[0]);
+						$scope.message = player.canEndTurn($scope, selectedCards[0], melds);
 						if ($scope.message)
 							return;
 						

@@ -40,6 +40,7 @@ var GameSchema = new mongoose.Schema({
 	roundStartingPlayer: { type: Number, default: 0},
 	turn: { type: Number, default: 0},
 	turnState: { type: String, default: ''},
+	drawCards: { type: Number, default: 0}, // the number of cards to draw after playing red threes
 	nsTeam: [ TeamSchema ],
 	ewTeam: [ TeamSchema ],
 	piles: [ PileSchema ],

@@ -148,38 +148,46 @@
 
 				<div ng-repeat="game in games | orderBy:'-startDate'">
 					{{game.name}} - {{game.startDate}} - 
-						North
-						<span ng-if="!game.players[0] && !game.playerAttached">
-							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
-						</span>
-						<span ng-if="game.players[0] && game.players[0].person.id.toString() === person._id.toString()">
-							- {{game.players[0].person.name}}
-							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
-						</span>
-						- East
-						<span ng-if="!game.players[1] && !game.playerAttached">
-							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'East')"></span>
-						</span>
-						<span ng-if="game.players[1] && game.players[1].person.id.toString() === person._id.toString()">
-							- {{game.players[1].person.name}}
-							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'East')"></span>
-						</span>
-						- South
-						<span ng-if="!game.players[2] && !game.playerAttached">
-							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'South')"></span>
-						</span>
-						<span ng-if="game.players[2] && game.players[0].person.id.toString() === person._id.toString()">
-							- {{game.players[2].person.name}}
-							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'South')"></span>
-						</span>
-						- West
-						<span ng-if="!game.players[3] && !game.playerAttached">
-							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'West')"></span>
-						</span>
-						<span ng-if="game.players[3] && game.players[3].person.id.toString() === person._id.toString()">
-							- {{game.players[0].person.name}}
-							<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'West')"></span>
-						</span>
+					North
+					<span ng-if="!game.players[0] && !game.playerAttached">
+						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
+					</span>
+					<span ng-if="game.players[0]">
+						- {{game.players[0].person.name}}
+					</span>
+					<span ng-if="game.players[0] && game.players[0].person.id.toString() === person._id.toString()">
+						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
+					</span>
+					- East
+					<span ng-if="!game.players[1] && !game.playerAttached">
+						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'East')"></span>
+					</span>
+					<span ng-if="game.players[1]">
+						- {{game.players[1].person.name}}
+					</span>
+					<span ng-if="game.players[1] && game.players[1].person.id.toString() === person._id.toString()">
+						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
+					</span>
+					- South
+					<span ng-if="!game.players[2] && !game.playerAttached">
+						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'South')"></span>
+					</span>
+					<span ng-if="game.players[2]">
+						- {{game.players[2].person.name}}
+					</span>
+					<span ng-if="game.players[2] && game.players[2].person.id.toString() === person._id.toString()">
+						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
+					</span>
+					- West
+					<span ng-if="!game.players[3] && !game.playerAttached">
+						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'West')"></span>
+					</span>
+					<span ng-if="game.players[3]">
+						- {{game.players[3].person.name}}
+					</span>
+					<span ng-if="game.players[3] && game.players[3].person.id.toString() === person._id.toString()">
+						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game._id, 'North')"></span>
+					</span>
 				</div>
 
 				<form ng-submit="addGame()" style="margin-top:30px;">
@@ -214,7 +222,7 @@
 						<span ng-if="game.gameBegun && !players[0].inFoot"> - in Hand</span>
 						<span ng-if="players[0].turn && control.turnState === 'draw1'"> - Draw 2 cards</span>
 						<span ng-if="players[0].turn && control.turnState === 'draw2'"> - Draw 1 card</span>
-						<span ng-if="players[0].turn && control.turnState === 'draw3'"> - Draw {{drawCards}} 
+						<span ng-if="players[0].turn && control.turnState === 'draw3'"> - Draw {{control.drawCards}} 
 							cards to replace your red threes</span>
 						<span ng-if="players[0].turn && control.turnState === 'play'"> - Play your cards</span>
 						- Round {{game.round + 1}}
@@ -265,7 +273,7 @@
 					</div>
 				</div>
 				<div class="panel-close panel-default">
-					<div class="panel-body">
+					<div class="panel-body" ng-click="clickMeldBase()">
 						<div class='col-md-2'>
 							Score: {{teams[0].score}}
 							<div ng-if="!control.hasMelds">

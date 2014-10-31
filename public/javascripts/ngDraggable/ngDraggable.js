@@ -73,14 +73,14 @@ angular.module("ngDraggable", [])
                             _pressTimer = setTimeout(function(){
                                 cancelPress();
                                 onlongpress(evt);
-                            },100);
+                            },175);
                             $document.on(_moveEvents, cancelPress);
                             $document.on(_releaseEvents, cancelPress);
                         }else{
                             _pressTimer = setTimeout(function(){
                                 cancelPress();
                                 onlongpress(evt);
-                            },100);
+                            },175);
                             $document.on(_moveEvents, cancelPress);
                             $document.on(_releaseEvents, cancelPress);
                         }

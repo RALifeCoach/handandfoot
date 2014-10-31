@@ -77,7 +77,7 @@ function Socket(io, playGame, mapper) {
 				return;
 					
 			// update the game and, optionally, the game VM
-			mapper.updateGame(connectedPlayer.gameId, data.player, data.piles, data.melds, data.turnState, function(err, gameVM) {
+			mapper.updateGame(connectedPlayer.gameId, data.player, data.piles, data.melds, data.control, function(err, gameVM) {
 				if (err) {
 					console.log(err);
 					console.log(data.gameId);

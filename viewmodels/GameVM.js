@@ -380,6 +380,7 @@ GameVM.prototype.mapToVM = function(game, callback) {
 		gameBegun: game.gameBegun,
 		turn: game.turn,
 		turnState: game.turnState,
+		drawCards: game.drawCards,
 		gameComplete: game.gameComplete
 	};
 
@@ -471,7 +472,7 @@ GameVM.prototype.addPlayer = function(gameId, personId, direction, callback) {
 					return callback(err); 
 				}
 
-				// get the person and game
+				// get the person
 				var query2 = Person.findById(personId);
 				query2.exec(function (err, person){
 					if (err) {
@@ -485,7 +486,10 @@ GameVM.prototype.addPlayer = function(gameId, personId, direction, callback) {
 						return callback(new Error("can't find person")); 
 					}
 
-					// add the game to the person
+					// add the game to the person if not already there
+					if (person.games.indexOf(gameId) > -1)
+						return callback(null, gameVM);
+
 					person.games.push(gameId);
 
 					person.save(function(err, savedPerson) {
@@ -649,7 +653,7 @@ GameVM.prototype.startNewGame = function(gameId, callback) {
 }
 
 // update cards from message from a game
-GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, turnState, callback) {
+GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, control, callback) {
 	var _this = this;
 	// find game from DB
 	var query1 = Game.findById(gameId);
@@ -708,12 +712,18 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, turnS
 		// update the melds - again notify players if melds being updated
 		updatePlayers = _this.unloadMelds(meldsVM, team.melds);
 		
-		// update the turn state
-		if (turnState !== game.turnState) {
+		// update draw cards
+		if (control.drawCards !== game.drawCards) {
 			updatePlayers = true;
-			game.turnState = turnState;
+			game.drawCards = control.drawCards;
+		}
+		
+		// update the turn state
+		if (control.turnState !== game.turnState) {
+			updatePlayers = true;
+			game.turnState = control.turnState;
 			// if the hand has ended then perform end of hand routines
-			switch (turnState) {
+			switch (control.turnState) {
 				case 'endHand':
 					_this.scoreTheGame(game);
 					_this.endTheHand(game);

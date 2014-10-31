@@ -27,7 +27,7 @@ angular.module('handAndFoot')
 						cards: [ cardArrays.redThrees[cardIndex] ] });
 					scope.teams[0].counts[0].count++;
 					scope.control.turnState = 'draw3';
-					scope.drawCards++
+					scope.control.drawCards++
 				}
 				
 				return false;
@@ -154,9 +154,7 @@ angular.module('handAndFoot')
 
 			function buildSuitMeld(clickedMeld, scope) {
 				var meld = clickedMeld;
-				var meldFound = false;
-				if (clickedMeld)
-					meldFound = true;
+				var meldFound = clickedMeld !== false;
 					
 				if (!meld) {
 					// check to see if there is an existing meld of this number
@@ -164,10 +162,11 @@ angular.module('handAndFoot')
 						var thisMeld = scope.teams[0].melds[meldIndex];
 						if (!thisMeld.isComplete 
 						&& (thisMeld.type === 'Clean Meld' || thisMeld.type === 'Dirty Meld')
-						&& thisMeld.number === cardArrays.meldNumber)
+						&& thisMeld.number === cardArrays.meldNumber) {
 							meld = thisMeld;
 							meldFound = true;
 							break;
+						}
 					}
 				}
 
@@ -403,9 +402,10 @@ angular.module('handAndFoot')
 					cards.splice(index, 1);
 				}
 				
-				if (!scope.hasMelds) {
-					scope.control.pointsSoFar = this.calculatePointsSoFar(scope);
-				}
+				if (!scope.control.hasMelds)
+					scope.control.pointsSoFar = calculatePointsSoFar(scope);
+				else
+					scope.teams[0].basePoints = this.calculateBase(scope.teams[0]);
 				
 				// if the player has drawn from the pile, determine if they get the rest of the cards
 				if (scope.drawFromDiscard.topCard) {
