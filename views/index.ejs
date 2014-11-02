@@ -146,12 +146,12 @@
 			<div class='col-md-6'>
 				<div class="page-header">
 					<h3>
-						Games Awaiting Players - {{game.players[0].person.name}}
+						Games Awaiting Players - {{person.name}}
 					</h3>
 				</div>
 
 				<div ng-repeat="game in games | orderBy:'-startDate'">
-					{{game.name}} - {{game.startDate}}<br/>
+					{{game.name}} - <p ng-bind="game.startDate | date:'MM/dd/yyyy'"></p>
 					North
 					<span ng-if="!game.players[0] && !game.playerAttached">
 						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'North', false)"></span>
