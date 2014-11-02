@@ -151,7 +151,7 @@
 				</div>
 
 				<div ng-repeat="game in games | orderBy:'-startDate'">
-					{{game.name}} - {{game.startDate}} - 
+					{{game.name}} - {{game.startDate}}<br/>
 					North
 					<span ng-if="!game.players[0] && !game.playerAttached">
 						<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'North', false)"></span>
