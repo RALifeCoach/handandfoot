@@ -50,7 +50,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 if (process.env.PRODUCTION) {
 	app.get('*',function(req,res,next){
 		if(req.headers['x-forwarded-proto']!='https')
-			res.redirect(return res.redirect(['https://', req.get('Host'), req.url].join(''));)
+			res.redirect(return res.redirect('https://', req.get('Host'), req.url].join('')));
 		else
 			next() /* Continue to other routes if we're not redirecting */
 	});
