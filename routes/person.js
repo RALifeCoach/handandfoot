@@ -19,7 +19,8 @@ module.exports = function(mapper) {
 			if (!person) {
 				console.log('user not found');
 				console.log(req.body);
-				return next(new Error("user id/password invalid"));
+				res.json({error: true });
+				return;
 			}
 
 			if (person.password !== req.body.password) {
@@ -27,6 +28,7 @@ module.exports = function(mapper) {
 				console.log(req.body);
 				console.log(person);
 				res.json({error: true });
+				return;
 			}
 
 			res.json({error: false, person: mapper.mapToVM(person) });
