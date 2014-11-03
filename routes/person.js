@@ -12,7 +12,8 @@ module.exports = function(mapper) {
 	});
 
 	router.post('/login', function(req, res, next) {
-		var query = Person.findOne( {userId: req.body.userId} );
+		var userId = req.body.userId.toLowerCase();
+		var query = Person.findOne( {userId: userId} );
 		query.exec(function (err, person){
 			if (err) { return next(err); }
 			if (!person) {
@@ -53,6 +54,7 @@ module.exports = function(mapper) {
 			}
 
 			person = new Person( req.body );
+			person.userId = person.userId.toLowerCase();
 			person.save();
 			res.json( {error: false, person: mapper.mapToVM(person) } );
 		});
