@@ -1,0 +1,38 @@
+<div class='col-md-3'>
+</div>
+<div class='col-md-6'>
+	<form name="registerForm" class="form-horizontal" role="form">
+		<h3>Register</h3>
+
+		<div class='row'>
+			<div class="col-md-3">
+				<div class="form-group">
+					<input type="text" class="form-control" placeholder="Name" ng-model="user.name" required />
+				</div>
+			</div>
+		</div>
+		<div class='row'>
+			<div class="col-md-3">
+				<div class="form-group">
+					<input type="email" class="form-control" placeholder="User Id" ng-model="user.userId" required />
+				</div>
+			</div>
+		</div>
+		<div class='row'>
+			<div class="col-md-3">
+				<div class="form-group">
+					<input type="password" class="form-control" placeholder="Password" ng-model="user.password" required />
+				</div>
+			</div>
+		</div>
+		<div class='row'>
+			<div class="col-md-3">
+				<div class="form-group">
+					<input type="password" class="form-control" placeholder="Confirm Password" ng-model="user.confirmPassword" required />
+				</div>
+			</div>
+			<span ng-show="user.failed">{{user.failed}}</span>
+		</div>
+		<button type="submit" class="btn btn-primary" ng-click="register()">Register</button>
+	</form>
+</div>

@@ -1,0 +1,25 @@
+<div class='col-md-3'>
+</div>
+<div class='col-md-6'>
+	<form name="loginForm" class="form-horizontal" role="form">
+		<h3>Sign In</h3>
+
+		<div class='row'>
+			<div class="col-md-3">
+				<div class="form-group">
+					<input type="email" class="form-control" placeholder="User Id" ng-model="user.userId" required />
+				</div>
+			</div>
+		</div>
+		<div class='row'>
+			<div class="col-md-3">
+				<div class="form-group">
+					<input type="password" class="form-control" placeholder="Password" ng-model="user.password" required />
+				</div>
+			</div>
+			<span ng-show="user.failed">User Id/Password Invalid</span>
+		</div>
+		<button type="submit" class="btn btn-primary" ng-click="signIn()">LogIn</button>
+		<a href="#/register">Register</a>
+	</form>
+</div>

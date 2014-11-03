@@ -1,0 +1,336 @@
+<div ng-if="message" class="alert alert-warning alert-dismissible" role="alert">
+	<button type="button" class="close" data-dismiss="alert">
+		<span aria-hidden="true">&times;</span>
+		<span class="sr-only">Close</span>
+	</button>
+	<strong>Error!</strong> {{message}}
+</div>
+<div class='row'>
+	<div class='col-md-9'>
+		<div class="panel" ng-class="{'panel-default': !players[0].turn, 'panel-danger': players[0].turn}">
+			<div class="panel-heading">
+				{{players[0].person.name}}
+				<span ng-if="game.gameBegun && players[0].inFoot"> - in Foot</span>
+				<span ng-if="game.gameBegun && !players[0].inFoot"> - in Hand</span>
+				<span ng-if="players[0].turn && control.turnState === 'draw1'"> - Draw 2 cards</span>
+				<span ng-if="players[0].turn && control.turnState === 'draw2'"> - Draw 1 card</span>
+				<span ng-if="players[0].turn && control.turnState === 'draw3'"> - Draw {{control.drawCards}} 
+					cards to replace your red threes</span>
+				<span ng-if="players[0].turn && control.turnState === 'play'"> - Play your cards</span>
+				- Round {{game.round + 1}}
+			</div>
+			<div class="panel-body">
+				<div ng-if="players[0].person" class="playingCards simpleCards">
+					<ul class="hand" ng-if="!players[0].inFoot">
+						<li ng-repeat="card in players[0].handCards" ng-drop="true" 
+						ng-drop-success="onDropComplete(players[0].inFoot, $index, $data, $event)">
+							<div ng-if="card.suit !== 'Joker'" ng-click="clickCard($event, players[0].inFoot, $index)" 
+								class="card rank-{{card.number}} {{card.suitCard}}"
+								ng-class="{highlight: card.highlight}" ng-drag="true" ng-drag-data="card">
+								<span class="rank">{{card.number}}</span>
+								<span ng-if="card.suit === 'Club'" class="suit">&clubs;</span>
+								<span ng-if="card.suit === 'Diamond'" class="suit">&diams;</span>
+								<span ng-if="card.suit === 'Heart'" class="suit">&hearts;</span>
+								<span ng-if="card.suit === 'Spade'" class="suit">&spades;</span>
+							</div>
+							<div ng-if="card.suit === 'Joker'" ng-click="clickCard($event, players[0].inFoot, $index)" 
+								class="card little joker" ng-class="{highlight: card.highlight}" 
+								ng-drag="true" ng-drag-data="card">
+								<span class="rank">-</span>
+								<span class="suit">Joker</span>
+							</div>
+						</li>
+					</ul>
+					<ul class="hand" ng-if="players[0].inFoot">
+						<li ng-repeat="card in players[0].footCards" ng-drop="true" 
+						ng-drop-success="onDropComplete(players[0].inFoot, $index, $data, $event)">
+							<div ng-if="card.suit !== 'Joker'" ng-click="clickCard($event, players[0].inFoot, $index)" 
+								class="card rank-{{card.number}} {{card.suitCard}}"
+								ng-class="{highlight: card.highlight}" ng-drag="true" ng-drag-data="card">
+								<span class="rank">{{card.number}}</span>
+								<span ng-if="card.suit === 'Club'" class="suit">&clubs;</span>
+								<span ng-if="card.suit === 'Diamond'" class="suit">&diams;</span>
+								<span ng-if="card.suit === 'Heart'" class="suit">&hearts;</span>
+								<span ng-if="card.suit === 'Spade'" class="suit">&spades;</span>
+							</div>
+							<div ng-if="card.suit === 'Joker'" ng-click="clickCard($event, players[0].inFoot, $index)" 
+								class="card little joker" ng-class="{highlight: card.highlight}" 
+								ng-drag="true" ng-drag-data="card">
+								<span class="rank">-</span>
+								<span class="suit">Joker</span>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="panel-close panel-default">
+			<div class="panel-body" ng-click="clickMeldBase()">
+				<div class='col-md-2'>
+					Score: {{teams[0].score}}
+					<div ng-if="!control.hasMelds">
+						Points Needed: {{control.pointsNeeded}}<br />
+						Points So Far: {{control.pointsSoFar}}
+					</div>
+					<div ng-if="control.hasMelds">
+						Base Points: {{teams[0].basePoints}}
+					</div>
+					<ul class="nav nav-pills nav-stacked">
+						<li ng-repeat="count in teams[0].counts">
+							<div>
+								<span class="badge pull-right">{{count.count}}</span>
+								{{count.type}}
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class='col-md-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[0].melds | inProgress">
+					<div class="playingCards simpleCards">
+						<ul class="meld">
+							<li ng-repeat="card in meld.cards" ng-drop="true"> 
+								<div ng-if="card.suit !== 'Joker'" ng-click="clickMeld($event, meld)" 
+									class="card rank-{{card.number}} {{card.suitCard}}">
+									<span class="rank">{{card.number}}</span>
+									<span ng-if="card.suit === 'Club'" class="suit">&clubs;</span>
+									<span ng-if="card.suit === 'Diamond'" class="suit">&diams;</span>
+									<span ng-if="card.suit === 'Heart'" class="suit">&hearts;</span>
+									<span ng-if="card.suit === 'Spade'" class="suit">&spades;</span>
+								</div>
+								<div ng-if="card.suit === 'Joker'" ng-click="clickMeld(meld)" 
+									class="card little joker">
+									<span class="rank">-</span>
+									<span class="suit">Joker</span>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel-close panel-default">
+			<div class="row">
+				<div class='col-md-1'>
+				</div>
+				<div class='col-md-2'>
+					<div class="panel-close panel-default">
+						<div class="panel-body-close">
+							<div ng-if="piles[0].cards.length > 0" class="playingCards simpleCards">
+								<ul class="deck">
+									<li ng-repeat="card in [piles[0].cards.length] | maxCards">
+										<div class="card back" ng-click="clickPile(0, players[0].inFoot)">*</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='col-md-2'>
+					<div class="panel-close panel-default">
+						<div class="panel-body-close">
+							<div ng-if="piles[1].cards.length > 0" class="playingCards simpleCards">
+								<ul class="deck">
+									<li ng-repeat="card in [piles[1].cards.length] | maxCards">
+										<div class="card back" ng-click="clickPile(1, players[0].inFoot)">*</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='col-md-2'>
+					<div class="panel-close panel-default" ng-click="clickDiscardPile(players[0].inFoot)">
+						<div class="panel-body-close">
+							<div name='discardPile' id='discardPile' class="playingCards simpleCards">
+								<ul class="deck">
+									<div ng-repeat="card in piles[4].cards | maxDiscard">
+										<li>
+											<div class="card rank-{{card.number}} {{card.suitCard}}"
+												ng-click="clickDiscardPile(players[0].inFoot)">
+												<span class="rank">{{card.number}}</span>
+												<span ng-show="card.suit === 'Club'" class="suit">&clubs;</span>
+												<span ng-show="card.suit === 'Diamond'" class="suit">&diams;</span>
+												<span ng-show="card.suit === 'Heart'" class="suit">&hearts;</span>
+												<span ng-show="card.suit === 'Spade'" class="suit">&spades;</span>
+											</div>
+										</li>
+									</div>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='col-md-2'>
+					<div class="panel-close panel-default">
+						<div class="panel-body-close">
+							<div ng-if="piles[2].cards.length > 0" class="playingCards simpleCards">
+								<ul class="deck">
+									<li ng-repeat="card in [piles[2].cards.length] | maxCards">
+										<div class="card back" ng-click="clickPile(2, players[0].inFoot)">*</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='col-md-2'>
+					<div class="panel-close panel-default">
+						<div class="panel-body-close">
+							<div ng-if="piles[3].cards.length > 0" class="playingCards simpleCards">
+								<ul class="deck">
+									<li ng-repeat="card in [piles[3].cards.length] | maxCards">
+										<div class="card back" ng-click="clickPile(3, players[0].inFoot)">*</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class='col-md-2'>
+					Score: {{teams[1].score}}
+					<div>
+						Base Points: {{teams[1].basePoints}}
+					</div>
+					<ul class="nav nav-pills nav-stacked">
+						<li ng-repeat="count in teams[1].counts">
+							<div>
+								<span class="badge pull-right">{{count.count}}</span>
+								{{count.type}}
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class='col-md-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[1].melds | inProgress">
+					<div class="playingCards simpleCards">
+						<ul class="meld">
+							<li ng-repeat="card in meld.cards" ng-drop="true"> 
+								<div ng-if="card.suit !== 'Joker'" ng-click="clickMeld($event, meld)" 
+									class="card rank-{{card.number}} {{card.suitCard}}">
+									<span class="rank">{{card.number}}</span>
+									<span ng-if="card.suit === 'Club'" class="suit">&clubs;</span>
+									<span ng-if="card.suit === 'Diamond'" class="suit">&diams;</span>
+									<span ng-if="card.suit === 'Heart'" class="suit">&hearts;</span>
+									<span ng-if="card.suit === 'Spade'" class="suit">&spades;</span>
+								</div>
+								<div ng-if="card.suit === 'Joker'" ng-click="clickMeld(meld)" 
+									class="card little joker">
+									<span class="rank">-</span>
+									<span class="suit">Joker</span>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class='col-md-4'>
+				<div class="panel-close" ng-class="{'panel-default': !players[1].turn, 'panel-danger': players[1].turn}">
+					<div class="panel-heading">
+						<span ng-show="players[1].person">{{players[1].person.name}}</span>
+						<span ng-show="!players[1].person">Waiting</span>
+						<span ng-if="game.gameBegun && players[1].inFoot"> - in Foot</span>
+						<span ng-if="game.gameBegun && !players[1].inFoot"> - in Hand</span>
+					</div>
+					<div class="panel-body-close">
+						<div ng-if="players[1].person" class="playingCards simpleCards">
+							<ul ng-if="!players[1].inFoot" class="deck">
+								<li ng-repeat="card in [players[1].handCards] | maxCards">
+									<div class="card back">*</div>
+								</li>
+							</ul>
+							<ul ng-if="players[1].inFoot" class="deck">
+								<li ng-repeat="card in [players[1].footCards] | maxCards">
+									<div class="card back">*</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class='col-md-4'>
+				<div class="panel-close" ng-class="{'panel-default': !players[2].turn, 'panel-danger': players[2].turn}">
+					<div class="panel-heading">
+						<span ng-show="players[2].person">{{players[2].person.name}}</span>
+						<span ng-show="!players[2].person">Waiting</span>
+						<span ng-if="game.gameBegun && players[2].inFoot"> - in Foot</span>
+						<span ng-if="game.gameBegun && !players[2].inFoot"> - in Hand</span>
+					</div>
+					<div class="panel-body-close">
+						<div ng-if="players[2].person" class="playingCards simpleCards">
+							<ul ng-if="!players[2].inFoot" class="deck">
+								<li ng-repeat="card in [players[2].handCards] | maxCards">
+									<div class="card back">*</div>
+								</li>
+							</ul>
+							<ul ng-if="players[2].inFoot" class="deck">
+								<li ng-repeat="card in [players[2].footCards] | maxCards">
+									<div class="card back">*</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class='col-md-4'>
+				<div class="panel-close" ng-class="{'panel-default': !players[3].turn, 'panel-danger': players[3].turn}">
+					<div class="panel-heading">
+						<span ng-show="players[3].person">{{players[3].person.name}}</span>
+						<span ng-show="!players[3].person">Waiting</span>
+						<span ng-if="game.gameBegun && players[3].inFoot"> - in Foot</span>
+						<span ng-if="game.gameBegun && !players[3].inFoot"> - in Hand</span>
+					</div>
+					<div class="panel-body-close">
+						<div ng-if="players[3].person" class="playingCards simpleCards">
+							<ul ng-if="!players[3].inFoot" class="deck">
+								<li ng-repeat="card in [players[3].handCards] | maxCards">
+									<div class="card back">*</div>
+								</li>
+							</ul>
+							<ul ng-if="players[3].inFoot" class="deck">
+								<li ng-repeat="card in [players[3].footCards] | maxCards">
+									<div class="card back">*</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class='col-md-3'>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<span ng-click="leaveGame()" class="btn btn-default btn-sm" role="button">Leave Game</span>
+			</div>
+			<div class="panel-body">
+				<span ng-click="resign()" class="btn btn-default btn-sm" role="button">Resign</span>
+			</div>
+			<div class="panel-body">
+				<span ng-click="applyUndo()" class="btn btn-default btn-sm" 
+				ng-class="{disabled: undo.length === 0}" role="button">Undo</span>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body" style="height:400px">
+				<textarea style='width: 100%; height: 100%'
+					ng-disable='true' ng-model='chatText'></textarea>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body" style="height:50px">
+				<div class="input-group">
+					<input type="text" class="form-control input-sm" ng-model="chatLine" 
+						placeholder="Type your message here..." />
+					<span class="input-group-btn">
+						<button class="btn btn-warning btn-sm" ng-click="sendChat()">
+							Send</button>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

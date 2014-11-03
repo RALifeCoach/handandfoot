@@ -7,12 +7,12 @@ angular.module('handAndFoot')
 			$stateProvider
 				.state('login', {
 					url: '/login',
-					templateUrl: '/login.html',
+					templateUrl: '/partials/login.html',
 					controller: 'AuthenticateCtrl'
 				})
 				.state('register', {
 					url: '/register',
-					templateUrl: '/register.html',
+					templateUrl: '/partials/register.html',
 					controller: 'AuthenticateCtrl'
 				})
 				.state('game', {
@@ -22,7 +22,7 @@ angular.module('handAndFoot')
 				})
 				.state('play', {
 					url: '/play',
-					templateUrl: '/play.html',
+					templateUrl: '/partials/play.html',
 					controller: 'PlayCtrl'
 				});
 
