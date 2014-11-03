@@ -1,0 +1,65 @@
+<div class='col-md-3'>
+</div>
+<div class='col-md-6'>
+	<div class="page-header">
+		<h3>
+			Games Awaiting Players - {{person.name}}
+		</h3>
+	</div>
+
+	<div ng-repeat="game in games | orderBy:'-startDate'">
+		<b>{{game.name}}</b> - <span ng-bind="game.startDate | date:'dd MMM, yyyy'"></span><br/>
+		North
+		<span ng-if="!game.players[0] && !game.playerAttached">
+			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'North', false)"></span>
+		</span>
+		<span ng-if="game.players[0]">
+			- {{game.players[0].person.name}}
+		</span>
+		<span ng-if="game.players[0] && game.players[0].person.id.toString() === person._id.toString()">
+			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'North', true)"></span>
+		</span>
+		- East
+		<span ng-if="!game.players[1] && !game.playerAttached">
+			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'East', false)"></span>
+		</span>
+		<span ng-if="game.players[1]">
+			- {{game.players[1].person.name}}
+		</span>
+		<span ng-if="game.players[1] && game.players[1].person.id.toString() === person._id.toString()">
+			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'East', true)"></span>
+		</span>
+		- South
+		<span ng-if="!game.players[2] && !game.playerAttached">
+			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'South', false)"></span>
+		</span>
+		<span ng-if="game.players[2]">
+			- {{game.players[2].person.name}}
+		</span>
+		<span ng-if="game.players[2] && game.players[2].person.id.toString() === person._id.toString()">
+			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'South', true)"></span>
+		</span>
+		- West
+		<span ng-if="!game.players[3] && !game.playerAttached">
+			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'West', false)"></span>
+		</span>
+		<span ng-if="game.players[3]">
+			- {{game.players[3].person.name}}
+		</span>
+		<span ng-if="game.players[3] && game.players[3].person.id.toString() === person._id.toString()">
+			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'West', true)"></span>
+		</span>
+	</div>
+
+	<form ng-submit="addGame()" style="margin-top:30px;">
+		<h3>Add a new game</h3>
+
+		<div class="form-group">
+			<input type="text" class="form-control" placeholder="name" ng-model="name"></input>
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control" placeholder="password" ng-model="password"></input>
+		</div>
+		<button type="submit" class="btn btn-primary">Post</button>
+	</form>
+</div>
