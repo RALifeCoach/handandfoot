@@ -47,6 +47,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+if (process.env.PRODUCTION) {
+	app.get('*',function(req,res,next){
+		if(req.headers['x-forwarded-proto']!='https')
+			res.redirect(return res.redirect(['https://', req.get('Host'), req.url].join(''));)
+		else
+			next() /* Continue to other routes if we're not redirecting */
+	});
+}
+
 app.use('/', people);
 app.use('/games', games);
 
