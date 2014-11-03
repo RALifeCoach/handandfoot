@@ -17,7 +17,7 @@ angular.module('handAndFoot')
 				})
 				.state('game', {
 					url: '/games',
-					templateUrl: '/games.html',
+					templateUrl: '/partials/games.html',
 					controller: 'GameCtrl'
 				})
 				.state('play', {
