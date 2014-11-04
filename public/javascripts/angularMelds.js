@@ -535,16 +535,16 @@ angular.module('handAndFoot')
 				}
 				
 				// next add black threes
-				for (var cardIndex = 0; cardIndex < cardArrays.numbers[1].cards.length; cardIndex++) {
-					var card = cardArrays.numbers[1].cards[cardIndex];
+				for (var cardIndex = 0; cardIndex < cardArrays.blackThrees.length; cardIndex++) {
+					var card = cardArrays.blackThrees[cardIndex];
 					if (card.suitNumber === 0 || card.suitNumber === 3) {
 						sortedCards.push(card);
 					}
 				}
 				
 				// finally add red threes
-				for (var cardIndex = 0; cardIndex < cardArrays.numbers[1].cards.length; cardIndex++) {
-					var card = cardArrays.numbers[1].cards[cardIndex];
+				for (var cardIndex = 0; cardIndex < cardArrays.redThrees.length; cardIndex++) {
+					var card = cardArrays.redThrees[cardIndex];
 					if (card.suitNumber === 1 || card.suitNumber === 2) {
 						sortedCards.push(card);
 					}
@@ -587,16 +587,16 @@ angular.module('handAndFoot')
 				}
 				
 				// next add black threes
-				for (var cardIndex = 0; cardIndex < cardArrays.numbers[1].cards.length; cardIndex++) {
-					var card = cardArrays.numbers[1].cards[cardIndex];
+				for (var cardIndex = 0; cardIndex < cardArrays.blackThrees.length; cardIndex++) {
+					var card = cardArrays.blackThrees[cardIndex];
 					if (card.suitNumber === 0 || card.suitNumber === 3) {
 						sortedCards.push(card);
 					}
 				}
 				
 				// finally add red threes
-				for (var cardIndex = 0; cardIndex < cardArrays.numbers[1].cards.length; cardIndex++) {
-					var card = cardArrays.numbers[1].cards[cardIndex];
+				for (var cardIndex = 0; cardIndex < cardArrays.redThrees.length; cardIndex++) {
+					var card = cardArrays.redThrees[cardIndex];
 					if (card.suitNumber === 1 || card.suitNumber === 2) {
 						sortedCards.push(card);
 					}
