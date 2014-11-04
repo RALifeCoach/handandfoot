@@ -153,6 +153,9 @@ angular.module('handAndFoot')
 			}
 
 			function buildSuitMeld(clickedMeld, scope) {
+				if (clickedMeld && clickedMeld.type === "Run")
+					return;
+					
 				var meld = clickedMeld;
 				var meldFound = clickedMeld !== false;
 					
@@ -508,6 +511,9 @@ angular.module('handAndFoot')
 					cards[cardIndex].highlight = true;
 					
 				cardArrays.buildCardArrays(player);
+
+				for (var cardIndex = 0; cardIndex < cards.length; cardIndex++)
+					cards[cardIndex].highlight = false;
 				
 				var sortedCards = [];
 
@@ -553,7 +559,10 @@ angular.module('handAndFoot')
 					cards[cardIndex].highlight = true;
 					
 				cardArrays.buildCardArrays(player);
-				
+
+				for (var cardIndex = 0; cardIndex < cards.length; cardIndex++)
+					cards[cardIndex].highlight = false;
+					
 				var sortedCards = [];
 
 				// first add wild cards
