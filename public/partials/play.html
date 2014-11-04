@@ -151,7 +151,7 @@
 				<div class='col-md-2'>
 					<div class="panel-close panel-default" ng-click="clickDiscardPile(players[0].inFoot)">
 						<div class="panel-body-close">
-							<div name='discardPile' id='discardPile' class="playingCards simpleCards">
+							<div name='discardPile' id='discardPile' class="playingCards simpleCards" ng-click="clickDiscardPile(players[0].inFoot)">
 								<ul class="deck">
 									<div ng-repeat="card in piles[4].cards | maxDiscard">
 										<li>
