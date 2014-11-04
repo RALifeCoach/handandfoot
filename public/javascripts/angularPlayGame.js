@@ -89,11 +89,11 @@ angular.module('handAndFoot')
 				
 				// okay if there are 2 or more
 				if (sameNumber > 1)
-					return true;
+					return false;
 					
 				// okay if pile not locked and there is 1 + wild cards
 				if (!pileLocked && sameNumber === 1 && this.countWildCards(hand) > 0)
-					return true;
+					return false;
 
 				// does the card fit for a run
 				var cards = [ false, false, false, false, false, false, false, false, false, false, false, false, false ];
@@ -106,18 +106,18 @@ angular.module('handAndFoot')
 				// check for 2 cards lower than the top card
 				if (topCard.cardNumber > 3 // the top card is a 6 or higher
 				&& cards[topCard.cardNumber - 2] && cards[topCard.cardNumber - 1])
-					return true;
+					return false;
 				
 				// check for 2 cards higher than the top card
 				if (topCard.cardNumber < 11 // the top card is a Q or lower
 				&& cards[topCard.cardNumber + 2] && cards[topCard.cardNumber + 1])
-					return true;
+					return false;
 				
 				// check for 1 card higher and 1 lower
 				if (topCard.cardNumber > 2 // the top card is a 5 or higher
 				&& topCard.cardNumber < 12 // the top card is a W or lower
 				&& cards[topCard.cardNumber - 1] && cards[topCard.cardNumber + 1])
-					return true;
+					return false;
 				
 				// error if pile locked and you have < 2 of the same number
 				if (pileLocked)
