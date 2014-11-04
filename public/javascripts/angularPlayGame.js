@@ -87,18 +87,13 @@ angular.module('handAndFoot')
 				var hand = scope.players[0].inFoot ? scope.players[0].footCards : scope.players[0].handCards;
 				var sameNumber = this.countSameNumber(hand, topCard);
 				
-				// error if you don't have any of the same number
-				if (sameNumber === 0)
-					return "You do not have any of the same card number in your hand.";
-				
-				// error if pile locked and you have < 2 of the same number
-				if (pileLocked && sameNumber < 2)
-					return "The discard pile is locked and you do not have 2 naturals in your hand.";
-
-				// if not locked must have at least 1 and a wild
-				var wildCards = this.countWildCards(hand);
-				if (!pileLocked && sameNumber < 2 && wildCards < 1)
-					return "You need two naturals or one natural and one wild card.";
+				// okay if there are 2 or more
+				if (sameNumber > 1)
+					return true;
+					
+				// okay if pile not locked and there is 1 + wild cards
+				if (!pileLocked && sameNumber === 1 && this.countWildCards(hand) > 0)
+					return true;
 
 				// does the card fit for a run
 				var cards = [ false, false, false, false, false, false, false, false, false, false, false, false, false ];
@@ -124,7 +119,11 @@ angular.module('handAndFoot')
 				&& cards[topCard.cardNumber - 1] && cards[topCard.cardNumber + 1])
 					return true;
 				
-				return false;
+				// error if pile locked and you have < 2 of the same number
+				if (pileLocked)
+					return "The discard pile is locked and you do not have 2 naturals in your hand.";
+
+				return "You need two naturals or one natural and one wild card.";
 			};
 			
 			// check to see if the player is allowed to end their turn
