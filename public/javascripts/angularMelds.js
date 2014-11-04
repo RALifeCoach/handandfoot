@@ -10,7 +10,7 @@ angular.module('handAndFoot')
 				{score: 220, autoOnSeven: true},
 				{score: 250, autoOnSeven: true}
 			];
-			var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 10];
+			var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 20];
 			
 			// private method to build the red three melds
 			function buildRedThrees(scope) {
