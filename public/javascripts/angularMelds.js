@@ -395,6 +395,18 @@ angular.module('handAndFoot')
 				if (message)
 					return message;
 				
+				scope.teams[0].melds.sort(function (a, b) {
+					if (a.type === 'Run')
+						return -1;
+					if (b.type === 'Run')
+						return 1;
+					if (a.type === 'Wild Card Meld')
+						return -1;
+					if (b.type === 'Wild Card Meld')
+						return 1;
+					return (a.number > b.number ? 1 : -1);
+				});
+				
 				// remove the played cards from the hand
 				var cards = scope.players[0].inFoot ? scope.players[0].footCards : scope.players[0].handCards;
 				for (var cardIndex = 0; cardIndex < cardArrays.selectedCards.length; cardIndex++) {
