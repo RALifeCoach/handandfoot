@@ -397,13 +397,13 @@ angular.module('handAndFoot')
 				
 				scope.teams[0].melds.sort(function (a, b) {
 					if (a.type === 'Run')
-						return -1;
+						return 1;
 					if (b.type === 'Run')
-						return 1;
-					if (a.type === 'Wild Card Meld')
 						return -1;
-					if (b.type === 'Wild Card Meld')
+					if (a.type === 'Wild Card Meld')
 						return 1;
+					if (b.type === 'Wild Card Meld')
+						return -1;
 					return (a.number > b.number ? 1 : -1);
 				});
 				
