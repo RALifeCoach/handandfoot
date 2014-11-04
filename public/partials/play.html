@@ -156,7 +156,7 @@
 									<div ng-repeat="card in piles[4].cards | maxDiscard">
 										<li>
 											<div class="card rank-{{card.number}} {{card.suitCard}}"
-												ng-click="clickDiscardPile(players[0].inFoot)">
+												ng-click="clickDiscardPile($event, players[0].inFoot)">
 												<span class="rank">{{card.number}}</span>
 												<span ng-show="card.suit === 'Club'" class="suit">&clubs;</span>
 												<span ng-show="card.suit === 'Diamond'" class="suit">&diams;</span>
