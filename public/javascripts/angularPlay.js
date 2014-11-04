@@ -149,8 +149,12 @@ angular.module('handAndFoot')
 			};
 			
 			// click on the discard pile
-			$scope.clickDiscardPile = function(inFoot) {
+			$scope.clickDiscardPile = function(event, inFoot) {
+				event.preventDefault();
+				event.stopPropagation();
+
 				console.log('pile discard click');
+				
 				$scope.message = false;
 				if (!$scope.players[0].turn)
 					return;
