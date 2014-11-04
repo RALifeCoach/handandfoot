@@ -19,12 +19,12 @@
 				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'"> - Play your cards</span>
 				- Round {{game.round + 1}}
 				<span ng-if="game.gameBegun">
-					- Sort
+					- Sort by
 					<div class="btn-group btn-group-sm">
-						<button type="button" class="btn btn-default">
+						<button type="button" class="btn btn-default" ng-click="sortByNumber()">
 							# Number
 						</button>
-						<button type="button" class="btn btn-default">
+						<button type="button" class="btn btn-default" ng-click="sortBySuit()">
 							<span class="suit">&clubs;</span> Suit
 						</button>
 					</div>

@@ -488,6 +488,100 @@ angular.module('handAndFoot')
 				return score;
 			}
 			
+			// sort the hand by number
+			o.sortByNumber = function(player) {
+				// highlight all the cards in the hand or foot so that card arrays will arrange all the cards
+				var cards = player.inFoot ? player.footCards : player.handCards;
+				for (var cardIndex = 0; cardIndex < cards.length; cardIndex++)
+					cards[cardIndex].highlight = true;
+					
+				cardArrays.buildCardArrays(player);
+				
+				var sortedCards = [];
+
+				// first add wild cards
+				for (var cardIndex = 0; cardIndex < cardArrays.wildCards.length; cardIndex++) {
+					sortedCards.push(cardArrays.wildCards[cardIndex]);
+				}
+				
+				// next add cards by number - from ace down to 4
+				for (var numberIndex = 12; numberIndex >= 2; numberIndex--) {
+					for (var cardIndex = 0; cardIndex < cardArrays.numbers[numberIndex].cards.length; cardIndex++) {
+						sortedCards.push(cardArrays.numbers[numberIndex].cards[cardIndex]);
+					}
+				}
+				
+				// next add black threes
+				for (var cardIndex = 0; cardIndex < cardArrays.numbers[numberIndex].cards.length; cardIndex++) {
+					var card = cardArrays.numbers[1].cards[cardIndex];
+					if (card.suitNumber === 0 || card.suitNumber === 3) {
+						sortedCards.push(card);
+					}
+				}
+				
+				// finally add red threes
+				for (var cardIndex = 0; cardIndex < cardArrays.numbers[numberIndex].cards.length; cardIndex++) {
+					var card = cardArrays.numbers[1].cards[cardIndex];
+					if (card.suitNumber === 1 || card.suitNumber === 2) {
+						sortedCards.push(card);
+					}
+				}
+				
+				if (player.inFoot)
+					player.footCards = sortedCards;
+				else
+					player.handCards = sortedCards;
+			}
+			
+			// sort the hand by suit
+			o.sortBySuit = function(player) {
+				// highlight all the cards in the hand or foot so that card arrays will arrange all the cards
+				var cards = player.inFoot ? player.footCards : player.handCards;
+				for (var cardIndex = 0; cardIndex < cards.length; cardIndex++)
+					cards[cardIndex].highlight = true;
+					
+				cardArrays.buildCardArrays(player);
+				
+				var sortedCards = [];
+
+				// first add wild cards
+				for (var cardIndex = 0; cardIndex < cardArrays.wildCards.length; cardIndex++) {
+					sortedCards.push(cardArrays.wildCards[cardIndex]);
+				}
+				
+				// next add cards by suit
+				for (var suitIndex = 0; suitIndex < 4; suitIndex++) {
+					var suitCards = cardArrays.suits[suitIndex].cards;
+					suitCards.sort(function (a, b) {
+						return (a.cardNumber > b.cardNumber ? 1 : -1);
+					});
+					for (var cardIndex = 0; cardIndex < suitCards.length; cardIndex++) {
+						sortedCards.push(suitCards[cardIndex]);
+					}
+				}
+				
+				// next add black threes
+				for (var cardIndex = 0; cardIndex < cardArrays.numbers[numberIndex].cards.length; cardIndex++) {
+					var card = cardArrays.numbers[1].cards[cardIndex];
+					if (card.suitNumber === 0 || card.suitNumber === 3) {
+						sortedCards.push(card);
+					}
+				}
+				
+				// finally add red threes
+				for (var cardIndex = 0; cardIndex < cardArrays.numbers[numberIndex].cards.length; cardIndex++) {
+					var card = cardArrays.numbers[1].cards[cardIndex];
+					if (card.suitNumber === 1 || card.suitNumber === 2) {
+						sortedCards.push(card);
+					}
+				}
+				
+				if (player.inFoot)
+					player.footCards = sortedCards;
+				else
+					player.handCards = sortedCards;
+			}
+			
 			return o;
 		}
 	]);

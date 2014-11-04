@@ -259,9 +259,31 @@ angular.module('handAndFoot')
 				}
 			};
 
+			$scope.sortByNumber = function() {
+				console.log('sort by number');
+				$scope.message = false;
+
+				melds.sortByNumber($scope.players[0]);
+
+				player.resetHighlight($scope.players[0], $scope);
+				if ($scope.control.turnState !== 'play')
+					player.sendUpdate($scope);
+			};
+
+			$scope.sortBySuit = function() {
+				console.log('sort by suit');
+				$scope.message = false;
+
+				melds.sortBySuit($scope.players[0]);
+
+				player.resetHighlight($scope.players[0], $scope);
+				if ($scope.control.turnState !== 'play')
+					player.sendUpdate($scope);
+			};
+
 			$scope.applyUndo = function() {
 				console.log('click undo');
-				player.applyUndo($scope);
+				player.applyUndo();
 			};
 
 			$scope.resign = function() {
