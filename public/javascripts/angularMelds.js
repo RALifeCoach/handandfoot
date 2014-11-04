@@ -553,7 +553,7 @@ angular.module('handAndFoot')
 				for (var suitIndex = 0; suitIndex < 4; suitIndex++) {
 					var suitCards = cardArrays.suits[suitIndex].cards;
 					suitCards.sort(function (a, b) {
-						return (a.cardNumber > b.cardNumber ? 1 : -1);
+						return (a.cardNumber < b.cardNumber ? 1 : -1);
 					});
 					for (var cardIndex = 0; cardIndex < suitCards.length; cardIndex++) {
 						sortedCards.push(suitCards[cardIndex]);
