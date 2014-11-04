@@ -287,7 +287,7 @@ angular.module('handAndFoot')
 
 			$scope.applyUndo = function() {
 				console.log('click undo');
-				player.applyUndo();
+				player.applyUndo($scope);
 			};
 
 			$scope.resign = function() {
