@@ -18,7 +18,7 @@
 					cards to replace your red threes</span>
 				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'"> - Play your cards</span>
 				- Round {{game.round + 1}}
-				<div ng-if="game.gameBegun">
+				<span ng-if="game.gameBegun">
 					- Sort
 					<div class="btn-group btn-group-sm">
 						<button type="button" class="btn btn-default">
@@ -28,7 +28,7 @@
 							<span class="suit">&clubs;</span> Suit
 						</button>
 					</div>
-				</div>
+				</span>
 			</div>
 			<div class="panel-body-close">
 				<div ng-if="players[0].person" class="playingCards simpleCards">
