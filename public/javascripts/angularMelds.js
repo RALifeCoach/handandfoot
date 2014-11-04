@@ -178,6 +178,14 @@ angular.module('handAndFoot')
 				&& cardArrays.numbers[cardArrays.meldNumber].cards.length <= cardArrays.wildCards.length)
 					return "There must be more naturals than wild cards."
 				
+				// if there is an existing meld of 5 or 6 cards 
+				// and the new cards are coming from a draw from the pile
+				// then start a new meld
+				if (meld
+				&& meld.cards.length > 4
+				&& scope.drawFromDiscard.topCard) {
+					meld = false;
+				}
 				
 				// if meld clicked or an existing meld exists
 				if (meld) {
