@@ -189,7 +189,7 @@
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<div class='col-md-2'>
+				<div class='col-md-3'>
 					Score: {{teams[1].score}}
 					<div>
 						Base Points: {{teams[1].basePoints}}
@@ -203,7 +203,7 @@
 						</li>
 					</ul>
 				</div>
-				<div class='col-md-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[1].melds | inProgress">
+				<div class='col-md-half' ng-click="clickMeldBase()" ng-repeat="meld in teams[1].melds | inProgress">
 					<div class="playingCards simpleCards">
 						<ul class="meld">
 							<li ng-repeat="card in meld.cards" ng-drop="true"> 
