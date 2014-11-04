@@ -481,7 +481,7 @@
 .playingCards ul.hand,
 .playingcards ul.meld,
 .playingCards ul.deck {
-    height: 7em;
+    height: 6em;
 }
 .playingCards ul.hand li,
 .playingcards ul.meld li,

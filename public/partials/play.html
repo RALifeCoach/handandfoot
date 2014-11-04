@@ -19,7 +19,7 @@
 				<span ng-if="players[0].turn && control.turnState === 'play'"> - Play your cards</span>
 				- Round {{game.round + 1}}
 			</div>
-			<div class="panel-body">
+			<div class="panel-body-close">
 				<div ng-if="players[0].person" class="playingCards simpleCards">
 					<ul class="hand" ng-if="!players[0].inFoot">
 						<li ng-repeat="card in players[0].handCards" ng-drop="true" 
