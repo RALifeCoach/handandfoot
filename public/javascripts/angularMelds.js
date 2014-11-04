@@ -153,9 +153,6 @@ angular.module('handAndFoot')
 			}
 
 			function buildSuitMeld(clickedMeld, scope) {
-				if (clickedMeld && clickedMeld.type === "Run")
-					return;
-					
 				var meld = clickedMeld;
 				var meldFound = clickedMeld !== false;
 					
@@ -379,7 +376,7 @@ angular.module('handAndFoot')
 				}
 				
 				// check for suit meld
-				if (cardArrays.numberCount === 1) {
+				if ((!clickedMeld || clickedMeld.type !== "Run") && cardArrays.numberCount === 1) {
 					return buildSuitMeld(clickedMeld, scope);
 				}
 				
