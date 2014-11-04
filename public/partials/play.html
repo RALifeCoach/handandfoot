@@ -12,12 +12,23 @@
 				{{players[0].person.name}}
 				<span ng-if="game.gameBegun && players[0].inFoot"> - in Foot</span>
 				<span ng-if="game.gameBegun && !players[0].inFoot"> - in Hand</span>
-				<span ng-if="players[0].turn && control.turnState === 'draw1'"> - Draw 2 cards</span>
-				<span ng-if="players[0].turn && control.turnState === 'draw2'"> - Draw 1 card</span>
-				<span ng-if="players[0].turn && control.turnState === 'draw3'"> - Draw {{control.drawCards}} 
+				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw1'"> - Draw 2 cards</span>
+				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw2'"> - Draw 1 card</span>
+				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw3'"> - Draw {{control.drawCards}} 
 					cards to replace your red threes</span>
-				<span ng-if="players[0].turn && control.turnState === 'play'"> - Play your cards</span>
+				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'"> - Play your cards</span>
 				- Round {{game.round + 1}}
+				<div ng-if="game.gameBegun">
+					- Sort
+					<div class="btn-group btn-group-sm">
+						<button type="button" class="btn btn-default">
+							# Number
+						</button>
+						<button type="button" class="btn btn-default">
+							<span class="suit">&clubs;</span> Suit
+						</button>
+					</div>
+				</div>
 			</div>
 			<div class="panel-body-close">
 				<div ng-if="players[0].person" class="playingCards simpleCards">

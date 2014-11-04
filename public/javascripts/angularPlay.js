@@ -43,8 +43,14 @@ angular.module('handAndFoot')
 				$scope.teams[0].basePoints = melds.calculateBase($scope.teams[0]);
 				$scope.teams[1].basePoints = melds.calculateBase($scope.teams[1]);
 				$scope.control.turnState = data.game.turnState;
-				$scope.control.hasMelds = data.teams[0].melds.length > 0;
-				//$scope.control.drawCards = data.game.drawCards;
+				$scope.control.hasMelds = false;
+				for (var meldIndex = 0; meldIndex < data.teams[0].melds.length; meldIndex++) {
+					if (data.teams[0].meldstype !== 'Red Three') {
+						$scope.control.hasMelds = true;
+						break;
+					}
+				}
+				$scope.control.drawCards = data.game.drawCards;
 				$scope.control.pointsNeeded = roundPoints[data.game.round];
 				
 				$scope.chatLine = '';
