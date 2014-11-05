@@ -223,10 +223,11 @@ PlayGame.prototype.sendResignRequest = function(socket, gameId) {
 		return;
 
 	// send update game with players properly ordered
-	for (socketIndex in this.sockets) {
-		var socket = this.sockets[socketIndex];
+	for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
+		var socket = connectedGame.sockets[socketIndex];
 		
 		// send the resign request to each player
+		console.log('send resign request');
 		socket.socket.emit('resignRequest', { direction: connectedPlayer.direction });
 	}
 };
