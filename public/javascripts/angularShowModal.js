@@ -1,5 +1,5 @@
 angular.module('handAndFoot')
-	.service('resignGameService', [
+	.service('showModalService', [
 		'$modal',
 		function($modal){
 			var modalInstance = {};
@@ -7,13 +7,13 @@ angular.module('handAndFoot')
 				backdrop: true,
 				keyboard: true,
 				modalFade: true,
-				templateUrl: '/partials/resignGame.html'
+				templateUrl: '/partials/showModal.html'
 			};
 
 			var modalOptions = {
 				closeButtonText: 'Cancel',
 				actionButtonText: 'Continue',
-				headerText: 'Resign Game'
+				headerText: 'Header'
 			};
 
 			this.showModal = function (customModalDefaults, customModalOptions) {

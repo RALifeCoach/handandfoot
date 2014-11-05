@@ -4,8 +4,8 @@ angular.module('handAndFoot')
 		'$location',
 		'playGame',
 		'melds',
-		'resignGameService',
-		function ($scope, $location, player, melds, resignGameService) {
+		'showModalService',
+		function ($scope, $location, player, melds, showModalService) {
 			var roundPoints = [ 50, 90, 120, 150, 190, 220, 250 ];
 			$scope.game = {};
 			$scope.piles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []}, {cards: []} ];
@@ -81,7 +81,7 @@ angular.module('handAndFoot')
 						closeButtonText: false,
 						actionButtonText: false,
 						headerText: 'Resign Request',
-						resignText: "You have asked to resign. Awaiting your partner's response."
+						modalText: "You have asked to resign. Awaiting your partner's response."
 					};
 				} else if ((data.direction === 'North' && $scope.players[0].direction === 'South')
 				|| (data.direction === 'East' && $scope.players[0].direction === 'West')
@@ -91,7 +91,7 @@ angular.module('handAndFoot')
 						closeButtonText: 'No',
 						actionButtonText: 'Yes',
 						headerText: 'Resign Request',
-						resignText: 'Your partner has asked to resign. Do you agree?'
+						modalText: 'Your partner has asked to resign. Do you agree?'
 					};
 				} else {
 					var text = data.direction + " has asked to resign. Awaiting their partner's response.";
@@ -99,11 +99,11 @@ angular.module('handAndFoot')
 						closeButtonText: false,
 						actionButtonText: false,
 						headerText: 'Resign Request',
-						resignText: text
+						modalText: text
 					};
 				}
 
-				resignGameService.showModal({}, modalOptions).then(function (result) {
+				showModalService.showModal({}, modalOptions).then(function (result) {
 					if (result.result !== 'close')
 						player.resignResponse(result);
 				});
@@ -113,7 +113,27 @@ angular.module('handAndFoot')
 			$scope.$on('socket:resignResponse', function(event, data) {
 				console.log('resignResponse');
 				
-				resignGameService.closeModal();
+				showModalService.closeModal();
+				
+				if (data.result !== 'no') {
+					if (data.result === 'winner')
+						var modalOptions = {
+							closeButtonText: false,
+							actionButtonText: 'Continue',
+							headerText: 'Game Over',
+							modalText: "The game is over. You have won!"
+						};
+					else
+						var modalOptions = {
+							closeButtonText: false,
+							actionButtonText: 'Continue',
+							headerText: 'Game Over',
+							modalText: "The game is over. You lost."
+						};
+
+					showModalService.showModal({}, modalOptions).then(function (result) {
+						$location.path('/games');
+					});
 			});
 
 			// listen for game update message

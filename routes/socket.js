@@ -79,6 +79,10 @@ function Socket(io, playGame, mapper) {
 		socket.on('resignResponse', function (data) {
 			console.log('recieved resign response');
 
+			// end the game
+			if (data.result === 'yes') {
+				data.result = 'winner';
+			}
 			playGame.sendResignResponse(socket, data);
 		});
 
