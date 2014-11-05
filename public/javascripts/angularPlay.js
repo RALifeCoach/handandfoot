@@ -104,7 +104,8 @@ angular.module('handAndFoot')
 				}
 
 				resignGameService.showModal({}, modalOptions).then(function (result) {
-					player.resignResponse(result);
+					if (result.result !== 'close')
+						player.resignResponse(result);
 				});
 			});
 

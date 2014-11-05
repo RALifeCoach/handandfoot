@@ -2,6 +2,7 @@ angular.module('handAndFoot')
 	.service('resignGameService', [
 		'$modal',
 		function($modal){
+			var modalInstance = {};
 			var modalDefaults = {
 				backdrop: true,
 				keyboard: true,
@@ -34,12 +35,13 @@ angular.module('handAndFoot')
 
 				if (!tempModalDefaults.controller) {
 					tempModalDefaults.controller = function ($scope, $modalInstance) {
+						modalInstance = $modalInstance;
 						$scope.modalOptions = tempModalOptions;
 						$scope.modalOptions.ok = function () {
-							$modalInstance.close({Result: 'yes'});
+							$modalInstance.close({result: 'yes'});
 						};
 						$scope.modalOptions.close = function () {
-							$modalInstance.close({Result: 'no'});
+							$modalInstance.close({result: 'no'});
 						};
 					}
 				}
@@ -48,7 +50,7 @@ angular.module('handAndFoot')
 			};
 
 			this.closeModal = function () {
-				$modal.close();
+				modalInstance.close({result: 'close'});
 			};
 		}
 	]);
