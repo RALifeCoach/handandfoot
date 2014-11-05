@@ -592,41 +592,8 @@ GameVM.prototype.removePlayer = function(gameId, personId, callback) {
 					console.log(game);
 					return callback(err); 
 				}
-
-				// get the person
-				var query2 = Person.findById(personId);
-				query2.exec(function (err, person){
-					if (err) {
-						console.log(err);
-						console.log(personId);
-						return callback(err); 
-					}
-					if (!person) { 
-						console.log("can't find person");
-						console.log(personId);
-						return callback(new Error("can't find person")); 
-					}
-
-					// remove the game from the person
-					for (var gameIndex = 0; gameIndex < person.games.length; gameIndex++) {
-						if (person.games[gameIndex] === gameId) {
-							person.games.splice(gameIndex, 1);
-							break;
-						}
-					}
-
-					// save the changed person
-					person.save(function(err, savedPerson) {
-						if (err) { 
-							console.log('error saving person');
-							console.log(err);
-							console.log(person);
-							return callback(err); 
-						}
 						
-						callback(null, gameVM);
-					});
-				});
+				callback(null, gameVM);
 			});
 		});
 	});
