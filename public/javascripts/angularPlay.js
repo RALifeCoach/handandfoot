@@ -88,8 +88,8 @@ angular.module('handAndFoot')
 				|| (data.direction === 'South' && $scope.players[0].direction === 'North')
 				|| (data.direction === 'West' && $scope.players[0].direction === 'East')) {
 					var modalOptions = {
-						closeButtonText: 'Cancel',
-						actionButtonText: 'Continue',
+						closeButtonText: 'No',
+						actionButtonText: 'Yes',
 						headerText: 'Resign Request',
 						resignText: 'Your partner has asked to resign. Do you agree?'
 					};
@@ -104,7 +104,6 @@ angular.module('handAndFoot')
 				}
 
 				resignGameService.showModal({}, modalOptions).then(function (result) {
-	console.log(result);
 					player.sendResignAgreement(result);
 				});
 			});

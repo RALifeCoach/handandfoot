@@ -30,6 +30,11 @@ angular.module('handAndFoot')
 			playGame.resignRequest = function() {
 				chatSocket.emit('resignRequest');
 			};
+			
+			// leave the game
+			playGame.resignResponse = function(data) {
+				chatSocket.emit('resignResponse', data);
+			};
 
 			// reset any highlighted flags
 			playGame.resetHighlight = function(player, scope) {

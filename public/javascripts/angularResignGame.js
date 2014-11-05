@@ -35,12 +35,11 @@ angular.module('handAndFoot')
 				if (!tempModalDefaults.controller) {
 					tempModalDefaults.controller = function ($scope, $modalInstance) {
 						$scope.modalOptions = tempModalOptions;
-						$scope.modalOptions.ok = function (result) {
-							$modalInstance.close(result);
+						$scope.modalOptions.ok = function () {
+							$modalInstance.close({Result: 'yes');
 						};
-						$scope.modalOptions.close = function (result) {
-		console.log(result);
-							$modalInstance.dismiss('cancel');
+						$scope.modalOptions.close = function () {
+							$modalInstance.close({Result: 'no');
 						};
 					}
 				}
