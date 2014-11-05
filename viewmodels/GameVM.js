@@ -532,37 +532,7 @@ GameVM.prototype.addPlayer = function(gameId, personId, direction, callback) {
 					return callback(err); 
 				}
 
-				// get the person
-				var query2 = Person.findById(personId);
-				query2.exec(function (err, person){
-					if (err) {
-						console.log(err);
-						console.log(personId);
-						return callback(err); 
-					}
-					if (!person) { 
-						console.log("can't find person");
-						console.log(personId);
-						return callback(new Error("can't find person")); 
-					}
-
-					// add the game to the person if not already there
-					if (person.games.indexOf(gameId) > -1)
-						return callback(null, gameVM);
-
-					person.games.push(gameId);
-
-					person.save(function(err, savedPerson) {
-						if (err) { 
-							console.log('error saving person');
-							console.log(err);
-							console.log(person);
-							return callback(err); 
-						}
-						
-						callback(null, gameVM);
-					});
-				});
+				callback(null, gameVM);
 			});
 		});
 	});
