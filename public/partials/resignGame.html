@@ -5,7 +5,7 @@
 	<p>{{modalOptions.resignText}}</p>
 </div>
 <div class="modal-footer">
-	<button ng-if="modalOptions.closeButtonText" type="button" class="btn" 
+	<button ng-if="modalOptions.closeButtonText !== false" type="button" class="btn" 
 		data-ng-click="modalOptions.close()">{{modalOptions.closeButtonText}}</button>
 	<button ng-if="modalOptions.actionButtonText" class="btn btn-primary" 
         data-ng-click="modalOptions.ok();">{{modalOptions.actionButtonText}}</button>
