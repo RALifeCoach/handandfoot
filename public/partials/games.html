@@ -8,46 +8,46 @@
 	</div>
 
 	<div ng-repeat="game in games | orderBy:'-startDate'">
-		<b>{{game.name}}</b> - <span ng-bind="game.startDate | date:'dd MMM, yyyy'"></span><br/>
+		<b>{{game.name}}</b> - <span ng-bind="game.startDate | date:'dd MMM, yyyy'"> </span><span class="glyphicon glyphicon-log-in" ng-click="gameOptions(game)"></span><br/>
 		North
 		<span ng-if="!game.players[0] && !game.playerAttached">
-			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'North', false)"></span>
+			<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, 'North', false)"></span>
 		</span>
 		<span ng-if="game.players[0]">
 			- {{game.players[0].person.name}}
 		</span>
 		<span ng-if="game.players[0] && game.players[0].person.id.toString() === person._id.toString()">
-			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'North', true)"></span>
+			<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, 'North', true)"></span>
 		</span>
 		- East
 		<span ng-if="!game.players[1] && !game.playerAttached">
-			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'East', false)"></span>
+			<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, 'East', false)"></span>
 		</span>
 		<span ng-if="game.players[1]">
 			- {{game.players[1].person.name}}
 		</span>
 		<span ng-if="game.players[1] && game.players[1].person.id.toString() === person._id.toString()">
-			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'East', true)"></span>
+			<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, 'East', true)"></span>
 		</span>
 		- South
 		<span ng-if="!game.players[2] && !game.playerAttached">
-			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'South', false)"></span>
+			<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, 'South', false)"></span>
 		</span>
 		<span ng-if="game.players[2]">
 			- {{game.players[2].person.name}}
 		</span>
 		<span ng-if="game.players[2] && game.players[2].person.id.toString() === person._id.toString()">
-			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'South', true)"></span>
+			<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, 'South', true)"></span>
 		</span>
 		- West
 		<span ng-if="!game.players[3] && !game.playerAttached">
-			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'West', false)"></span>
+			<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, 'West', false)"></span>
 		</span>
 		<span ng-if="game.players[3]">
 			- {{game.players[3].person.name}}
 		</span>
 		<span ng-if="game.players[3] && game.players[3].person.id.toString() === person._id.toString()">
-			<span class="glyphicon glyphicon-thumbs-up" ng-click="joinGame(game, 'West', true)"></span>
+			<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, 'West', true)"></span>
 		</span>
 	</div>
 
