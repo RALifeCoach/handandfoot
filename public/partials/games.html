@@ -8,7 +8,7 @@
 	</div>
 
 	<div ng-repeat="game in games | orderBy:'-startDate'">
-		<b>{{game.name}}</b> - <span ng-bind="game.startDate | date:'dd MMM, yyyy'"> </span><span class="glyphicon glyphicon-log-in" ng-click="gameOptions(game)"></span><br/>
+		<b>{{game.name}}</b> - <span ng-bind="game.startDate | date:'dd MMM, yyyy'"> </span><span class="glyphicon glyphicon-cog" ng-click="gameOptions(game)"></span><br/>
 		North
 		<span ng-if="!game.players[0] && !game.playerAttached">
 			<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, 'North', false)"></span>
