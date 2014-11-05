@@ -329,7 +329,8 @@ angular.module('handAndFoot')
 				player.applyUndo($scope);
 			};
 
-			$scope.resign = function() {
+			$scope.resignGame = function() {
+				console.log('resign');
 				player.resignRequest();
 			};
 
