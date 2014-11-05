@@ -36,10 +36,10 @@ angular.module('handAndFoot')
 					tempModalDefaults.controller = function ($scope, $modalInstance) {
 						$scope.modalOptions = tempModalOptions;
 						$scope.modalOptions.ok = function () {
-							$modalInstance.close({Result: 'yes');
+							$modalInstance.close({Result: 'yes'});
 						};
 						$scope.modalOptions.close = function () {
-							$modalInstance.close({Result: 'no');
+							$modalInstance.close({Result: 'no'});
 						};
 					}
 				}
