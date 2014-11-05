@@ -134,6 +134,7 @@ angular.module('handAndFoot')
 					showModalService.showModal({}, modalOptions).then(function (result) {
 						$location.path('/games');
 					});
+				}
 			});
 
 			// listen for game update message
