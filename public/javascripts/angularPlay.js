@@ -4,7 +4,8 @@ angular.module('handAndFoot')
 		'$location',
 		'playGame',
 		'melds',
-		function ($scope, $location, player, melds) {
+		'resignGameService',
+		function ($scope, $location, player, melds, resignGameService) {
 			var roundPoints = [ 50, 90, 120, 150, 190, 220, 250 ];
 			$scope.game = {};
 			$scope.piles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []}, {cards: []} ];
@@ -68,6 +69,44 @@ angular.module('handAndFoot')
 				if ($scope.chatText !== '')
 					$scope.chatText += '\n';
 				$scope.chatText += data.chatText;
+			});
+
+			// listen for game update message
+			$scope.$on('socket:resignRequest', function(event, data) {
+				console.log('resignRequest');
+				
+				// show the resign model
+				
+				if (data.direction === $scope.players[0].direction) {
+					var modalOptions = {
+						closeButtonText: false,
+						actionButtonText: false,
+						headerText: 'Resign Request',
+						resignText: "You have asked to resign. Awaiting your partner's response."
+					};
+				} else if ((data.direction === 'North' && $scope.players[0].direction === 'South')
+				|| (data.direction === 'East' && $scope.players[0].direction === 'West')
+				|| (data.direction === 'South' && $scope.players[0].direction === 'North')
+				|| (data.direction === 'West' && $scope.players[0].direction === 'East')) {
+					var modalOptions = {
+						closeButtonText: 'Cancel',
+						actionButtonText: 'Continue',
+						headerText: 'Resign Request',
+						resignText: 'Your partner has asked to resign. Do you agree?'
+					};
+				} else {
+					var test = data.direction + " has asked to resign. Awaiting their partner's response.";
+					var modalOptions = {
+						closeButtonText: false,
+						actionButtonText: false,
+						headerText: 'Resign Request',
+						resignText: text
+					};
+				}
+
+				resignGameService.showModal({}, modalOptions).then(function (result) {
+					//player.sendResignAgreement();
+				});
 			});
 
 			// listen for game update message
@@ -291,6 +330,7 @@ angular.module('handAndFoot')
 			};
 
 			$scope.resign = function() {
+				player.resignRequest();
 			};
 
 			$scope.sendChat = function() {

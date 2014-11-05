@@ -145,7 +145,11 @@ PlayGame.prototype.newConnectedPlayer = function(socket, data) {
 	}
 				
 	// add the new player to the list of players
-	this.connectedPlayers.push({ personId: data.personId, socketId: socket.id, gameId: data.gameId});
+	this.connectedPlayers.push({ 
+		personId: data.personId, 
+		direction: data.direction, 
+		socketId: socket.id, 
+		gameId: data.gameId});
 	return true;
 };
 
@@ -203,6 +207,28 @@ PlayGame.prototype.findConnectedGame = function(socket, gameId) {
 	}
 
 	return connectedGame;
+};
+	
+PlayGame.prototype.sendResignRequest = function(socket, gameId) {
+	var _this = this;
+	// common routine for leaving the game
+	// check to see if the player is playing a game
+	var connectedPlayer = this.findConnectedPlayer(socket);
+	if (!connectedPlayer)
+		return;
+	
+	// find the game, error if it doesn't exist
+	var connectedGame = _this.findConnectedGame(socket, connectedPlayer.gameId);
+	if (!connectedGame)
+		return;
+
+	// send update game with players properly ordered
+	for (socketIndex in this.sockets) {
+		var socket = this.sockets[socketIndex];
+		
+		// send the resign request to each player
+		socket.socket.emit('resignRequest', { direction: connectedPlayer.direction });
+	}
 };
 
 module.exports.PlayGame = PlayGame;

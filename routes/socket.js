@@ -68,6 +68,20 @@ function Socket(io, playGame, mapper) {
 			playGame.leaveGame(socket, mapper);
 		});
 
+		// message handler for the leave game message
+		socket.on('resignRequest', function () {
+			console.log('recieved resign request');
+
+			playGame.sendResignRequest(socket);
+		});
+
+		// message handler for the leave game message
+		socket.on('resignResponse', function (data) {
+			console.log('recieved resign response');
+
+			playGame.sendResignResponse(socket, data);
+		});
+
 		// message handler for update cards message
 		socket.on('updateGame', function (data) {
 			console.log('recieved update Cards');
