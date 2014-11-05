@@ -94,7 +94,7 @@ angular.module('handAndFoot')
 						resignText: 'Your partner has asked to resign. Do you agree?'
 					};
 				} else {
-					var test = data.direction + " has asked to resign. Awaiting their partner's response.";
+					var text = data.direction + " has asked to resign. Awaiting their partner's response.";
 					var modalOptions = {
 						closeButtonText: false,
 						actionButtonText: false,
@@ -103,7 +103,6 @@ angular.module('handAndFoot')
 					};
 				}
 
-	console.log(modalOptions);
 				resignGameService.showModal({}, modalOptions).then(function (result) {
 	console.log(result);
 					player.sendResignAgreement(result);
