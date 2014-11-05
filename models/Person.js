@@ -1,22 +1,17 @@
 var mongoose = require('mongoose');
 
-var PersonSchema = new mongoose.Schema({
-  name: String,
-  userId: String,
-  password: String,
-  wins: {type: Number, default: 0},
-  losses: {type: Number, default: 0},
-  games: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Game' }]
+var StatsSchema = new mongoose.Schema({
+	game: String,
+	dateEnded: { type: Date, default: Date.now },
+	yourScore: { type: Number, default: 0},
+	theirScore: { type: Number, default: 0}
 });
 
-PersonSchema.methods.recordWin = function(person) {
-  this.wins += 1;
-  person.Save();
-};
-
-PersonSchema.methods.recordLoss = function(person) {
-  this.losses += 1;
-  person.Save();
-};
+var PersonSchema = new mongoose.Schema({
+	name: String,
+	userId: String,
+	password: String,
+	stats: [ StatsSchema ]
+});
 
 mongoose.model('Person', PersonSchema);

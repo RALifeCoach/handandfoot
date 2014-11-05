@@ -187,7 +187,7 @@ var GameVM = function() {
 
 	// score the game
 	this.scoreTheGame = function(game, winningTeam) {
-		var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 10];
+		var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 20];
 
 		for (var teamIndex = 0; teamIndex < 2; teamIndex++) {
 			var team = teamIndex === 0 ? game.nsTeam[0] : game.ewTeam[0];
@@ -351,6 +351,61 @@ var GameVM = function() {
 	// end the game
 	this.endTheGame = function(game) {
 		game.gameComplete = true;
+	}
+
+	function addStats(score1, score2, playerId, callback) {
+		var stat = {
+			game: game.name,
+			yourScore: score1,
+			theirScore: score2
+		};
+	
+		Person.findById(nsTeam.players[0].person._id, function(err, person) {
+			if (err) {
+				console.log(err);
+				console.log(nsTeam.players[0].person._id);
+				return callback(err); 
+			}
+			if (!person) { 
+				console.log("can't find person");
+				console.log(nsTeam.players[0].person._id);
+				return callback(new Error("can't find person")); 
+			}
+			
+			person.stats.push(stat);
+			
+			person.save(function(err) {
+				if (err) {
+					console.log(err);
+					console.log(nsTeam.players[0].person._id);
+					return callback(err); 
+				}
+				
+				callback(null);
+			});
+		});
+	}
+	
+	// update players - record scores
+	this.updatePlayers = function(nsTeam, ewTeam, callback) {
+		addStats(nsTeam.score, ewTeam.score, nsTeam.players[0].person._id, function(err) {
+			if (err)
+				callback(err);
+			addStats(nsTeam.score, ewTeam.score, nsTeam.players[1].person._id, function(err) {
+				if (err)
+					callback(err);
+				addStats(ewTeam.score, nsTeam.score, ewTeam.players[0].person._id, function(err) {
+					if (err)
+						callback(err);
+					addStats(ewTeam.score, nsTeam.score, ewTeam.players[0].person._id, function(err) {
+						if (err)
+							callback(err);
+						
+						callback(null);
+					});
+				});
+			});
+		});
 	}
 };
 	
@@ -766,6 +821,13 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 			if (!updatePlayers)
 				return callback(null, false);
 			
+			if (game.gameComplete) {
+				_this.updatePlayers(game.nsTeam[0], game.ewTeam[0], function(err) {
+					return callback(err, null, true);
+				});
+				return;
+			}
+			
 			// recreate the gameVM from the new DB game
 			var mapper = new GameVM();
 			mapper.mapToVM(game, function(err, gameVM) {
@@ -776,6 +838,42 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 				}
 				
 				callback(null, gameVM);
+			});
+		});
+	});
+};
+
+// end the game
+GameVM.prototype.endGame = function(gameId, callback) {
+	var _this = this;
+	// find game from DB
+	var query1 = Game.findById(gameId);
+	query1.exec(function (err, game){
+		if (err) {
+			console.log(err);
+			console.log(gameId);
+			return callback(err); 
+		}
+		if (!game) { 
+			console.log("can't find game");
+			console.log(gameId);
+			return callback(new Error("can't find game")); 
+		}
+
+		_this.scoreTheGame(game, null);
+		_this.endTheGame(game);
+		
+		// save the game
+		game.save(function(err, savedGame){
+			if (err) { 
+				console.log('error saving game');
+				console.log(err);
+				console.log(game);
+				return callback(err); 
+			}
+
+			_this.updatePlayers(game.nsTeam[0], game.ewTeam[0], function(err) {
+				return callback(err);
 			});
 		});
 	});
