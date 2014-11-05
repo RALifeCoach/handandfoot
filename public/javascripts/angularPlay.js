@@ -76,7 +76,6 @@ angular.module('handAndFoot')
 				console.log('resignRequest');
 				
 				// show the resign model
-				
 				if (data.direction === $scope.players[0].direction) {
 					var modalOptions = {
 						closeButtonText: false,
@@ -104,8 +103,10 @@ angular.module('handAndFoot')
 					};
 				}
 
+	console.log(modalOptions);
 				resignGameService.showModal({}, modalOptions).then(function (result) {
-					//player.sendResignAgreement();
+	console.log(result);
+					player.sendResignAgreement(result);
 				});
 			});
 
