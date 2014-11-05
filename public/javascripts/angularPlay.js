@@ -108,6 +108,13 @@ angular.module('handAndFoot')
 				});
 			});
 
+			// listen for resign response
+			$scope.$on('socket:resignResponse', function(event, data) {
+				console.log('resignResponse');
+				
+				resignGameService.closeModal();
+			});
+
 			// listen for game update message
 			$scope.$on('socket:error', function(event, data) {
 				console.log(event);

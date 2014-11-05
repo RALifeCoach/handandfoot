@@ -84,6 +84,7 @@ angular.module('handAndFoot')
 			playSocket.forward('gameUpdate');
 			playSocket.forward('chatUpdate');
 			playSocket.forward('resignRequest');
+			playSocket.forward('resignResponse');
 			playSocket.forward('error');
 			return playSocket;
 		}

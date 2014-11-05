@@ -209,7 +209,7 @@ PlayGame.prototype.findConnectedGame = function(socket, gameId) {
 	return connectedGame;
 };
 	
-PlayGame.prototype.sendResignRequest = function(socket, gameId) {
+PlayGame.prototype.sendResignRequest = function(socket) {
 	var _this = this;
 	// common routine for leaving the game
 	// check to see if the player is playing a game
@@ -229,6 +229,29 @@ PlayGame.prototype.sendResignRequest = function(socket, gameId) {
 		// send the resign request to each player
 		console.log('send resign request');
 		socket.socket.emit('resignRequest', { direction: connectedPlayer.direction });
+	}
+};
+	
+PlayGame.prototype.sendResignResponse = function(socket, data) {
+	var _this = this;
+	// common routine for leaving the game
+	// check to see if the player is playing a game
+	var connectedPlayer = this.findConnectedPlayer(socket);
+	if (!connectedPlayer)
+		return;
+	
+	// find the game, error if it doesn't exist
+	var connectedGame = _this.findConnectedGame(socket, connectedPlayer.gameId);
+	if (!connectedGame)
+		return;
+
+	// send update game with players properly ordered
+	for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
+		var socket = connectedGame.sockets[socketIndex];
+		
+		// send the resign request to each player
+		console.log('send resign response');
+		socket.socket.emit('resignResponse', data);
 	}
 };
 

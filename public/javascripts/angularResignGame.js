@@ -46,5 +46,9 @@ angular.module('handAndFoot')
 
 				return $modal.open(tempModalDefaults).result;
 			};
+
+			this.closeModal = function () {
+				$modal.close();
+			};
 		}
 	]);
