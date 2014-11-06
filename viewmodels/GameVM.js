@@ -3,6 +3,8 @@ var Person = mongoose.model('Person');
 var Game = mongoose.model('Game');
 
 var GameVM = function() {
+	var cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+	var suitsCard = ['clubs', 'diams', 'hearts', 'spades', 'joker'];
 	this.loadPlayer = function(player, callback) {
 		if (player.direction === '')
 			return callback(null, false);
@@ -94,7 +96,9 @@ var GameVM = function() {
 					var card = inPile[cardIndex];
 					cardVM = {
 						suitNumber: card.suit,
-						cardNumber: card.number
+						cardNumber: card.number,
+						suitCard: suitsCard[card.suit],
+						number: card.number > -1 ? cards[card.number] : -1
 					};
 					outPile.push(cardVM);
 				}

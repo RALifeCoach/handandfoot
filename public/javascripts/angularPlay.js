@@ -152,7 +152,7 @@ angular.module('handAndFoot')
 			};
 
 			// click on one of the cards in the hand
-			$scope.clickCard = function(event, inFoot, cardIndex) {
+			$scope.clickCard = function(event, cardIndex) {
 				event.stopPropagation();
 
 				console.log('click ' + cardIndex);
@@ -165,7 +165,7 @@ angular.module('handAndFoot')
 					return;
 				}
 
-				var cards = inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
+				var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
 				if ($scope.drawFromDiscard.topCard
 				&& cards[cardIndex] == $scope.drawFromDiscard.topCard) {
 					$scope.message = "You must play this card.";
@@ -176,10 +176,10 @@ angular.module('handAndFoot')
 			};
 
 			// handle drop complete
-			$scope.onDropComplete = function (inFoot, index, obj, evt) {
+			$scope.onDropComplete = function (index, obj, evt) {
 				$scope.message = false;
 				console.log('drop ' + index);
-				var cards = inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
+				var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
 				var startCard = cards.indexOf(obj);
 				cards.move(startCard, index);
 				player.resetHighlight($scope.players[0], $scope);
@@ -188,7 +188,7 @@ angular.module('handAndFoot')
 			}
 			
 			// click on one of the pick up piles
-			$scope.clickPile = function(pileIndex, inFoot) {
+			$scope.clickPile = function(pileIndex) {
 				$scope.message = false;
 				if (!$scope.players[0].turn)
 					return;
@@ -208,7 +208,7 @@ angular.module('handAndFoot')
 						return;
 				}
 					
-				var cards = inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
+				var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
 				cards.push($scope.piles[pileIndex].cards.pop());
 				player.resetHighlight($scope.players[0], $scope);
 				player.sendUpdate($scope);
@@ -216,7 +216,7 @@ angular.module('handAndFoot')
 			};
 			
 			// click on the discard pile
-			$scope.clickDiscardPile = function(event, inFoot) {
+			$scope.clickDiscardPile = function(event) {
 				event.preventDefault();
 				event.stopPropagation();
 
@@ -263,7 +263,7 @@ angular.module('handAndFoot')
 							return;
 						
 						// discard the selected card and end the turn or the hand
-						var cards = inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
+						var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
 						var cardIndex = cards.indexOf(selectedCards[0]);
 						$scope.piles[4].cards.push(selectedCards[0]);
 						cards.splice(cardIndex, 1);
