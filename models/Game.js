@@ -1,5 +1,27 @@
 var mongoose = require('mongoose');
 
+var OptionsSchema = new mongoose.Schema({
+	teams: Number,
+	runScores: [ 
+		new mongoose.Schema({
+			score: Number,
+			sevenRule: Boolean
+		})
+	],
+	cardScores: [ Number ],
+	redThreeScore: Number,
+	redThreeNegative: Boolean,
+	allowRuns: Boolean,
+	allowWildCardMelds: Boolean,
+	allowPickupFromPile: Boolean,
+	decks: Number,
+	dirtyMeldScore: Number,
+	cleanMeldScore: Number,
+	runScore: Number,
+	wildCardMeldScore: Number,
+	discardPickupCount: Number
+});
+
 var CardSchema = new mongoose.Schema({
 	suit: Number,
 	number: Number

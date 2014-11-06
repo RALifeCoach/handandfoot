@@ -3,10 +3,6 @@ var Person = mongoose.model('Person');
 var Game = mongoose.model('Game');
 
 var GameVM = function() {
-	var suits = ['Club', 'Diamond', 'Heart', 'Spade', 'Joker'];
-	var suitsCard = ['clubs', 'diams', 'hearts', 'spades', 'joker'];
-	var cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-		
 	this.loadPlayer = function(player, callback) {
 		if (player.direction === '')
 			return callback(null, false);
@@ -98,10 +94,7 @@ var GameVM = function() {
 					var card = inPile[cardIndex];
 					cardVM = {
 						suitNumber: card.suit,
-						cardNumber: card.number,
-						suit: suits[card.suit],
-						suitCard: suitsCard[card.suit],
-						number: card.number > -1 ? cards[card.number] : -1
+						cardNumber: card.number
 					};
 					outPile.push(cardVM);
 				}
@@ -810,7 +803,7 @@ GameVM.prototype.endGame = function(gameId, callback) {
 			}
 
 			_this.updatePlayers(game.nsTeam[0], game.ewTeam[0], function(err) {
-				return callback(err);
+				return callback(err, game);
 			});
 		});
 	});

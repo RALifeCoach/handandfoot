@@ -80,10 +80,10 @@ function Socket(io, playGame, mapper) {
 			console.log('recieved resign response');
 
 			// end the game
-			if (data.result === 'yes') {
-				data.result = 'winner';
-			}
-			playGame.sendResignResponse(socket, data);
+			if (data.result === 'yes')
+				return playGame.endTheGame(socket, mapper);
+				
+			playGame.sendResignNoResponse(socket);
 		});
 
 		// message handler for update cards message

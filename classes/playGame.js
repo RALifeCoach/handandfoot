@@ -40,7 +40,7 @@ ConnectedGame.prototype.sendMessages = function(gameVM) {
 
 	// send update game with players properly ordered
 	for (socketIndex in this.sockets) {
-		var socket = this.sockets[socketIndex];
+		var socket = this.sockets[socketIndex].socket;
 		var players = [];
 		var teams = [];
 		
@@ -224,7 +224,7 @@ PlayGame.prototype.sendResignRequest = function(socket) {
 
 	// send update game with players properly ordered
 	for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-		var socket = connectedGame.sockets[socketIndex];
+		var socket = connectedGame.sockets[socketIndex].socket;
 		
 		// send the resign request to each player
 		console.log('send resign request');
@@ -232,26 +232,64 @@ PlayGame.prototype.sendResignRequest = function(socket) {
 	}
 };
 	
-PlayGame.prototype.sendResignResponse = function(socket, data) {
-	var _this = this;
-	// common routine for leaving the game
-	// check to see if the player is playing a game
+PlayGame.prototype.endTheGame = function(socket, mapper, callback) {
+	// find the player, error if not found
+	var connectedPlayer = this.findConnectedPlayer(socket);
+	if (!connectedPlayer)
+		return;
+	
+	mapper.endGame(connectedPlayer.gameId, function(err, game) {
+		if (err)
+			return;
+			
+		// find the game, error if it doesn't exist
+		var connectedGame = this.findConnectedGame(socket, connectedPlayer.gameId);
+		if (!connectedGame)
+			return;
+
+		// send the resign response
+		for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
+			var socket = connectedGame.sockets[socketIndex].socket;
+			var direction = connectedGame.sockets[socketIndex].direction;
+			var results = 'loser';
+			switch (direction) {
+				case 'North':
+				case 'South':
+					if (game.nsTeam[0].score > game.ewTeam[0].score)
+						results = 'winner';
+					break;
+				case 'East':
+				case 'West':
+					if (game.nsTeam[0].score < game.ewTeam[0].score)
+						results = 'winner';
+					break;
+			}
+			
+			// send the resign response to each player
+			
+			socket.socket.emit('resignResponse', { result: results });
+		}
+	});
+};
+	
+PlayGame.prototype.sendResignNoResponse = function(socket) {
+	// find the player, error if not found
 	var connectedPlayer = this.findConnectedPlayer(socket);
 	if (!connectedPlayer)
 		return;
 	
 	// find the game, error if it doesn't exist
-	var connectedGame = _this.findConnectedGame(socket, connectedPlayer.gameId);
+	var connectedGame = this.findConnectedGame(socket, connectedPlayer.gameId);
 	if (!connectedGame)
 		return;
 
-	// send update game with players properly ordered
+	// send the resign response
 	for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-		var socket = connectedGame.sockets[socketIndex];
+		var socket = connectedGame.sockets[socketIndex].socket;
 		
-		// send the resign request to each player
+		// send the resign response to each player
 		console.log('send resign response');
-		socket.socket.emit('resignResponse', data);
+		socket.socket.emit('resignResponse', { result: 'no'} );
 	}
 };
 
