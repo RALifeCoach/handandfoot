@@ -44,7 +44,7 @@ ConnectedGame.prototype.sendMessages = function(gameVM) {
 		var players = [];
 		var teams = [];
 		
-		switch (socket.direction) {
+		switch (this.sockets[socketIndex].direction) {
 			case 'North':
 				players.push(playersVM[0]);
 				players.push(otherPlayers[1]);
@@ -228,7 +228,7 @@ PlayGame.prototype.sendResignRequest = function(socket) {
 		
 		// send the resign request to each player
 		console.log('send resign request');
-		socket.socket.emit('resignRequest', { direction: connectedPlayer.direction });
+		socket.emit('resignRequest', { direction: connectedPlayer.direction });
 	}
 };
 	
@@ -266,8 +266,7 @@ PlayGame.prototype.endTheGame = function(socket, mapper, callback) {
 			}
 			
 			// send the resign response to each player
-			
-			socket.socket.emit('resignResponse', { result: results });
+			socket.emit('resignResponse', { result: results });
 		}
 	});
 };
@@ -289,7 +288,7 @@ PlayGame.prototype.sendResignNoResponse = function(socket) {
 		
 		// send the resign response to each player
 		console.log('send resign response');
-		socket.socket.emit('resignResponse', { result: 'no'} );
+		socket.emit('resignResponse', { result: 'no'} );
 	}
 };
 
