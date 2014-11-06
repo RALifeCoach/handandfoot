@@ -104,13 +104,18 @@ function Socket(io, playGame, mapper) {
 				
 				// game view model is only returned if the update affects other player displays
 				if (gameVM) {
-					// find the game, error if it doesn't exist
-					var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
-					if (!connectedGame)
-						return;
-					
-					// send the updates to the other players
-					connectedGame.sendMessages(gameVM);
+					// the game is over
+					if (gameVM.gameComplete) {
+						playGame.endTheGame(socket, mapper);
+					} else {
+						// find the game, error if it doesn't exist
+						var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
+						if (!connectedGame)
+							return;
+						
+						// send the updates to the other players
+						connectedGame.sendMessages(gameVM);
+					}
 				}
 			});
 		});

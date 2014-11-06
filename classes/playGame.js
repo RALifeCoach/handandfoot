@@ -232,7 +232,7 @@ PlayGame.prototype.sendResignRequest = function(socket) {
 	}
 };
 	
-PlayGame.prototype.endTheGame = function(socket, mapper, callback) {
+PlayGame.prototype.endTheGame = function(socket, mapper) {
 	// find the player, error if not found
 	var connectedPlayer = this.findConnectedPlayer(socket);
 	if (!connectedPlayer)
