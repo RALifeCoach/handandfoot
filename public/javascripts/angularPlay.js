@@ -46,7 +46,7 @@ angular.module('handAndFoot')
 				$scope.control.turnState = data.game.turnState;
 				$scope.control.hasMelds = false;
 				for (var meldIndex = 0; meldIndex < data.teams[0].melds.length; meldIndex++) {
-					if (data.teams[0].meldstype !== 'Red Three') {
+					if (data.teams[0].melds[meldIndex].type !== 'Red Three') {
 						$scope.control.hasMelds = true;
 						break;
 					}
