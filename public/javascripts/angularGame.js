@@ -56,7 +56,7 @@ angular.module('handAndFoot')
 
 			// join an existing game
 			$scope.joinGame = function(game, direction, existingPlayer) {
-				if (!existingPlayer && game.password !== '') {
+				if (!existingPlayer && game.password && game.password !== '') {
 					// show the model to get the password
 					var modalOptions = {
 						closeButtonText: 'Cancel',
