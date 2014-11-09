@@ -355,7 +355,7 @@ var GameVM = function() {
 		var yourScore, yourPartner, theirScore, opponent1, opponent2, personId;
 		switch (direction) {
 			case 'North':
-				personId = game.players[0];
+				personId = game.players[0].person.id;
 				yourScore = game.nsTeam.score;
 				yourPartner = game.players[2];
 				theirScore = game.ewTeam.score;
@@ -363,7 +363,7 @@ var GameVM = function() {
 				oppenent2 = game.players[3];
 				break;
 			case 'South':
-				personId = game.players[2];
+				personId = game.players[2].person.id;
 				yourScore = game.nsTeam.score;
 				yourPartner = game.players[0];
 				theirScore = game.ewTeam.score;
@@ -371,7 +371,7 @@ var GameVM = function() {
 				oppenent2 = game.players[3];
 				break;
 			case 'East':
-				personId = game.players[1];
+				personId = game.players[1].person.id;
 				yourScore = game.ewTeam.score;
 				yourPartner = game.players[3];
 				theirScore = game.nsTeam.score;
@@ -379,7 +379,7 @@ var GameVM = function() {
 				oppenent2 = game.players[2];
 				break;
 			case 'West':
-				personId = game.players[3];
+				personId = game.players[3].person.id;
 				yourScore = game.ewTeam.score;
 				yourPartner = game.players[1];
 				theirScore = game.nsTeam.score;
@@ -394,24 +394,24 @@ var GameVM = function() {
 			gameId: game._id,
 			yourTeam: { 
 				partner: {
-					personId: yourPartner.person._id,
+					personId: yourPartner.person.id,
 					name: yourPartner.person.name
 				},
 				score: resigned ? false : yourScore,
 			},
 			theirTeam: {
 				player1: {
-					personId: oppenent1.person._id,
+					personId: oppenent1.person.id,
 					name: oppenent1.person.name
 				},
 				player2: {
-					personId: oppenent2.person._id,
+					personId: oppenent2.person.id,
 					name: oppenent2.person.name
 				},
 				score: theirScore
 			}
 		};
-console.log('5');	
+console.log(personId);	
 		// update the person document
 		Person.findById(personId, function(err, person) {
 console.log('6');	
