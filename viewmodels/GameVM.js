@@ -385,7 +385,6 @@ var GameVM = function() {
 	
 	// update players - record scores
 	this.updatePlayers = function(gameName, nsTeam, ewTeam, callback) {
-console.log(nsTeam.players);
 		addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[0].person[0], function(err) {
 			if (err)
 				return callback(err);

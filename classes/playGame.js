@@ -233,6 +233,7 @@ PlayGame.prototype.sendResignRequest = function(socket) {
 };
 	
 PlayGame.prototype.endTheGame = function(socket, mapper) {
+	var _this = this;
 	// find the player, error if not found
 	var connectedPlayer = this.findConnectedPlayer(socket);
 	if (!connectedPlayer)
@@ -243,7 +244,7 @@ PlayGame.prototype.endTheGame = function(socket, mapper) {
 			return;
 			
 		// find the game, error if it doesn't exist
-		var connectedGame = this.findConnectedGame(socket, connectedPlayer.gameId);
+		var connectedGame = _this.findConnectedGame(socket, connectedPlayer.gameId);
 		if (!connectedGame)
 			return;
 
