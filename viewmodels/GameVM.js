@@ -444,8 +444,8 @@ var GameVM = function() {
 		var nsResigned = false;
 		var ewResigned = false;
 		if (personId) {
-			if (personId.toString() === game.players[0].person._id.toString()
-			|| personId.toString() === game.players[2].person._id.toString())
+			if (personId.toString() === game.players[0].person.id.toString()
+			|| personId.toString() === game.players[2].person.id.toString())
 				nsResigned = true;
 			else
 				ewResigned = true;
