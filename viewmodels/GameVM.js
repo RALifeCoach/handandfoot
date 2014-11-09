@@ -397,7 +397,7 @@ var GameVM = function() {
 					personId: yourPartner.person._id,
 					name: yourPartner.person.name
 				},
-				score: resigned ? false : yourTeam.score,
+				score: resigned ? false : yourScore,
 			},
 			theirTeam: {
 				player1: {
@@ -408,7 +408,7 @@ var GameVM = function() {
 					personId: oppenent2.person._id,
 					name: oppenent2.person.name
 				},
-				score: theirTeam.score
+				score: theirScore
 			}
 		};
 	
