@@ -390,37 +390,35 @@ var GameVM = function() {
 		
 		// build the stats for the game
 		var stat = {
-			game: game.name,
+			gameName: game.name,
 			gameId: game._id,
-			yourTeam: { 
-				partner: {
+			yourTeam: [{ 
+				partner: [{
 					personId: yourPartner.person.id,
 					name: yourPartner.person.name
-				},
+				}],
 				score: resigned ? false : yourScore,
-			},
-			theirTeam: {
-				player1: {
+			}],
+			theirTeam: [{
+				player1: [{
 					personId: oppenent1.person.id,
 					name: oppenent1.person.name
-				},
-				player2: {
+				}],
+				player2: [{
 					personId: oppenent2.person.id,
 					name: oppenent2.person.name
-				},
+				}],
 				score: theirScore
-			}
+			}]
 		};
-console.log(personId);	
+
 		// update the person document
 		Person.findById(personId, function(err, person) {
-console.log('6');	
 			if (err) {
 				console.log(err);
 				console.log(personId);
 				return callback(err); 
 			}
-console.log('7');	
 			if (!person) { 
 				console.log("can't find person");
 				console.log(personId);
@@ -429,7 +427,6 @@ console.log('7');
 			
 			person.stats.push(stat);
 			
-console.log('8');	
 			person.save(function(err) {
 				if (err) {
 					console.log('error saving person');
@@ -437,7 +434,6 @@ console.log('8');
 					return callback(err); 
 				}
 				
-console.log('9');	
 				callback(null);
 			});
 		});
@@ -454,19 +450,16 @@ console.log('9');
 			else
 				ewResigned = true;
 		}
-console.log('1');
+
 		addStats(game, 'North', nsResigned, function(err) {
 			if (err)
 				return callback(err);
-console.log('2');
 			addStats(game, 'South', nsResigned, function(err) {
 				if (err)
 					callback(err);
-console.log('3');
 				addStats(game, 'East', ewResigned, function(err) {
 					if (err)
 						callback(err);
-console.log('4');
 					addStats(game, 'West', ewResigned, function(err) {
 						if (err)
 							callback(err);
