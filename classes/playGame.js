@@ -266,6 +266,7 @@ PlayGame.prototype.endTheGame = function(socket, mapper) {
 			}
 			
 			// send the resign response to each player
+	console.log(results, direction);
 			socket.emit('resignResponse', { result: results });
 		}
 	});

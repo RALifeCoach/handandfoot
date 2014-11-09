@@ -407,6 +407,8 @@ var GameVM = function() {
 };
 	
 GameVM.prototype.mapToVM = function(game, callback) {
+console.log(this);
+console.log('ggtttt');
 	var gameVM = {
 		_id: game._id,
 		name: game.name,
@@ -440,9 +442,9 @@ GameVM.prototype.mapToVM = function(game, callback) {
 		drawCards: game.drawCards,
 		gameComplete: game.gameComplete
 	};
+console.log('uuuuuuuuuuuu');
 
 	var _this = this;
-
 	_this.loadPlayer(game.nsTeam[0].players[0], function(err, player){
 		if (err) return callback(err);
 		gameVM.players.push(player);

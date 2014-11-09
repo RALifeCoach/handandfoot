@@ -140,7 +140,14 @@ angular.module('handAndFoot')
 			playGame.canEndTurn = function(scope, card, melds) {
 				// if there were no melds and now there are melds, ensure that the score
 				// is high enough
-				if (!scope.control.hasMelds && scope.teams[0].melds.length > 0)
+				var nowHasMelds = false;
+				angular.forEach(var meld in scope.teams[0].melds) {
+					if (meld.type !== 'Red Three') {
+						nowHasMelds = true;
+						break;
+					}
+				}
+				if (!scope.control.hasMelds && nowHasMelds)
 					if (!melds.layDownScoreMet(scope))
 						return "Minimum score for lay down not yet met.";
 
