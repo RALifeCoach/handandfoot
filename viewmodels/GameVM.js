@@ -350,9 +350,9 @@ var GameVM = function() {
 		game.gameComplete = true;
 	}
 
-	function addStats(score1, score2, playerId, callback) {
+	function addStats(gameName, score1, score2, playerId, callback) {
 		var stat = {
-			game: game.name,
+			game: gameName,
 			yourScore: score1,
 			theirScore: score2
 		};
@@ -384,17 +384,17 @@ var GameVM = function() {
 	}
 	
 	// update players - record scores
-	this.updatePlayers = function(nsTeam, ewTeam, callback) {
-		addStats(nsTeam.score, ewTeam.score, nsTeam.players[0].person._id, function(err) {
+	this.updatePlayers = function(gameName, nsTeam, ewTeam, callback) {
+		addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[0].person._id, function(err) {
 			if (err)
 				callback(err);
-			addStats(nsTeam.score, ewTeam.score, nsTeam.players[1].person._id, function(err) {
+			addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[1].person._id, function(err) {
 				if (err)
 					callback(err);
-				addStats(ewTeam.score, nsTeam.score, ewTeam.players[0].person._id, function(err) {
+				addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[0].person._id, function(err) {
 					if (err)
 						callback(err);
-					addStats(ewTeam.score, nsTeam.score, ewTeam.players[0].person._id, function(err) {
+					addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[0].person._id, function(err) {
 						if (err)
 							callback(err);
 						
@@ -758,7 +758,7 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 				return callback(null, false);
 			
 			if (game.gameComplete) {
-				_this.updatePlayers(game.nsTeam[0], game.ewTeam[0], function(err) {
+				_this.updatePlayers(game.name, game.nsTeam[0], game.ewTeam[0], function(err) {
 					return callback(err, null, true);
 				});
 				return;
