@@ -411,14 +411,16 @@ var GameVM = function() {
 				score: theirScore
 			}
 		};
-	
+console.log('5');	
 		// update the person document
 		Person.findById(personId, function(err, person) {
+console.log('6');	
 			if (err) {
 				console.log(err);
 				console.log(personId);
 				return callback(err); 
 			}
+console.log('7');	
 			if (!person) { 
 				console.log("can't find person");
 				console.log(personId);
@@ -427,6 +429,7 @@ var GameVM = function() {
 			
 			person.stats.push(stat);
 			
+console.log('8');	
 			person.save(function(err) {
 				if (err) {
 					console.log('error saving person');
@@ -434,6 +437,7 @@ var GameVM = function() {
 					return callback(err); 
 				}
 				
+console.log('9');	
 				callback(null);
 			});
 		});
@@ -450,15 +454,19 @@ var GameVM = function() {
 			else
 				ewResigned = true;
 		}
+console('1');
 		addStats(game, 'North', nsResigned, function(err) {
 			if (err)
 				return callback(err);
+console('2');
 			addStats(game, 'South', nsResigned, function(err) {
 				if (err)
 					callback(err);
+console('3');
 				addStats(game, 'East', ewResigned, function(err) {
 					if (err)
 						callback(err);
+console('4');
 					addStats(game, 'West', ewResigned, function(err) {
 						if (err)
 							callback(err);
@@ -870,18 +878,16 @@ GameVM.prototype.endGame = function(gameId, personId, callback) {
 				console.log(game);
 				return callback(err); 
 			}
-console.log('1');
+
 			// recreate the gameVM from the new DB game
 			var mapper = new GameVM();
 			mapper.mapToVM(game, function(err, gameVM) {
-console.log('2');
 				if (err) {
 					console.log(err);
 					console.log(game);
 					return callback(err); 
 				}
 
-console.log('3');
 				_this.updatePlayers(gameVM, personId, function(err) {
 					return callback(err, game);
 				});
