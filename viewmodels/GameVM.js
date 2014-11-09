@@ -429,8 +429,8 @@ var GameVM = function() {
 			
 			person.save(function(err) {
 				if (err) {
+					console.log('error saving person');
 					console.log(err);
-					console.log(personId);
 					return callback(err); 
 				}
 				
