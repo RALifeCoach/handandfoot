@@ -351,14 +351,14 @@ console.log('load medls');
 		game.gameComplete = true;
 	}
 
-	function addStats(gameName, score1, score2, playerId, callback) {
+	function addStats(gameName, score1, score2, personId, callback) {
 		var stat = {
 			game: gameName,
 			yourScore: score1,
 			theirScore: score2
 		};
 	
-		Person.findById(nsTeam.players[0].person._id, function(err, person) {
+		Person.findById(personId, function(err, person) {
 			if (err) {
 				console.log(err);
 				console.log(nsTeam.players[0].person._id);
