@@ -70,7 +70,7 @@ module.exports = function(mapper) {
 		];
 
 console.log(game);
-		new mapper.mapToVM(game, function(err, gameVM) {
+		mapper.mapToVM(game, function(err, gameVM) {
 console.log(err);
 			if (err) 
 				return next(err);
