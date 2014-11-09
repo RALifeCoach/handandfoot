@@ -52,7 +52,6 @@ var GameVM = function() {
 
 	// count meld types
 	this.countMelds = function(inMelds) {
-console.log('load medls');
 		var counts = [ 
 			{type: 'Red Threes', count: 0},
 			{type: 'Clean Melds', count: 0},
@@ -386,6 +385,7 @@ console.log('load medls');
 	
 	// update players - record scores
 	this.updatePlayers = function(gameName, nsTeam, ewTeam, callback) {
+console.log(nsTeam.players);
 		addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[0].person._id, function(err) {
 			if (err)
 				return callback(err);
@@ -408,8 +408,6 @@ console.log('load medls');
 };
 	
 GameVM.prototype.mapToVM = function(game, callback) {
-console.log(this);
-console.log('ggtttt');
 	var gameVM = {
 		_id: game._id,
 		name: game.name,
@@ -443,7 +441,6 @@ console.log('ggtttt');
 		drawCards: game.drawCards,
 		gameComplete: game.gameComplete
 	};
-console.log('uuuuuuuuuuuu');
 
 	var _this = this;
 	_this.loadPlayer(game.nsTeam[0].players[0], function(err, player){
