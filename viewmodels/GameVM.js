@@ -350,13 +350,69 @@ var GameVM = function() {
 		game.gameComplete = true;
 	}
 
-	function addStats(gameName, score1, score2, personId, resigned, callback) {
+	function addStats(game, direction, resigned, callback) {
+		// build the fields needed to get the stats
+		var yourScore, yourPartner, theirScore, opponent1, opponent2, personId;
+		switch (direction) {
+			case 'North':
+				personId = game.players[0];
+				yourScore = game.nsTeam.score;
+				yourPartner = game.players[2];
+				theirScore = game.ewTeam.score;
+				oppenent1 = game.players[1];
+				oppenent2 = game.players[3];
+				break;
+			case 'South':
+				personId = game.players[2];
+				yourScore = game.nsTeam.score;
+				yourPartner = game.players[0];
+				theirScore = game.ewTeam.score;
+				oppenent1 = game.players[1];
+				oppenent2 = game.players[3];
+				break;
+			case 'East':
+				personId = game.players[1];
+				yourScore = game.ewTeam.score;
+				yourPartner = game.players[3];
+				theirScore = game.nsTeam.score;
+				oppenent1 = game.players[0];
+				oppenent2 = game.players[2];
+				break;
+			case 'West':
+				personId = game.players[3];
+				yourScore = game.ewTeam.score;
+				yourPartner = game.players[1];
+				theirScore = game.nsTeam.score;
+				oppenent1 = game.players[0];
+				oppenent2 = game.players[2];
+				break;
+		}
+		
+		// build the stats for the game
 		var stat = {
-			game: gameName,
-			yourScore: resigned ? -1 : score1,
-			theirScore: score2
+			game: game.name,
+			gameId: game._id,
+			yourTeam: { 
+				partner: {
+					personId: yourPartner.person._id,
+					name: yourPartner.person.name
+				},
+				score: resigned ? false : yourTeam.score,
+			},
+			theirTeam: {
+				player1: {
+					personId: oppenent1.person._id,
+					name: oppenent1.person.name
+				},
+				player2: {
+					personId: oppenent2.person._id,
+					name: oppenent2.person.name
+				},
+				score: theirTeam.score
+			}
 		};
 	
+		// update the person document
 		Person.findById(personId, function(err, person) {
 			if (err) {
 				console.log(err);
@@ -384,7 +440,7 @@ var GameVM = function() {
 	}
 	
 	// update players - record scores
-	this.updatePlayers = function(gameName, nsTeam, ewTeam, personId, callback) {
+	this.updatePlayers = function(game, personId, callback) {
 		var nsResigned = false;
 		var ewResigned = false;
 		if (personId) {
@@ -394,16 +450,16 @@ var GameVM = function() {
 			else
 				ewResigned = true;
 		}
-		addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[0].person[0], nsResigned, function(err) {
+		addStats(game, 'North', nsResigned, function(err) {
 			if (err)
 				return callback(err);
-			addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[1].person[0], nsResigned, function(err) {
+			addStats(game, 'South', nsResigned, function(err) {
 				if (err)
 					callback(err);
-				addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[0].person[0], ewResigned, function(err) {
+				addStats(game, 'East', ewResigned, function(err) {
 					if (err)
 						callback(err);
-					addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[1].person[0], ewResigned, function(err) {
+					addStats(game, 'West', ewResigned, function(err) {
 						if (err)
 							callback(err);
 						
@@ -763,13 +819,6 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 			if (!updatePlayers)
 				return callback(null, false);
 			
-			if (game.gameComplete) {
-				_this.updatePlayers(game.name, game.nsTeam[0], game.ewTeam[0], function(err) {
-					return callback(err, null, true);
-				});
-				return;
-			}
-			
 			// recreate the gameVM from the new DB game
 			var mapper = new GameVM();
 			mapper.mapToVM(game, function(err, gameVM) {
@@ -777,6 +826,14 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 					console.log(err);
 					console.log(game);
 					return callback(err); 
+				}
+				
+				// if the game is complete, update the stats
+				if (game.gameComplete) {
+					_this.updatePlayers(gameVM, function(err) {
+						return callback(err, null, true);
+					});
+					return;
 				}
 				
 				callback(null, gameVM);
@@ -813,9 +870,19 @@ GameVM.prototype.endGame = function(gameId, personId, callback) {
 				console.log(game);
 				return callback(err); 
 			}
+			
+			// recreate the gameVM from the new DB game
+			var mapper = new GameVM();
+			mapper.mapToVM(game, function(err, gameVM) {
+				if (err) {
+					console.log(err);
+					console.log(game);
+					return callback(err); 
+				}
 
-			_this.updatePlayers(game.name, game.nsTeam[0], game.ewTeam[0], personId, function(err) {
-				return callback(err, game);
+				_this.updatePlayers(gameVM, function(err) {
+					return callback(err, game);
+				});
 			});
 		});
 	});

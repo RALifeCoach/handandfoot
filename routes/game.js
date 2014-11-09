@@ -69,14 +69,10 @@ module.exports = function(mapper) {
 			{ direction: 'Discard', cards: [] }
 		];
 
-console.log(game);
 		mapper.mapToVM(game, function(err, gameVM) {
-console.log(err);
 			if (err) 
 				return next(err);
-console.log('2');
 			game.save(function(err, game){
-console.log(err);
 				if(err){ return next(err); }
 
 				res.json(gameVM);
