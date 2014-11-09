@@ -257,11 +257,17 @@ PlayGame.prototype.endTheGame = function(socket, mapper, wasResigned) {
 			switch (direction) {
 				case 'North':
 				case 'South':
+					if (wasResigned
+					&& (connectedPlayer.direction === 'East' || connectedPlayer.direction === 'West'))
+						results = 'winner';
 					if (game.nsTeam[0].score > game.ewTeam[0].score)
 						results = 'winner';
 					break;
 				case 'East':
 				case 'West':
+					if (wasResigned
+					&& (connectedPlayer.direction === 'North' || connectedPlayer.direction === 'South'))
+						results = 'winner';
 					if (game.nsTeam[0].score < game.ewTeam[0].score)
 						results = 'winner';
 					break;

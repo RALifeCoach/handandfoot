@@ -397,7 +397,7 @@ var GameVM = function() {
 					personId: yourPartner.person.id,
 					name: yourPartner.person.name
 				}],
-				score: resigned ? false : yourScore,
+				score: resigned ? -99999 : yourScore,
 			}],
 			theirTeam: [{
 				player1: [{
