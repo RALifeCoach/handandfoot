@@ -360,7 +360,7 @@ var GameVM = function() {
 		Person.findById(personId, function(err, person) {
 			if (err) {
 				console.log(err);
-				console.log(nsTeam.players[0].person._id);
+				console.log(personId);
 				return callback(err); 
 			}
 			if (!person) { 
@@ -386,16 +386,16 @@ var GameVM = function() {
 	// update players - record scores
 	this.updatePlayers = function(gameName, nsTeam, ewTeam, callback) {
 console.log(nsTeam.players);
-		addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[0].person._id, function(err) {
+		addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[0].person[0], function(err) {
 			if (err)
 				return callback(err);
-			addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[1].person._id, function(err) {
+			addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[1].person[0], function(err) {
 				if (err)
 					callback(err);
-				addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[0].person._id, function(err) {
+				addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[0].person[0], function(err) {
 					if (err)
 						callback(err);
-					addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[0].person._id, function(err) {
+					addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[1].person[0], function(err) {
 						if (err)
 							callback(err);
 						
