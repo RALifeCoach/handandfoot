@@ -69,7 +69,7 @@ module.exports = function(mapper) {
 			{ direction: 'Discard', cards: [] }
 		];
 
-console.log('ggggg');
+console.log(game);
 		new mapper.mapToVM(game, function(err, gameVM) {
 console.log(err);
 			if (err) 

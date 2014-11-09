@@ -52,6 +52,7 @@ var GameVM = function() {
 
 	// count meld types
 	this.countMelds = function(inMelds) {
+console.log('load medls');
 		var counts = [ 
 			{type: 'Red Threes', count: 0},
 			{type: 'Clean Melds', count: 0},
