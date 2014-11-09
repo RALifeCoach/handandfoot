@@ -141,7 +141,7 @@ angular.module('handAndFoot')
 				// if there were no melds and now there are melds, ensure that the score
 				// is high enough
 				var nowHasMelds = false;
-				angular.forEach(var meld in scope.teams[0].melds) {
+				angular.forEach(meld in scope.teams[0].melds) {
 					if (meld.type !== 'Red Three') {
 						nowHasMelds = true;
 						break;
