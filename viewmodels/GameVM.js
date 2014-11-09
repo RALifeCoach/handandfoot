@@ -830,7 +830,7 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 				
 				// if the game is complete, update the stats
 				if (game.gameComplete) {
-					_this.updatePlayers(gameVM, function(err) {
+					_this.updatePlayers(gameVM, false, function(err) {
 						return callback(err, null, true);
 					});
 					return;
@@ -880,7 +880,7 @@ GameVM.prototype.endGame = function(gameId, personId, callback) {
 					return callback(err); 
 				}
 
-				_this.updatePlayers(gameVM, function(err) {
+				_this.updatePlayers(gameVM, personId, function(err) {
 					return callback(err, game);
 				});
 			});
