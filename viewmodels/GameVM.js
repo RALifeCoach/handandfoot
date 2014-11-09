@@ -454,19 +454,19 @@ console.log('9');
 			else
 				ewResigned = true;
 		}
-console('1');
+console.log('1');
 		addStats(game, 'North', nsResigned, function(err) {
 			if (err)
 				return callback(err);
-console('2');
+console.log('2');
 			addStats(game, 'South', nsResigned, function(err) {
 				if (err)
 					callback(err);
-console('3');
+console.log('3');
 				addStats(game, 'East', ewResigned, function(err) {
 					if (err)
 						callback(err);
-console('4');
+console.log('4');
 					addStats(game, 'West', ewResigned, function(err) {
 						if (err)
 							callback(err);
