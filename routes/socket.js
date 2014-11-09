@@ -81,8 +81,7 @@ function Socket(io, playGame, mapper) {
 
 			// end the game
 			if (data.result === 'yes') {
-	console.log('end the game');
-				return playGame.endTheGame(socket, mapper);
+				return playGame.endTheGame(socket, mapper, true);
 			}
 				
 			playGame.sendResignNoResponse(socket);
@@ -108,7 +107,7 @@ function Socket(io, playGame, mapper) {
 				if (gameVM) {
 					// the game is over
 					if (gameVM.gameComplete) {
-						playGame.endTheGame(socket, mapper);
+						playGame.endTheGame(socket, mapper, false);
 					} else {
 						// find the game, error if it doesn't exist
 						var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);

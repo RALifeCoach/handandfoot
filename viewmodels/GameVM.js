@@ -350,10 +350,10 @@ var GameVM = function() {
 		game.gameComplete = true;
 	}
 
-	function addStats(gameName, score1, score2, personId, callback) {
+	function addStats(gameName, score1, score2, personId, resigned, callback) {
 		var stat = {
 			game: gameName,
-			yourScore: score1,
+			yourScore: resigned ? -1 : score1,
 			theirScore: score2
 		};
 	
@@ -384,17 +384,26 @@ var GameVM = function() {
 	}
 	
 	// update players - record scores
-	this.updatePlayers = function(gameName, nsTeam, ewTeam, callback) {
-		addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[0].person[0], function(err) {
+	this.updatePlayers = function(gameName, nsTeam, ewTeam, personId, callback) {
+		var nsResigned = false;
+		var ewResigned = false;
+		if (personId) {
+			if (personId.toString() === nsTeam.players[0].person[0].toString()
+			|| personId.toString() === nsTeam.players[0].person[1].toString())
+				nsResigned = true;
+			else
+				ewResigned = true;
+		}
+		addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[0].person[0], nsResigned, function(err) {
 			if (err)
 				return callback(err);
-			addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[1].person[0], function(err) {
+			addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[1].person[0], nsResigned, function(err) {
 				if (err)
 					callback(err);
-				addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[0].person[0], function(err) {
+				addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[0].person[0], ewResigned, function(err) {
 					if (err)
 						callback(err);
-					addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[1].person[0], function(err) {
+					addStats(gameName, ewTeam.score, nsTeam.score, ewTeam.players[1].person[0], ewResigned, function(err) {
 						if (err)
 							callback(err);
 						
@@ -777,7 +786,7 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 };
 
 // end the game
-GameVM.prototype.endGame = function(gameId, callback) {
+GameVM.prototype.endGame = function(gameId, personId, callback) {
 	var _this = this;
 	// find game from DB
 	var query1 = Game.findById(gameId);
@@ -805,7 +814,7 @@ GameVM.prototype.endGame = function(gameId, callback) {
 				return callback(err); 
 			}
 
-			_this.updatePlayers(game.name, game.nsTeam[0], game.ewTeam[0], function(err) {
+			_this.updatePlayers(game.name, game.nsTeam[0], game.ewTeam[0], personId, function(err) {
 				return callback(err, game);
 			});
 		});

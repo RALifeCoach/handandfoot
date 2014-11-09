@@ -232,14 +232,15 @@ PlayGame.prototype.sendResignRequest = function(socket) {
 	}
 };
 	
-PlayGame.prototype.endTheGame = function(socket, mapper) {
+PlayGame.prototype.endTheGame = function(socket, mapper, wasResigned) {
 	var _this = this;
 	// find the player, error if not found
 	var connectedPlayer = this.findConnectedPlayer(socket);
 	if (!connectedPlayer)
 		return;
 	
-	mapper.endGame(connectedPlayer.gameId, function(err, game) {
+	var personId = wasResigned ? connectedPlayer.personId : false;
+	mapper.endGame(connectedPlayer.gameId, personId, function(err, game) {
 		if (err)
 			return;
 			
