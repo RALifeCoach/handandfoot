@@ -366,7 +366,7 @@ console.log('load medls');
 			}
 			if (!person) { 
 				console.log("can't find person");
-				console.log(nsTeam.players[0].person._id);
+				console.log(personId);
 				return callback(new Error("can't find person")); 
 			}
 			
@@ -375,7 +375,7 @@ console.log('load medls');
 			person.save(function(err) {
 				if (err) {
 					console.log(err);
-					console.log(nsTeam.players[0].person._id);
+					console.log(personId);
 					return callback(err); 
 				}
 				
