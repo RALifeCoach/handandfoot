@@ -141,12 +141,12 @@ angular.module('handAndFoot')
 				// if there were no melds and now there are melds, ensure that the score
 				// is high enough
 				var nowHasMelds = false;
-				angular.forEach(meld in scope.teams[0].melds) {
+				angular.forEach(scope.teams[0].melds, function(meld, meldIndex) {
 					if (meld.type !== 'Red Three') {
 						nowHasMelds = true;
 						break;
 					}
-				}
+				});
 				if (!scope.control.hasMelds && nowHasMelds)
 					if (!melds.layDownScoreMet(scope))
 						return "Minimum score for lay down not yet met.";
