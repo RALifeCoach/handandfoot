@@ -870,16 +870,18 @@ GameVM.prototype.endGame = function(gameId, personId, callback) {
 				console.log(game);
 				return callback(err); 
 			}
-			
+console.log('1');
 			// recreate the gameVM from the new DB game
 			var mapper = new GameVM();
 			mapper.mapToVM(game, function(err, gameVM) {
+console.log('2');
 				if (err) {
 					console.log(err);
 					console.log(game);
 					return callback(err); 
 				}
 
+console.log('3');
 				_this.updatePlayers(gameVM, personId, function(err) {
 					return callback(err, game);
 				});
