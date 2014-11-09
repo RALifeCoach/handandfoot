@@ -388,7 +388,7 @@ console.log('load medls');
 	this.updatePlayers = function(gameName, nsTeam, ewTeam, callback) {
 		addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[0].person._id, function(err) {
 			if (err)
-				callback(err);
+				return callback(err);
 			addStats(gameName, nsTeam.score, ewTeam.score, nsTeam.players[1].person._id, function(err) {
 				if (err)
 					callback(err);
@@ -809,7 +809,7 @@ GameVM.prototype.endGame = function(gameId, callback) {
 				return callback(err); 
 			}
 
-			_this.updatePlayers(game.nsTeam[0], game.ewTeam[0], function(err) {
+			_this.updatePlayers(game.name, game.nsTeam[0], game.ewTeam[0], function(err) {
 				return callback(err, game);
 			});
 		});
