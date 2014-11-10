@@ -4,6 +4,8 @@ var StatsSchema = new mongoose.Schema({
 	gameId: String,
 	gameName: String,
 	dateEnded: { type: Date, default: Date.now },
+	status: String,
+	roundsPlayed: Number,
 	yourTeam: [{
 		partner: [{
 			personId: String,

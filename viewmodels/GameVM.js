@@ -350,9 +350,9 @@ var GameVM = function() {
 		game.gameComplete = true;
 	}
 
-	function addStats(game, direction, resigned, callback) {
+	function addStats(game, direction, youResigned, theyResigned, callback) {
 		// build the fields needed to get the stats
-		var yourScore, yourPartner, theirScore, opponent1, opponent2, personId;
+		var yourScore, yourPartner, theirScore, opponent1, opponent2, personId, status;
 		switch (direction) {
 			case 'North':
 				personId = game.players[0].person.id;
@@ -388,16 +388,29 @@ var GameVM = function() {
 				break;
 		}
 		
+		if (youResigned)
+			status = "loss";
+		else if (theyResigned)
+			status = "win";
+		else if (yourScore > theirScore)
+			status = "win";
+		else if (yourScore < theirScore)
+			status = "loss";
+		else
+			status = "tie";
+		
 		// build the stats for the game
 		var stat = {
 			gameName: game.name,
 			gameId: game._id,
+			status: status,
+			roundsPlayed: game:round,
 			yourTeam: [{ 
 				partner: [{
 					personId: yourPartner.person.id,
 					name: yourPartner.person.name
 				}],
-				score: resigned ? -99999 : yourScore,
+				score: youResigned ? -99999 : yourScore,
 			}],
 			theirTeam: [{
 				player1: [{
@@ -408,7 +421,7 @@ var GameVM = function() {
 					personId: oppenent2.person.id,
 					name: oppenent2.person.name
 				}],
-				score: theirScore
+				score: theyResigned ? -99999 : theirScore
 			}]
 		};
 
@@ -451,16 +464,16 @@ var GameVM = function() {
 				ewResigned = true;
 		}
 
-		addStats(game, 'North', nsResigned, function(err) {
+		addStats(game, 'North', nsResigned, ewResigned, function(err) {
 			if (err)
 				return callback(err);
-			addStats(game, 'South', nsResigned, function(err) {
+			addStats(game, 'South', nsResigned, ewResigned, function(err) {
 				if (err)
 					callback(err);
-				addStats(game, 'East', ewResigned, function(err) {
+				addStats(game, 'East', ewResigned, nsResigned, function(err) {
 					if (err)
 						callback(err);
-					addStats(game, 'West', ewResigned, function(err) {
+					addStats(game, 'West', ewResigned, nsResigned, function(err) {
 						if (err)
 							callback(err);
 						
