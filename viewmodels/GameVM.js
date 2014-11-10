@@ -404,7 +404,7 @@ var GameVM = function() {
 			gameName: game.name,
 			gameId: game._id,
 			status: status,
-			roundsPlayed: game:round,
+			roundsPlayed: game.round,
 			yourTeam: [{ 
 				partner: [{
 					personId: yourPartner.person.id,
