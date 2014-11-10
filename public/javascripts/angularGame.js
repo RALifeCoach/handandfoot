@@ -33,14 +33,17 @@ angular.module('handAndFoot')
 		function($scope, $location, games, sharedProperties, gamePasswordService){
 			// if user not set then go to login
 			$scope.person = sharedProperties.getPerson();
+			$scope.games = [];
 			if (!$scope.person) {
 				$location.path('/login');
 				return;
 			}
-			
-			// get all games awaiting players
-			games.getAll( {personId: $scope.person._id} );
-			$scope.games = games.games;
+
+			$scope.$on('$routeChangeSuccess', function () {
+				// get all games awaiting players
+				games.getAll( {personId: $scope.person._id} );
+				$scope.games = games.games;
+			});			
 
 			// add a new game
 			$scope.addGame = function() {
