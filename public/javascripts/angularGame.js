@@ -38,6 +38,9 @@ angular.module('handAndFoot')
 				$location.path('/login');
 				return;
 			}
+			// get all games awaiting players
+			games.getAll( {personId: $scope.person._id} );
+			$scope.games = games.games;
 
 			$scope.$on('$routeChangeSuccess', function () {
 				// get all games awaiting players
