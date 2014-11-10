@@ -550,6 +550,40 @@ GameVM.prototype.mapToVM = function(game, callback) {
 	});
 };
 
+GameVM.prototype.getAllIncompleteGames = function(callback) {
+	var _this = this;
+	Game.find().where({gameComplete: false}).exec(function(err, games){
+		if(err)
+			return callback(err);
+
+		var gamesVM = [];
+		var ctr = games.length;
+		for (var gameIndex = 0; gameIndex < games.length; gameIndex++) {
+			_this.mapToVM(games[gameIndex], function(err, gameVM) {
+				if (err) { return next(err); }
+
+				gameVM.playerAttached = false;
+				for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
+					if (gameVM.players[playerIndex].person 
+					&& gameVM.players[playerIndex].person.id.toString() === req.body.personId.toString()) {
+						gameVM.playerAttached = true;
+						break;
+					}
+				}
+				
+				// add game if it is still awaiting players
+				if (!gameVM.playersFull || gameVM.playerAttached)
+					gamesVM.push(gameVM);
+
+				// when all games have been mapped to gameVM return the message to the front end
+				if (--ctr === 0) {
+					callback(null, gamesVM);
+				}
+			});
+		}
+	});
+};
+	
 GameVM.prototype.addPlayer = function(gameId, personId, direction, callback) {
 	var query1 = Game.findById(gameId);
 	query1.exec(function (err, game){
