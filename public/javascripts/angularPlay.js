@@ -25,6 +25,9 @@ angular.module('handAndFoot')
 			$scope.drawFromDiscard.topCard = false;
 			$scope.message = false;
 			$scope.undo = [];
+				
+			$scope.chatLine = '';
+			$scope.chatText = '';
 
 			// if no game present then go get it
 			if (!player.gameId) {
@@ -53,9 +56,6 @@ angular.module('handAndFoot')
 				}
 				$scope.control.drawCards = data.game.drawCards;
 				$scope.control.pointsNeeded = roundPoints[data.game.round];
-				
-				$scope.chatLine = '';
-				$scope.chatText = '';
 
 				$scope.undo = [];
 				
