@@ -107,7 +107,7 @@
 									<span ng-if="card.suitNumber === 2" class="suit">&hearts;</span>
 									<span ng-if="card.suitNumber === 3" class="suit">&spades;</span>
 								</div>
-								<div ng-if="card.suitNumber === 4" ng-click="clickMeld(meld)" 
+								<div ng-if="card.suitNumber === 4" ng-click="clickMeld($event, meld)" 
 									class="card little joker">
 									<span class="rank">-</span>
 									<span class="suit">Joker</span>
@@ -223,16 +223,14 @@
 					<div class="playingCards simpleCards">
 						<ul class="meld">
 							<li ng-repeat="card in meld.cards" ng-drop="true"> 
-								<div ng-if="card.suitNumber !== 4" ng-click="clickMeld($event, meld)" 
-									class="card rank-{{card.number}} {{card.suitCard}}">
+								<div ng-if="card.suitNumber !== 4" class="card rank-{{card.number}} {{card.suitCard}}">
 									<span class="rank">{{card.number}}</span>
 									<span ng-if="card.suitNumber === 0" class="suit">&clubs;</span>
 									<span ng-if="card.suitNumber === 1" class="suit">&diams;</span>
 									<span ng-if="card.suitNumber === 2" class="suit">&hearts;</span>
 									<span ng-if="card.suitNumber === 3" class="suit">&spades;</span>
 								</div>
-								<div ng-if="card.suitNumber === 4" ng-click="clickMeld($event, meld)" 
-									class="card little joker">
+								<div ng-if="card.suitNumber === 4" class="card little joker">
 									<span class="rank">-</span>
 									<span class="suit">Joker</span>
 								</div>
