@@ -728,6 +728,7 @@ GameVM.prototype.startNewGame = function(gameId, callback) {
 		
 		game.gameBegun = true;
 		game.turn = Math.floor(Math.random() * 4);
+		game.roundStartingPlayer = game.turn;
 		if (game.turn > 3)
 			game.turn = 0;
 		game.turnState = "draw1";
@@ -842,6 +843,13 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 					
 					// deal of the new hand
 					_this.dealNewHand(game);
+					
+					// set the next starting player
+					if (++game.roundStartingPlayer > 3)
+						game.roundStartingPlayer = 0;
+					game.turn = game.roundStartingPlayer;
+					
+					break;
 					
 				// if the current player's turn has ended then move on to the next player
 				// endHand also falls through to here

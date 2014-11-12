@@ -308,7 +308,6 @@ angular.module('handAndFoot')
 			
 			// click on the meld to add cards
 			$scope.clickMeld = function(event, meld) {
-				event.preventDefault();
 				event.stopPropagation();
 
 				console.log('click meld');
