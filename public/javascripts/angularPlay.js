@@ -67,7 +67,7 @@ angular.module('handAndFoot')
 				console.log('chatUpdate');
 				
 				if ($scope.chatText !== '')
-					$scope.chatText += '\n';
+					data.chatText += '\n';
 				$scope.chatText = data.chatText + $scope.chatText;
 			});
 
