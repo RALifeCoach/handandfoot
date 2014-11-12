@@ -340,9 +340,9 @@
 			<div class="panel-body" style="height:50px">
 				<div class="input-group">
 					<input type="text" class="form-control input-sm" ng-model="chatLine" 
-						placeholder="Type your message here..." />
+						placeholder="Type your message here..." ui-keypress="{13:'sendChat($event)'}" />
 					<span class="input-group-btn">
-						<button class="btn btn-warning btn-sm" ng-click="sendChat()">
+						<button class="btn btn-warning btn-sm" ng-click="sendChat($event)">
 							Send</button>
 					</span>
 				</div>
