@@ -362,9 +362,8 @@ angular.module('handAndFoot')
 				player.resignRequest();
 			};
 
-			$scope.sendChat = function(event) {
+			$scope.sendChat = function() {
 				console.log('send chat');
-				event.preventDefault();
 
 				if ($scope.chatLine === '')
 					return;
