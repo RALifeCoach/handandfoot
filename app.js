@@ -33,7 +33,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 // for socket communications
-var socket = require('./routes/socket')(io, playGame, gameMapper);
+var socket = require('./routes/play')(io, playGame, gameMapper);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
