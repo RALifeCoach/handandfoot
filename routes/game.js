@@ -22,14 +22,16 @@ module.exports = function(mapper) {
 							return next(err);
 
 						// find games that are not complete
-						mapper.getAllIncompleteGames(function(err, gamesVM){
+						mapper.getAllIncompleteGames(req.body.personId, function(err, gamesVM){
 							if(err)
 								return next(err);
 
 							res.json(gamesVM);
 						});
-					});
-			});
+					}
+				);
+			}
+		);
 	});
 
 	router.post('/', function(req, res, next) {

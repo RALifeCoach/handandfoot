@@ -550,7 +550,7 @@ GameVM.prototype.mapToVM = function(game, callback) {
 	});
 };
 
-GameVM.prototype.getAllIncompleteGames = function(callback) {
+GameVM.prototype.getAllIncompleteGames = function(personId, callback) {
 	var _this = this;
 	Game.find().where({gameComplete: false}).exec(function(err, games){
 		if(err)
@@ -565,7 +565,7 @@ GameVM.prototype.getAllIncompleteGames = function(callback) {
 				gameVM.playerAttached = false;
 				for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
 					if (gameVM.players[playerIndex].person 
-					&& gameVM.players[playerIndex].person.id.toString() === req.body.personId.toString()) {
+					&& gameVM.players[playerIndex].person.id.toString() === personId.toString()) {
 						gameVM.playerAttached = true;
 						break;
 					}
