@@ -8,6 +8,7 @@ function Play(io, playGame, mapper) {
 			var connectedPlayer = playGame.findConnectedPlayer(socket);
 			if (!connectedPlayer)
 				return;
+console.log(connectedPlayer);
 			
 			var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
 			if (!connectedGame)
@@ -19,7 +20,7 @@ function Play(io, playGame, mapper) {
 		
 				// send the new data to each player
 				console.log('chatUpdate', JSON.stringify(data));
-				var text = "<b>" + connectedPlayer.playerName + ":</b> " + data.chat;
+				var text = connectedPlayer.playerName + data.chat;
 				connection.socket.emit('chatUpdate', { chatText: text });
 			}
 		});
