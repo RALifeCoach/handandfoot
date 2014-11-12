@@ -148,6 +148,7 @@ PlayGame.prototype.newConnectedPlayer = function(socket, data) {
 	this.connectedPlayers.push({ 
 		personId: data.personId, 
 		direction: data.direction, 
+		personName: data.name,
 		socketId: socket.id, 
 		gameId: data.gameId});
 	return true;

@@ -18,7 +18,8 @@ function Play(io, playGame, mapper) {
 		
 				// send the new data to each player
 				console.log('chatUpdate', JSON.stringify(data));
-				connection.socket.emit('chatUpdate', { chatText: data.chat });
+				var text = "<b>" + connectedPlayer.playerName + ":</b> " + data.chat;
+				connection.socket.emit('chatUpdate', { chatText: text });
 			}
 		});
 

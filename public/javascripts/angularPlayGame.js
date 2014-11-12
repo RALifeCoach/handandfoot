@@ -18,7 +18,7 @@ angular.module('handAndFoot')
 			
 			// join game message
 			playGame.joinGame = function() {
-				chatSocket.emit('joinGame', {gameId: this.gameId, personId: this.person._id, direction: this.direction});
+				chatSocket.emit('joinGame', {gameId: this.gameId, personId: this.person._id, name: this.person.name, direction: this.direction});
 			}
 			
 			// leave the game

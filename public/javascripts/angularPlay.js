@@ -68,7 +68,7 @@ angular.module('handAndFoot')
 				
 				if ($scope.chatText !== '')
 					$scope.chatText += '\n';
-				$scope.chatText += data.chatText;
+				$scope.chatText = data.chatText + $scope.chatText;
 			});
 
 			// listen for game update message
