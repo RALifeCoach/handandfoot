@@ -3,6 +3,7 @@ function Play(io, playGame, mapper) {
 		// message handler for the chat message
 		socket.on('sendChat', function (data) {
 			console.log('recieved chat');
+			console.log(data);
 
 			var connectedPlayer = playGame.findConnectedPlayer(socket);
 			if (!connectedPlayer)
