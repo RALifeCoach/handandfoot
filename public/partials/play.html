@@ -231,7 +231,7 @@
 									<span ng-if="card.suitNumber === 2" class="suit">&hearts;</span>
 									<span ng-if="card.suitNumber === 3" class="suit">&spades;</span>
 								</div>
-								<div ng-if="card.suitNumber === 4" ng-click="clickMeld(meld)" 
+								<div ng-if="card.suitNumber === 4" ng-click="clickMeld($event, meld)" 
 									class="card little joker">
 									<span class="rank">-</span>
 									<span class="suit">Joker</span>
