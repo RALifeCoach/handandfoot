@@ -101,7 +101,7 @@
 							<li ng-repeat="card in meld.cards" ng-drop="true"> 
 								<div ng-if="card.suitNumber !== 4" ng-click="clickMeld($event, meld)" 
 									class="card rank-{{card.number}} {{card.suitCard}}"
-									title="{{car.numbe}} of {{card.SuitCard}}">
+									title="{{card.number}} of {{card.suitCard}}">
 									<span class="rank">{{card.number}}</span>
 									<span ng-if="card.suitNumber === 0" class="suit">&clubs;</span>
 									<span ng-if="card.suitNumber === 1" class="suit">&diams;</span>
