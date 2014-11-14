@@ -235,7 +235,15 @@ angular.module('handAndFoot')
 					control: scope.control
 				};
 				chatSocket.emit('updateGame', data);
+				
+				for (var messageIndex = 0; messageIndex < scope.control.gameMessages.length; messageIndex++)
+					chatSocket.emit('gameMessage', { message: scope.control.gameMessages[messageIndex] });
+				scope.control.gameMessages = [];
 			};
+			
+			playGame.sendGameMessage = function(scope, message) {
+				scope.control.gameMessages.push(scope.players[0].person.name + " " + message);
+			}
 			
 			playGame.clearUndo = function(scope) {
 				scope.undo = [];
@@ -272,6 +280,16 @@ angular.module('handAndFoot')
 					chat: chat
 				};
 				chatSocket.emit('sendChat', data);
+			};
+
+			// send an update to the server
+			playGame.sendEndHandQuestion = function() {
+				chatSocket.emit('endHandQuestion');
+			};
+			
+			// send end hand response
+			playGame.endHandResponse = function(data) {
+				chatSocket.emit('endHandResponse', data);
 			};
 			
 			return playGame;

@@ -17,8 +17,29 @@ function Play(io, playGame, mapper) {
 				var connection = connectedGame.sockets[socketIndex];
 		
 				// send the new data to each player
-				console.log('chatUpdate', JSON.stringify(data));
 				var text = connectedPlayer.personName + ": " + data.chat;
+				connection.socket.emit('chatUpdate', { chatText: text });
+			}
+		});
+
+		// message handler for messages from the game
+		socket.on('gameMessage', function (data) {
+			console.log('recieved game message');
+
+			var connectedPlayer = playGame.findConnectedPlayer(socket);
+			if (!connectedPlayer)
+				return;
+			
+			var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
+			if (!connectedGame)
+				return;
+
+			// send update game with players properly ordered
+			for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
+				var connection = connectedGame.sockets[socketIndex];
+		
+				// send the new data to each player
+				var text = "Game: " + data.message;
 				connection.socket.emit('chatUpdate', { chatText: text });
 			}
 		});
@@ -88,6 +109,19 @@ function Play(io, playGame, mapper) {
 			playGame.sendResignNoResponse(socket);
 		});
 
+		// message handler for the end hand question
+		socket.on('endHandQuestion', function () {
+			console.log('recieved end hand question');
+
+			playGame.sendEndHandQuestion(socket);
+		});
+
+		// message handler for the end hand question
+		socket.on('endHandResponse', function (data) {
+			console.log('recieved end hand response');
+				
+			playGame.sendEndHandResponse(socket, data);
+		});		
 		// message handler for update cards message
 		socket.on('updateGame', function (data) {
 			console.log('recieved update Cards');
@@ -97,7 +131,7 @@ function Play(io, playGame, mapper) {
 				return;
 					
 			// update the game and, optionally, the game VM
-			mapper.updateGame(connectedPlayer.gameId, data.player, data.piles, data.melds, data.control, function(err, gameVM) {
+			mapper.updateGame(connectedPlayer.gameId, data.player, data.piles, data.melds, data.control, function(err, gameVM, results) {
 				if (err) {
 					console.log(err);
 					console.log(data.gameId);
@@ -116,7 +150,7 @@ function Play(io, playGame, mapper) {
 							return;
 						
 						// send the updates to the other players
-						connectedGame.sendMessages(gameVM);
+						connectedGame.sendMessages(gameVM, results);
 					}
 				}
 			});

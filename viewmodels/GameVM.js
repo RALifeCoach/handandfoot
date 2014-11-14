@@ -185,43 +185,61 @@ var GameVM = function() {
 	// score the game
 	this.scoreTheGame = function(game, winningTeam) {
 		var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 20];
+		var results = {
+			nsTeam: {
+				baseScore: 0,
+				cardsScore: 0,
+				priorScore: 0
+			},
+			ewTeam: {
+				baseScore: 0,
+				cardsScore: 0,
+				priorScore: 0
+			}
+		};
 
 		for (var teamIndex = 0; teamIndex < 2; teamIndex++) {
-			var team = teamIndex === 0 ? game.nsTeam[0] : game.ewTeam[0];
+			var team, scores;
+			if (teamIndex === 0) {
+				team = game.nsTeam[0];
+				scores = results.nsTeam;
+			} else {
+				team = game.ewTeam[0];
+				scores = results.ewTeam;
+			}
 			
 			var baseScore = 0;
 			// add 100 points for going out first
 			if (team == winningTeam)
-				baseScore += 100;
+				scores.baseScore += 100;
 				
-			var cardsScore = 0;
 			// score the team's melds
 			for (var meldIndex = 0; meldIndex < team.melds.length; meldIndex++) {
 				var meld = team.melds[meldIndex];
 				switch (meld.type) {
 					case 'Red Three':
-						baseScore += 100;
+						scores.baseScore += 100;
 						continue;
 					case 'Clean Meld':
-						baseScore += meld.isComplete ? 500 : 0;
+						scores.baseScore += meld.isComplete ? 500 : 0;
 						break;
 					case 'Dirty Meld':
-						baseScore += meld.isComplete ? 300 : 0;
+						scores.baseScore += meld.isComplete ? 300 : 0;
 						break;
-					case 'run':
-						baseScore += meld.isComplete ? 2000 : -2000;
+					case 'Run':
+						scores.baseScore += meld.isComplete ? 2000 : -2000;
 						break;
 					case 'Wild Card Meld':
-						baseScore += meld.isComplete ? 1000 : -1000;
+						scores.baseScore += meld.isComplete ? 1000 : -1000;
 						break;
 				}
 				
 				// score the cards in the meld
 				for (var cardIndex = 0; cardIndex < meld.cards.length; cardIndex++) {
 					if (meld.cards[cardIndex].suit === 4)
-						cardsScore += 50;
+						scores.cardsScore += 50;
 					else
-						cardsScore += cardScores[meld.cards[cardIndex].number];
+						scores.cardsScore += cardScores[meld.cards[cardIndex].number];
 				}
 			}
 			
@@ -232,22 +250,43 @@ var GameVM = function() {
 					for (var cardIndex = 0; cardIndex < cards.length; cardIndex++) {
 						var card = cards[cardIndex];
 						if (card.suit === 4)
-							cardsScore -= 50;
+							scores.cardsScore -= 50;
 						else if (card.number === 2
 						&& (card.suit === 1 || card.suit === 2))
 							// red three
-							cardsScore -= 100;
+							scores.cardsScore -= 100;
 						else
-							cardsScore -= cardScores[card.number];
+							scores.cardsScore -= cardScores[card.number];
 					}
 				}
 			}
 
-			team.score += baseScore + cardsScore;
+			scores.priorScore = team.score;
+			team.score += scores.baseScore + scores.cardsScore;
 		}
+		
+		var roundPlayed = {
+			round: game.round,
+			nsTeam: [
+				{
+					baseScore: results.nsTeam.baseScore,
+					cardsScore: results.nsTeam.cardsScore,
+					priorScore: results.nsTeam.priorScore
+				}
+			],
+			ewTeam: [
+				{
+					baseScore: results.ewTeam.baseScore,
+					cardsScore: results.ewTeam.cardsScore,
+					priorScore: results.ewTeam.priorScore
+				}
+			]
+		};
+		game.roundsPlayed.push(roundPlayed);
+		return results;
 	}
 
-	// score the game
+	// deal a new hand
 	this.dealNewHand = function(game) {
 		var allCards = [];
 		var deckIndex, cardIndex, suitIndex;
@@ -824,7 +863,8 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 			updatePlayers = true;
 			game.drawCards = control.drawCards;
 		}
-		
+
+		var results = false;
 		// update the turn state
 		if (control.turnState !== game.turnState) {
 			updatePlayers = true;
@@ -832,7 +872,7 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 			// if the hand has ended then perform end of hand routines
 			switch (control.turnState) {
 				case 'endHand':
-					_this.scoreTheGame(game, team);
+					results = _this.scoreTheGame(game, team);
 					_this.endTheHand(game);
 					
 					// increment the round and end the game if the final round has been played
@@ -848,6 +888,7 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 					if (++game.roundStartingPlayer > 3)
 						game.roundStartingPlayer = 0;
 					game.turn = game.roundStartingPlayer;
+					game.turnState = 'draw1';
 					
 					break;
 					
@@ -887,12 +928,12 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 				// if the game is complete, update the stats
 				if (game.gameComplete) {
 					_this.updatePlayers(gameVM, false, function(err) {
-						return callback(err, null, true);
+						return callback(err, false);
 					});
 					return;
 				}
 				
-				callback(null, gameVM);
+				callback(null, gameVM, results);
 			});
 		});
 	});

@@ -53,6 +53,18 @@ var TeamSchema = new mongoose.Schema({
 	players: [ PlayerSchema ]
 });
 
+var ScoresSchema = new mongoose.Schema({
+	baseScore: Number,
+	cardsScore: Number,
+	priorScore: Number
+});
+
+var RoundSchema = new mongoose.Schema({
+	round: Number,
+	nsTeam: [ ScoresSchema ],
+	ewTeam: [ ScoresSchema ],
+});
+
 var GameSchema = new mongoose.Schema({
 	name: String,
 	password: String,
@@ -66,6 +78,7 @@ var GameSchema = new mongoose.Schema({
 	nsTeam: [ TeamSchema ],
 	ewTeam: [ TeamSchema ],
 	piles: [ PileSchema ],
+	roundsPlayed: [ RoundSchema],
 	gameBegun: { type: Boolean, default: false },
 	gameComplete: { type: Boolean, default: false }
 });

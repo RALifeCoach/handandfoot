@@ -1,6 +1,7 @@
 angular.module('handAndFoot')
 	.factory('melds', ['cardArrays',
-		function(cardArrays){
+		'playGame',
+		function(cardArrays, playGame){
 			var scoresToMeet = [ 
 				{score: 50, autoOnSeven: false},
 				{score: 90, autoOnSeven: false},
@@ -30,6 +31,7 @@ angular.module('handAndFoot')
 					scope.control.drawCards++
 				}
 				
+				playGame.sendGameMessage(scope, "played " + cardArrays.redThrees.length + " red threes");
 				return false;
 			}
 
@@ -44,8 +46,9 @@ angular.module('handAndFoot')
 					return "Black threes must be played without other cards."
 					
 				// can play if in foot and one remaining card
+				var cards = cardArrays.selectedCards;
 				if (scope.players[0].inFoot 
-				&& cards.length === footCardsRemaining - 1 
+				&& cards.length === scope.players[0].footCards.length - 1 
 				&& cards.length > 2 
 				&& cards.length < 8)
 				{
@@ -53,6 +56,13 @@ angular.module('handAndFoot')
 					for (var cardIndex = 0; cardIndex < cards.length; cardIndex++) {
 						meld.cards.push(cards[cardIndex]);
 					}
+					if (cards.length === 7) {
+						meld.isComplete = true;
+						scope.teams[0].counts[1].count++;
+					}
+
+					scope.teams[0].melds.push(meld);
+					
 					return false;
 				}
 
@@ -101,6 +111,8 @@ angular.module('handAndFoot')
 							}
 						}
 						
+						if (clickedMeld.type === "Wild Card Meld" && clickedMeld.isComplete)
+							playGame.sendGameMessage(scope, "finished a wild card meld");
 						return false;
 					}
 				}
@@ -149,6 +161,10 @@ angular.module('handAndFoot')
 				if (!meldFound && meld.cards.length > 0)
 					scope.teams[0].melds.push(meld);
 				
+				if (meld.isComplete)
+					playGame.sendGameMessage(scope, "played a complete wild card meld");
+				else
+					playGame.sendGameMessage(scope, "started a wild card meld");
 				return false;
 			}
 
@@ -282,11 +298,11 @@ angular.module('handAndFoot')
 						return "Wrong suit for this meld.";
 				
 					// ensure that the cards being added touch the cards in the meld
-					if (maxCardNumber < clickedMeld.cards[0].cardNumber
-					&& maxCardNumber !== clickedMeld.cards[0].cardNumber - 1)
+					if (minCardNumber > clickedMeld.cards[0].cardNumber
+					&& minCardNumber !== clickedMeld.cards[0].cardNumber + 1)
 						return "Invalid cards to add to the run.";
-					if (minCardNumber > clickedMeld.cards[clickedMeld.cards.length - 1].cardNumber
-					&& minCardNumber !== clickedMeld.cards[clickedMeld.cards.length - 1].cardNumber + 1)
+					if (maxCardNumber < clickedMeld.cards[clickedMeld.cards.length - 1].cardNumber
+					&& maxCardNumber !== clickedMeld.cards[clickedMeld.cards.length - 1].cardNumber - 1)
 						return "Invalid cards to add to the run.";
 					
 					// ensure that we don't go over 7 cards
@@ -299,12 +315,12 @@ angular.module('handAndFoot')
 				if (clickedMeld)
 					meld = clickedMeld;
 				
-				if (clickedMeld && maxCardNumber < clickedMeld.cards[0].cardNumber) {
+				if (clickedMeld && minCardNumber < clickedMeld.cards[clickedMeld.cards.length - 1].cardNumber) {
 					for (var cardIndex = cards.length - 1; cardIndex >= 0; cardIndex--)
-						meld.cards.unshift(cards[cardIndex]);
+						meld.cards.push(cards[cardIndex]);
 				} else {
 					for (var cardIndex = 0; cardIndex < cards.length; cardIndex++)
-						meld.cards.push(cards[cardIndex]);
+						meld.cards.unshift(cards[cardIndex]);
 				}
 
 				if (meld.cards.length === 7) {
@@ -312,8 +328,16 @@ angular.module('handAndFoot')
 					scope.teams[0].counts[3].count++;
 				}
 
-				if (!clickedMeld)
+				if (!clickedMeld) {
 					scope.teams[0].melds.push(meld);
+					if (meld.isComplete)
+						playGame.sendGameMessage(scope, "played a complete run");
+					else
+						playGame.sendGameMessage(scope, "started a run");
+				} else {
+					if (meld.isComplete)
+						playGame.sendGameMessage(scope, "finished a run");
+				}
 			}
 			
 			function drawSevenCards(scope) {
@@ -326,6 +350,8 @@ angular.module('handAndFoot')
 				for (var cardIndex = 0; cardIndex < 6 && scope.piles[4].cards.length > 0; cardIndex++) {
 					cards.push(scope.piles[4].cards.pop());
 				}
+				
+				playGame.sendGameMessage(scope, "picked up from the discard pile");
 			}
 
 			function calculatePointsSoFar(scope) {

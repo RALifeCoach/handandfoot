@@ -5,7 +5,8 @@ angular.module('handAndFoot')
 		'playGame',
 		'melds',
 		'showModalService',
-		function ($scope, $location, player, melds, showModalService) {
+		'resultsModalService',
+		function ($scope, $location, player, melds, showModalService, resultsModalService) {
 			var roundPoints = [ 50, 90, 120, 150, 190, 220, 250 ];
 			$scope.game = {};
 			$scope.piles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []}, {cards: []} ];
@@ -19,7 +20,9 @@ angular.module('handAndFoot')
 				hasMelds: false,
 				drawCards: 0, // used when playing 3 threes
 				pointsNeeded: 0,
-				pointsSoFar: 0
+				pointsSoFar: 0,
+				endHand: false,
+				gameMessages: []
 			};
 			$scope.drawFromDiscard = {};
 			$scope.drawFromDiscard.topCard = false;
@@ -71,11 +74,85 @@ angular.module('handAndFoot')
 				$scope.chatText = data.chatText + $scope.chatText;
 			});
 
-			// listen for game update message
+			// listen for end hand question
+			$scope.$on('socket:endHandQuestion', function(event, data) {
+				console.log('end hand question');
+				
+				// show the end hand question modal
+				if (data.direction === $scope.players[0].direction) {
+					var modalOptions = {
+						closeButtonText: false,
+						actionButtonText: false,
+						headerText: 'End Hand',
+						modalText: "You have asked to end the hand. Awaiting your partner's response."
+					};
+				} else if ((data.direction === 'North' && $scope.players[0].direction === 'South')
+				|| (data.direction === 'East' && $scope.players[0].direction === 'West')
+				|| (data.direction === 'South' && $scope.players[0].direction === 'North')
+				|| (data.direction === 'West' && $scope.players[0].direction === 'East')) {
+					var modalOptions = {
+						closeButtonText: 'No',
+						actionButtonText: 'Yes',
+						headerText: 'End Hand',
+						modalText: 'Your partner has asked to end the hand. Do you agree?'
+					};
+				} else {
+					var text = data.personName + " has asked to end the hand. Awaiting their partner's response.";
+					var modalOptions = {
+						closeButtonText: false,
+						actionButtonText: false,
+						headerText: 'End Hand',
+						modalText: text
+					};
+				}
+
+				showModalService.showModal({}, modalOptions).then(function (result) {
+					if (result.result !== 'close')
+						player.endHandResponse(result);
+				});
+			});
+
+			// listen for end hand response
+			$scope.$on('socket:endHandResponse', function(event, data) {
+				console.log('end hand response');
+				
+				showModalService.closeModal();
+				
+				if (data.result === 'no') {
+					$scope.control.endHand = false;
+					return;
+				}
+
+				if ($scope.control.endHand) {
+					$scope.control.endHand = false;
+					// discard the selected card and end the turn
+					$scope.players[0].footCards = [];
+					$scope.control.turnState = 'endHand';
+					
+					player.sendUpdate($scope);
+					player.clearUndo($scope);
+				}
+			});
+
+			// listen for hand results
+			$scope.$on('socket:handResults', function(event, results) {
+				console.log('hand results');
+				
+				var modalOptions = {
+					closeButtonText: 'OK',
+					actionButtonText: false,
+					headerText: 'Hand Results',
+					results: results
+				};
+
+				resultsModalService.showModal({}, modalOptions);
+			});
+
+			// listen for resign request
 			$scope.$on('socket:resignRequest', function(event, data) {
 				console.log('resignRequest');
 				
-				// show the resign model
+				// show the resign modal
 				if (data.direction === $scope.players[0].direction) {
 					var modalOptions = {
 						closeButtonText: false,
@@ -262,23 +339,37 @@ angular.module('handAndFoot')
 						if ($scope.message)
 							return;
 						
-						// discard the selected card and end the turn or the hand
+						// send message if the discard will put the player into their foot
+						if (!$scope.players[0].inFoot
+						&& $scope.players[0].handCards.length === 1)
+							player.sendGameMessage($scope, " went into their foot");
+						
+						// check if the hand is over 
+						// - discarding the last card from the foot
+						// - and there is at least one clean and one dirty
+						// send end hand message
+						if ($scope.players[0].inFoot
+						&& $scope.players[0].footCards.length === 1
+						&& $scope.teams[0].counts[1].count > 0
+						&& $scope.teams[0].counts[2].count > 0) {
+							$scope.control.endHand = true;
+							player.sendEndHandQuestion();
+							return;
+						}
+						
+						// discard the selected card and end the turn
 						var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
 						var cardIndex = cards.indexOf(selectedCards[0]);
 						$scope.piles[4].cards.push(selectedCards[0]);
 						cards.splice(cardIndex, 1);
 						player.resetHighlight($scope.players[0], $scope);
 						
-						// check if the hand is over 
-						// - discarding the last card from the foot
-						// - and there is at least one clean and one dirty
+						$scope.control.turnState = 'end';
+						// send message if the discard left the player with no cards
 						if ($scope.players[0].inFoot
-						&& cards.length === 0
-						&& $scope.teams[0].counts[1].count > 0
-						&& $scope.teams[0].counts[2].count > 0)
-							$scope.control.turnState = 'endHand';
-						else
-							$scope.control.turnState = 'end';
+						&& cards.length === 0)
+							player.sendGameMessage($scope, " is playing without cards");
+						
 						player.sendUpdate($scope);
 						player.clearUndo($scope);
 						break;
@@ -296,13 +387,23 @@ angular.module('handAndFoot')
 					$scope.undo.pop();
 					return;
 				}
-				
-				// playing without cards
-				if ($scope.players[0].inFoot && $scope.players[0].footCards.length === 0) {
-					$scope.control.turnState = 'end';
+
+				// player has moved into their foot
+				if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0) {
+					player.sendGameMessage($scope, " went into their foot and is still playing");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
-					return;
+					$scope.players[0].inFoot = true;
+				}
+				
+				// playing without cards
+				if ($scope.players[0].inFoot 
+				&& $scope.players[0].footCards.length === 0
+				&& $scope.control.drawCards === 0) {
+					$scope.control.turnState = 'end';
+					player.sendGameMessage($scope, " is playing without cards");
+					player.sendUpdate($scope);
+					player.clearUndo($scope);
 				}
 			};
 			
@@ -320,13 +421,21 @@ angular.module('handAndFoot')
 					$scope.undo.pop();
 					return;
 				}
-					
+
+				// player has moved into their foot
+				if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0) {
+					player.sendGameMessage($scope, " went into their foot and is still playing");
+					player.sendUpdate($scope);
+					player.clearUndo($scope);
+					$scope.players[0].inFoot = true;
+				}
+				
 				// playing without cards
 				if ($scope.players[0].inFoot && $scope.players[0].footCards.length === 0) {
 					$scope.control.turnState = 'end';
+					player.sendGameMessage($scope, " is playing without cards");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
-					return;
 				}
 			};
 

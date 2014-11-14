@@ -2,7 +2,23 @@ var ConnectedGame = function(pGameId) {
 	this.gameId = pGameId;
 	this.sockets = [];
 }
-ConnectedGame.prototype.sendMessages = function(gameVM) {
+ConnectedGame.prototype.sendMessages = function(gameVM, results) {
+	function loadScores(resultsVM, yourTeam, theirTeam) {
+		resultsVM.yourTeam = {
+			baseScore: yourTeam.baseScore,
+			cardsScore: yourTeam.cardsScore,
+			handScore: yourTeam.baseScore + yourTeam.cardsScore,
+			priorScore: yourTeam.priorScore,
+			newScore: yourTeam.priorScore + yourTeam.baseScore + yourTeam.cardsScore
+		};
+		resultsVM.theirTeam = {
+			baseScore: theirTeam.baseScore,
+			cardsScore: theirTeam.cardsScore,
+			handScore: theirTeam.baseScore + theirTeam.cardsScore,
+			priorScore: theirTeam.priorScore,
+			newScore: theirTeam.priorScore + theirTeam.baseScore + theirTeam.cardsScore
+		};
+	}
 	var playersVM = [];
 	
 	for (playerIndex in gameVM.players) {
@@ -37,6 +53,23 @@ ConnectedGame.prototype.sendMessages = function(gameVM) {
 
 	playersVM[gameVM.turn].turn = true;
 	otherPlayers[gameVM.turn].turn = true;
+	
+	var resultsVM = {
+		yourTeam: {
+			baseScore: 0,
+			cardsScore: 0,
+			handScore: 0,
+			priorScore: 0,
+			newScore: 0
+		},
+		theirTeam: {
+			baseScore: 0,
+			cardsScore: 0,
+			handScore: 0,
+			priorScore: 0,
+			newScore: 0
+		}
+	};
 
 	// send update game with players properly ordered
 	for (socketIndex in this.sockets) {
@@ -52,6 +85,8 @@ ConnectedGame.prototype.sendMessages = function(gameVM) {
 				players.push(otherPlayers[3]);
 				teams.push(teamsVM[0]);
 				teams.push(teamsVM[1]);
+				if (results)
+					loadScores(resultsVM, results.nsTeam, results.ewTeam);
 				break;
 			case 'East':
 				players.push(playersVM[1]);
@@ -60,6 +95,8 @@ ConnectedGame.prototype.sendMessages = function(gameVM) {
 				players.push(otherPlayers[0]);
 				teams.push(teamsVM[1]);
 				teams.push(teamsVM[0]);
+				if (results)
+					loadScores(resultsVM, results.ewTeam, results.nsTeam);
 				break;
 			case 'South':
 				players.push(playersVM[2]);
@@ -68,6 +105,8 @@ ConnectedGame.prototype.sendMessages = function(gameVM) {
 				players.push(otherPlayers[1]);
 				teams.push(teamsVM[0]);
 				teams.push(teamsVM[1]);
+				if (results)
+					loadScores(resultsVM, results.nsTeam, results.ewTeam);
 				break;
 			case 'West':
 				players.push(playersVM[3]);
@@ -76,9 +115,15 @@ ConnectedGame.prototype.sendMessages = function(gameVM) {
 				players.push(otherPlayers[2]);
 				teams.push(teamsVM[1]);
 				teams.push(teamsVM[0]);
+				if (results)
+					loadScores(resultsVM, results.ewTeam, results.nsTeam);
 				break;
 		}
 		
+		// if the hand ended, send the results
+		if (results)
+			socket.emit('handResults', resultsVM);
+			
 		// send the new data to each player
 		socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
 	}
@@ -209,27 +254,64 @@ PlayGame.prototype.findConnectedGame = function(socket, gameId) {
 
 	return connectedGame;
 };
-	
-PlayGame.prototype.sendResignRequest = function(socket) {
-	var _this = this;
-	// common routine for leaving the game
+
+// received end hand question - send it to all players
+PlayGame.prototype.sendEndHandQuestion = function(socket) {
 	// check to see if the player is playing a game
 	var connectedPlayer = this.findConnectedPlayer(socket);
 	if (!connectedPlayer)
 		return;
 	
 	// find the game, error if it doesn't exist
-	var connectedGame = _this.findConnectedGame(socket, connectedPlayer.gameId);
+	var connectedGame = this.findConnectedGame(socket, connectedPlayer.gameId);
 	if (!connectedGame)
 		return;
 
-	// send update game with players properly ordered
+	// send to each player
 	for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
 		var socket = connectedGame.sockets[socketIndex].socket;
 		
-		// send the resign request to each player
-		console.log('send resign request');
-		socket.emit('resignRequest', { direction: connectedPlayer.direction });
+		socket.emit('endHandQuestion', { direction: connectedPlayer.direction, personName: connectedPlayer.personName });
+	}
+};
+
+// received end hand question - send it to all players
+PlayGame.prototype.sendEndHandResponse = function(socket, data) {
+	// check to see if the player is playing a game
+	var connectedPlayer = this.findConnectedPlayer(socket);
+	if (!connectedPlayer)
+		return;
+	
+	// find the game, error if it doesn't exist
+	var connectedGame = this.findConnectedGame(socket, connectedPlayer.gameId);
+	if (!connectedGame)
+		return;
+
+	// send to each player
+	for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
+		var socket = connectedGame.sockets[socketIndex].socket;
+		
+		socket.emit('endHandResponse', data);
+	}
+};
+
+// received a request to resign - send it to all players
+PlayGame.prototype.sendResignRequest = function(socket) {
+	// check to see if the player is playing a game
+	var connectedPlayer = this.findConnectedPlayer(socket);
+	if (!connectedPlayer)
+		return;
+	
+	// find the game, error if it doesn't exist
+	var connectedGame = this.findConnectedGame(socket, connectedPlayer.gameId);
+	if (!connectedGame)
+		return;
+
+	// send to each player
+	for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
+		var socket = connectedGame.sockets[socketIndex].socket;
+		
+		socket.emit('resignRequest', { direction: connectedPlayer.direction, personName: connectedPlayer.personName });
 	}
 };
 	
@@ -275,7 +357,6 @@ PlayGame.prototype.endTheGame = function(socket, mapper, wasResigned) {
 			}
 			
 			// send the resign response to each player
-	console.log(results, direction);
 			socket.emit('resignResponse', { result: results });
 		}
 	});
