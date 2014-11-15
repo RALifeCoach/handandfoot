@@ -108,9 +108,9 @@ angular.module('handAndFoot')
 				// does the card fit for a run
 				var cards = [ false, false, false, false, false, false, false, false, false, false, false, false, false ];
 				// begin by looping through the hand for all the cards in the same suit
-				for (cardIndex = 0; cardIndex < hand.cards.length; cardIndex++) {
+				for (cardIndex = 0; cardIndex < hand.length; cardIndex++) {
 					if (hand.cards[cardIndex].suitNumber === topCard.suitNumber)
-						cards[hand.cards[cardIndex].cardNumber] = true;
+						cards[hand[cardIndex].cardNumber] = true;
 				}
 				
 				// check for 2 cards lower than the top card
