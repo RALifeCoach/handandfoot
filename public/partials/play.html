@@ -35,41 +35,13 @@
 					<ul class="hand" ng-if="!players[0].inFoot">
 						<li ng-repeat="card in players[0].handCards" ng-drop="true" 
 						ng-drop-success="onDropComplete($index, $data, $event)">
-							<div ng-if="card.suitNumber !== 4" ng-click="clickCard($event, $index)" 
-								class="card rank-{{card.number}} {{card.suitCard}}"
-								ng-class="{highlight: card.highlight}" ng-drag="true" ng-drag-data="card">
-								<span class="rank">{{card.number}}</span>
-								<span ng-if="card.suitNumber === 0" class="suit">&clubs;</span>
-								<span ng-if="card.suitNumber === 1" class="suit">&diams;</span>
-								<span ng-if="card.suitNumber === 2" class="suit">&hearts;</span>
-								<span ng-if="card.suitNumber === 3" class="suit">&spades;</span>
-							</div>
-							<div ng-if="card.suitNumber === 4" ng-click="clickCard($event, $index)" 
-								class="card little joker" ng-class="{highlight: card.highlight}" 
-								ng-drag="true" ng-drag-data="card">
-								<span class="rank">-</span>
-								<span class="suit">Joker</span>
-							</div>
+							<playing-card card="card" ng-click="clickCard($event, $index)"></playing-card>
 						</li>
 					</ul>
 					<ul class="hand" ng-if="players[0].inFoot">
 						<li ng-repeat="card in players[0].footCards" ng-drop="true" 
 						ng-drop-success="onDropComplete($index, $data, $event)">
-							<div ng-if="card.suitNumber !== 4" ng-click="clickCard($event, $index)" 
-								class="card rank-{{card.number}} {{card.suitCard}}"
-								ng-class="{highlight: card.highlight}" ng-drag="true" ng-drag-data="card">
-								<span class="rank">{{card.number}}</span>
-								<span ng-if="card.suitNumber === 0" class="suit">&clubs;</span>
-								<span ng-if="card.suitNumber === 1" class="suit">&diams;</span>
-								<span ng-if="card.suitNumber === 2" class="suit">&hearts;</span>
-								<span ng-if="card.suitNumber === 3" class="suit">&spades;</span>
-							</div>
-							<div ng-if="card.suitNumber === 4" ng-click="clickCard($event, $index)" 
-								class="card little joker" ng-class="{highlight: card.highlight}" 
-								ng-drag="true" ng-drag-data="card">
-								<span class="rank">-</span>
-								<span class="suit">Joker</span>
-							</div>
+							<playing-card card="card" ng-click="clickCard($event, $index)"></playing-card>
 						</li>
 					</ul>
 				</div>
@@ -99,20 +71,7 @@
 					<div class="playingCards simpleCards">
 						<ul class="meld">
 							<li ng-repeat="card in meld.cards" ng-drop="true"> 
-								<div ng-if="card.suitNumber !== 4" ng-click="clickMeld($event, meld)" 
-									class="card rank-{{card.number}} {{card.suitCard}}"
-									title="{{card.number}} of {{card.suitCard}}">
-									<span class="rank">{{card.number}}</span>
-									<span ng-if="card.suitNumber === 0" class="suit">&clubs;</span>
-									<span ng-if="card.suitNumber === 1" class="suit">&diams;</span>
-									<span ng-if="card.suitNumber === 2" class="suit">&hearts;</span>
-									<span ng-if="card.suitNumber === 3" class="suit">&spades;</span>
-								</div>
-								<div ng-if="card.suitNumber === 4" ng-click="clickMeld($event, meld)" 
-									class="card little joker">
-									<span class="rank">-</span>
-									<span class="suit">Joker</span>
-								</div>
+								<playing-card card="card" ng-click="clickMeld($event, meld)"></playing-card>
 							</li>
 						</ul>
 					</div>
@@ -156,19 +115,7 @@
 								<ul class="deck">
 									<div ng-repeat="card in piles[4].cards | maxDiscard">
 										<li>
-											<div ng-if="card.suitNumber !== 4" class="card rank-{{card.number}} {{card.suitCard}}"
-												ng-click="clickDiscardPile($event)">
-												<span class="rank">{{card.number}}</span>
-												<span ng-if="card.suitNumber === 0" class="suit">&clubs;</span>
-												<span ng-if="card.suitNumber === 1" class="suit">&diams;</span>
-												<span ng-if="card.suitNumber === 2" class="suit">&hearts;</span>
-												<span ng-if="card.suitNumber === 3" class="suit">&spades;</span>
-											</div>
-											<div ng-if="card.suitNumber === 4" ng-click="clickDiscardPile($event)" 
-												class="card little joker">
-												<span class="rank">-</span>
-												<span class="suit">Joker</span>
-											</div>
+											<playing-card card="card" ng-click="clickDiscardPile($event)"></playing-card>
 										</li>
 									</div>
 								</ul>
@@ -224,18 +171,7 @@
 					<div class="playingCards simpleCards">
 						<ul class="meld">
 							<li ng-repeat="card in meld.cards" ng-drop="true"> 
-								<div ng-if="card.suitNumber !== 4" class="card rank-{{card.number}} {{card.suitCard}}"
-								title="{{card.number}} of {{card.suitCard}}">
-									<span class="rank">{{card.number}}</span>
-									<span ng-if="card.suitNumber === 0" class="suit">&clubs;</span>
-									<span ng-if="card.suitNumber === 1" class="suit">&diams;</span>
-									<span ng-if="card.suitNumber === 2" class="suit">&hearts;</span>
-									<span ng-if="card.suitNumber === 3" class="suit">&spades;</span>
-								</div>
-								<div ng-if="card.suitNumber === 4" class="card little joker">
-									<span class="rank">-</span>
-									<span class="suit">Joker</span>
-								</div>
+								<playing-card card="card"></playing-card>
 							</li>
 						</ul>
 					</div>
@@ -325,9 +261,6 @@
 	</div>
 	<div class='col-md-3'>
 		<div class="panel panel-default">
-			<div class="panel-body">
-				<span ng-click="leaveGame()" class="btn btn-default btn-sm" role="button">Leave Game</span>
-			</div>
 			<div class="panel-body">
 				<span ng-click="resignGame()" class="btn btn-default btn-sm" role="button">Resign</span>
 			</div>

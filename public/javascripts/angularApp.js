@@ -151,3 +151,25 @@ angular.module('handAndFoot')
             });
         };
     });
+angular.module('handAndFoot')
+	.directive('playingCard', [
+		'$compile',
+		'$templateCache',
+		function($compile, $templateCache) {
+			var linker = function(scope, element, attrs) {
+				scope.$watch('card', function() {
+					$compile(element.contents())(scope);
+				});
+			};
+			return {
+				controller: 'PlayCtrl',
+				restrict: 'E',
+				transclude: true,
+				scope: {
+					card: '='
+				},
+				templateUrl: '/partials/playingCard.html',
+				link: linker
+			};
+		}
+	]);

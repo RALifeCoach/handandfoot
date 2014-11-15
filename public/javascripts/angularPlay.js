@@ -38,7 +38,7 @@ angular.module('handAndFoot')
 				return;
 			}
 
-			player.joinGame();
+            player.joinGame();
 
 			// listen for game update message
 			$scope.$on('socket:gameUpdate', function(event, data) {
