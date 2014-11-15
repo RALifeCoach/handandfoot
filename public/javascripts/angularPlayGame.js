@@ -109,7 +109,7 @@ angular.module('handAndFoot')
 				var cards = [ false, false, false, false, false, false, false, false, false, false, false, false, false ];
 				// begin by looping through the hand for all the cards in the same suit
 				for (cardIndex = 0; cardIndex < hand.length; cardIndex++) {
-					if (hand.cards[cardIndex].suitNumber === topCard.suitNumber)
+					if (hand[cardIndex].suitNumber === topCard.suitNumber)
 						cards[hand[cardIndex].cardNumber] = true;
 				}
 				
