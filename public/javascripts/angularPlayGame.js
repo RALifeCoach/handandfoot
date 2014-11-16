@@ -158,7 +158,7 @@ angular.module('handAndFoot')
 				// can't discard a wild card if it is the last card
 				if (this.isWildCard(card)) {
 					if (scope.players[0].inFoot 
-					&& scope.players[0].cards.length === 1)
+					&& scope.players[0].footCards.length === 1)
 						return "Can't discard a wild card as your final discard.";
 					
 					// otherwise okay to discard a wild card
