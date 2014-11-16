@@ -182,8 +182,8 @@ angular.module('handAndFoot')
 					
 					// if the meld is a run then can the card play top or bottom?
 					if (meld.cards[0].suitNumber === card.suitNumber) {
-						var minCardNumber = meld.cards[0].cardNumber;
-						var maxCardNumber = meld.cards[meld.cards.length - 1].cardNumber;
+						var maxCardNumber = meld.cards[0].cardNumber;
+						var minCardNumber = meld.cards[meld.cards.length - 1].cardNumber;
 						if (card.cardNumber === minCardNumber - 1)
 							return "That card is playable on a run.";
 						if (card.cardNumber === maxCardNumber + 1)
