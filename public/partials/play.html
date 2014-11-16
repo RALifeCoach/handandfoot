@@ -35,13 +35,13 @@
 					<ul class="hand" ng-if="!players[0].inFoot">
 						<li ng-repeat="card in players[0].handCards" ng-drop="true" 
 						ng-drop-success="onDropComplete($index, $data, $event)">
-							<playing-card card="card" ng-click="clickCard($event, $index)"></playing-card>
+							<playing-card card="card" highlight="true" ng-click="clickCard($event, $index)"></playing-card>
 						</li>
 					</ul>
 					<ul class="hand" ng-if="players[0].inFoot">
 						<li ng-repeat="card in players[0].footCards" ng-drop="true" 
 						ng-drop-success="onDropComplete($index, $data, $event)">
-							<playing-card card="card" ng-click="clickCard($event, $index)"></playing-card>
+							<playing-card card="card" highlight="true" ng-click="clickCard($event, $index)"></playing-card>
 						</li>
 					</ul>
 				</div>
