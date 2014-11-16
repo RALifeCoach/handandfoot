@@ -44,13 +44,14 @@ angular.module('handAndFoot')
 			$scope.$on('socket:gameUpdate', function(event, data) {
 				console.log('game update');
 				$scope.game = data.game;
-//				if (!$scope.players)
+				if (!$scope.players)
 					$scope.players = data.players;
-//				else {
-//					$scope.players[1] = data.players[1];
-//					$scope.players[2] = data.players[2];
-//					$scope.players[3] = data.players[3];
-//				}
+				else {
+					$scope.players[0].turn = data.players[0].turn;
+					$scope.players[1] = data.players[1];
+					$scope.players[2] = data.players[2];
+					$scope.players[3] = data.players[3];
+				}
 				$scope.piles = data.game.piles;
 				$scope.teams = data.teams;
 				$scope.teams[0].basePoints = melds.calculateBase($scope.teams[0]);

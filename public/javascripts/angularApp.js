@@ -158,6 +158,8 @@ angular.module('handAndFoot')
 		function($compile, $templateCache) {
 			var linker = function(scope, element, attrs) {
 				scope.$watch('card', function() {
+					if (!scope.highlight)
+						scope.card.highlight = false;
 					$compile(element.contents())(scope);
 				});
 			};
