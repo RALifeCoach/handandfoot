@@ -293,7 +293,7 @@ angular.module('handAndFoot')
 					return "Too few cards to start a new run";
 				
 				if (clickedMeld) {
-					// ensure it is the same suit`
+					// ensure it is the same suit
 					if (clickedMeld.cards[0].suitNumber !== cards[0].suitNumber)
 						return "Wrong suit for this meld.";
 				
@@ -601,9 +601,48 @@ angular.module('handAndFoot')
 					sortedCards.push(cardArrays.wildCards[cardIndex]);
 				}
 				
+				var suitOrder = [];
+				if (cardArrays.suits[0].cards.length > 0
+				&& cardArrays.suits[3].cards.length > 0) {
+					suitOrder.push(0);
+					if (cardArrays.suits[1].cards.length > 0) {
+						suitOrder.push(1);
+						suitOrder.push(3);
+						if (cardArrays.suits[2].cards.length > 0)
+							suitOrder.push(2);
+					} else if (cardArrays.suits[2].cards.length > 0) {
+						suitOrder.push(2);
+						suitOrder.push(3);
+					} else {
+						suitOrder.push(0);
+						suitOrder.push(3);
+					}	
+				} else if (cardArrays.suits[1].cards.length > 0
+				&& cardArrays.suits[2].cards.length > 0) {
+					suitOrder.push(1);
+					if (cardArrays.suits[0].cards.length > 0) {
+						suitOrder.push(0);
+						suitOrder.push(2);
+					} else if (cardArrays.suits[3].cards.length > 0) {
+						suitOrder.push(3);
+						suitOrder.push(2);
+					} else {
+						suitOrder.push(1);
+						suitOrder.push(2);
+					}
+				} else {
+					if (cardArrays.suits[0].cards.length > 0)
+						suitOrder.push(0);
+					if (cardArrays.suits[1].cards.length > 0)
+						suitOrder.push(1);
+					if (cardArrays.suits[2].cards.length > 0)
+						suitOrder.push(2);
+					if (cardArrays.suits[3].cards.length > 0)
+						suitOrder.push(3);
+				}
 				// next add cards by suit
-				for (var suitIndex = 0; suitIndex < 4; suitIndex++) {
-					var suitCards = cardArrays.suits[suitIndex].cards;
+				for (var suitIndex = 0; suitIndex < suitOrder.length; suitIndex++) {
+					var suitCards = cardArrays.suits[suitOrder[suitIndex]].cards;
 					suitCards.sort(function (a, b) {
 						return (a.cardNumber < b.cardNumber ? 1 : -1);
 					});
@@ -615,9 +654,8 @@ angular.module('handAndFoot')
 				// next add black threes
 				for (var cardIndex = 0; cardIndex < cardArrays.blackThrees.length; cardIndex++) {
 					var card = cardArrays.blackThrees[cardIndex];
-					if (card.suitNumber === 0 || card.suitNumber === 3) {
+					if (card.suitNumber === 0 || card.suitNumber === 3)
 						sortedCards.push(card);
-					}
 				}
 				
 				// finally add red threes

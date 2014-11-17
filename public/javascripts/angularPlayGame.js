@@ -136,64 +136,6 @@ angular.module('handAndFoot')
 				return "You need two naturals or one natural and one wild card.";
 			};
 			
-			// check to see if the player is allowed to end their turn
-			playGame.canEndTurn = function(scope, card, melds) {
-				// if there were no melds and now there are melds, ensure that the score
-				// is high enough
-				var nowHasMelds = false;
-				for (var meldIndex = 0; meldIndex < scope.teams[0].melds.length; meldIndex++) {
-					if (scope.teams[0].melds[meldIndex].type !== 'Red Three') {
-						nowHasMelds = true;
-						break;
-					}
-				}
-				if (!scope.control.hasMelds && nowHasMelds)
-					if (!melds.layDownScoreMet(scope))
-						return "Minimum score for lay down not yet met.";
-
-				// can't discard a red three
-				if (this.isRedThree(card))
-					return "Cannot discard a red three.";
-
-				// can't discard a wild card if it is the last card
-				if (this.isWildCard(card)) {
-					if (scope.players[0].inFoot 
-					&& scope.players[0].footCards.length === 1)
-						return "Can't discard a wild card as your final discard.";
-					
-					// otherwise okay to discard a wild card
-					return false;
-				}
-				
-				// make sure that the card isn't playable
-				for (var meldIndex = 0; meldIndex < scope.teams[0].melds.length; meldIndex++) {
-					var meld = scope.teams[0].melds[meldIndex];
-					if (meld.isComplete)
-						continue;
-					if (meld.type === "Red Three" || meld.type === "Wild Card Meld")
-						continue;
-						
-					// if the card number matches on regular meld then error
-					if (meld.type === "Clean Meld" || meld.type === "Dirty Meld") {
-						if (meld.number === card.cardNumber)
-							return "That card is playable.";
-						continue;
-					}
-					
-					// if the meld is a run then can the card play top or bottom?
-					if (meld.cards[0].suitNumber === card.suitNumber) {
-						var maxCardNumber = meld.cards[0].cardNumber;
-						var minCardNumber = meld.cards[meld.cards.length - 1].cardNumber;
-						if (card.cardNumber === minCardNumber - 1)
-							return "That card is playable on a run.";
-						if (card.cardNumber === maxCardNumber + 1)
-							return "That card is playable on a run.";
-					}
-				}
-				
-				return false;
-			};
-			
 			// check to see if the player is allowed to discard
 			playGame.canDiscard = function(scope, card, melds) {
 				// if there were no melds and now there are melds, ensure that the score

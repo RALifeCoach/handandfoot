@@ -1,4 +1,9 @@
-angular.module('handAndFoot', ['ui.router', 'ngCookies', 'btford.socket-io', 'ngDraggable', 'ui.bootstrap']);
+angular.module('handAndFoot', ['ui.router', 
+	'ngCookies', 
+	'btford.socket-io', 
+	'ngDraggable', 
+	'ui.bootstrap',
+	'ngAudio']);
 
 // add config to hand the various page states
 angular.module('handAndFoot')
@@ -169,7 +174,8 @@ angular.module('handAndFoot')
 				transclude: true,
 				scope: {
 					card: '=',
-					highlight: '='
+					highlight: '=',
+					dragDrop: '='
 				},
 				templateUrl: '/partials/playingCard.html',
 				link: linker

@@ -5310,8 +5310,8 @@ a.list-group-item-danger.active:focus {
   border-color: #ebccd1;
 }
 .panel-danger > .panel-heading {
-  color: #a94442;
-  background-color: #f2dede;
+  color: #f9f9f9;
+  background-color: #f20000;
   border-color: #ebccd1;
 }
 .panel-danger > .panel-heading + .panel-collapse > .panel-body {

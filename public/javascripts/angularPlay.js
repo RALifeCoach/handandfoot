@@ -6,7 +6,8 @@ angular.module('handAndFoot')
 		'melds',
 		'showModalService',
 		'resultsModalService',
-		function ($scope, $location, player, melds, showModalService, resultsModalService) {
+		'ngAudio',
+		function ($scope, $location, player, melds, showModalService, resultsModalService, ngAudio) {
 			var roundPoints = [ 50, 90, 120, 150, 190, 220, 250 ];
 			$scope.game = {};
 			$scope.piles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []}, {cards: []} ];
@@ -43,14 +44,22 @@ angular.module('handAndFoot')
 			// listen for game update message
 			$scope.$on('socket:gameUpdate', function(event, data) {
 				console.log('game update');
+				var wasTurn = false;
 				$scope.game = data.game;
 				if (!$scope.players)
 					$scope.players = data.players;
 				else {
+					wasTurn = $scope.players[0].turn;
 					$scope.players[0].turn = data.players[0].turn;
 					$scope.players[1] = data.players[1];
 					$scope.players[2] = data.players[2];
 					$scope.players[3] = data.players[3];
+				}
+				if ($scope.players[0].turn && !wasTurn) {
+					console.log('play wave');
+					var audio = ngAudio.load("/sounds/LETSGO.mp3");
+					console.log(audio);
+					audio.play();
 				}
 				$scope.piles = data.game.piles;
 				$scope.teams = data.teams;
@@ -342,14 +351,14 @@ angular.module('handAndFoot')
 						}
 						
 						// must be in a valid state to end turn
-						$scope.message = player.canEndTurn($scope, selectedCards[0], melds);
+						$scope.message = player.canDiscard($scope, selectedCards[0], melds);
 						if ($scope.message)
 							return;
 						
 						// send message if the discard will put the player into their foot
 						if (!$scope.players[0].inFoot
 						&& $scope.players[0].handCards.length === 1)
-							player.sendGameMessage($scope, " went into their foot");
+							player.sendGameMessage($scope, "went into their foot");
 						
 						// check if the hand is over 
 						// - discarding the last card from the foot
@@ -397,7 +406,7 @@ angular.module('handAndFoot')
 
 				// player has moved into their foot
 				if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0) {
-					player.sendGameMessage($scope, " went into their foot and is still playing");
+					player.sendGameMessage($scope, "went into their foot and is still playing");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
 					$scope.players[0].inFoot = true;
@@ -431,7 +440,7 @@ angular.module('handAndFoot')
 
 				// player has moved into their foot
 				if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0) {
-					player.sendGameMessage($scope, " went into their foot and is still playing");
+					player.sendGameMessage($scope, "went into their foot and is still playing");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
 					$scope.players[0].inFoot = true;
@@ -440,7 +449,7 @@ angular.module('handAndFoot')
 				// playing without cards
 				if ($scope.players[0].inFoot && $scope.players[0].footCards.length === 0) {
 					$scope.control.turnState = 'end';
-					player.sendGameMessage($scope, " is playing without cards");
+					player.sendGameMessage($scope, "is playing without cards");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
 				}
