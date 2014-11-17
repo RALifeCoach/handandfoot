@@ -10,8 +10,14 @@
 		<div class="panel" ng-class="{'panel-default': !players[0].turn, 'panel-danger': players[0].turn}">
 			<div class="panel-heading">
 				<span class="player-name">{{players[0].person.name}}</span>
-				<span ng-if="game.gameBegun && players[0].inFoot" class="player-name"> &nbsp;<img src="/images/foot.png" width="40px" height="40px"></span>
-				<span ng-if="game.gameBegun && !players[0].inFoot" class="player-name"> &nbsp;<img src="/images/hand.png" width="40px" height="40px"></span>
+				<span ng-if="game.gameBegun && players[0].inFoot" class="player-name">
+					<img ng-if="players[0].turn" src="/images/foot-red.png" width="40px" height="40px">
+					<img ng-if="!players[0].turn" src="/images/foot.png" width="40px" height="40px">
+				</span>
+				<span ng-if="game.gameBegun && !players[0].inFoot" class="player-name">
+					<img ng-if="players[0].turn" src="/images/hand-red.png" width="40px" height="40px">
+					<img ng-if="!players[0].turn" src="/images/hand.png" width="40px" height="40px">
+				</span>
 				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw1'"> - Draw 2 cards</span>
 				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw2'"> - Draw 1 card</span>
 				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw3'"> - Draw {{control.drawCards}} 
@@ -184,8 +190,14 @@
 					<div class="panel-heading">
 						<span ng-show="players[1].person" class="player-name">{{players[1].person.name}}</span>
 						<span ng-show="!players[1].person" class="player-name">Waiting</span>
-						<span ng-if="game.gameBegun && players[1].inFoot" class="player-name"> &nbsp;<img src="/images/foot.png" width="40px" height="40px"></span>
-						<span ng-if="game.gameBegun && !players[1].inFoot" class="player-name"> &nbsp;<img src="/images/hand.png" width="40px" height="40px"></span>
+						<span ng-if="game.gameBegun && players[1].inFoot" class="player-name">
+							<img ng-if="players[1].turn" src="/images/foot-red.png" width="40px" height="40px">
+							<img ng-if="!players[1].turn" src="/images/foot.png" width="40px" height="40px">
+						</span>
+						<span ng-if="game.gameBegun && !players[1].inFoot" class="player-name">
+							<img ng-if="players[1].turn" src="/images/hand-red.png" width="40px" height="40px">
+							<img ng-if="!players[1].turn" src="/images/hand.png" width="40px" height="40px">
+						</span>
 					</div>
 					<div class="panel-body-close">
 						<div ng-if="players[1].person" class="playingCards simpleCards">
@@ -210,8 +222,14 @@
 					<div class="panel-heading">
 						<span ng-show="players[2].person" class="player-name">{{players[2].person.name}}</span>
 						<span ng-show="!players[2].person" class="player-name">Waiting</span>
-						<span ng-if="game.gameBegun && players[2].inFoot" class="player-name"> &nbsp;<img src="/images/foot.png" width="40px" height="40px"></span>
-						<span ng-if="game.gameBegun && !players[2].inFoot" class="player-name"> &nbsp;<img src="/images/hand.png" width="40px" height="40px"></span>
+						<span ng-if="game.gameBegun && players[2].inFoot" class="player-name">
+							<img ng-if="players[2].turn" src="/images/foot-red.png" width="40px" height="40px">
+							<img ng-if="!players[2].turn" src="/images/foot.png" width="40px" height="40px">
+						</span>
+						<span ng-if="game.gameBegun && !players[2].inFoot" class="player-name">
+							<img ng-if="players[2].turn" src="/images/hand-red.png" width="40px" height="40px">
+							<img ng-if="!players[2].turn" src="/images/hand.png" width="40px" height="40px">
+						</span>
 					</div>
 					<div class="panel-body-close">
 						<div ng-if="players[2].person" class="playingCards simpleCards">
@@ -236,8 +254,14 @@
 					<div class="panel-heading">
 						<span ng-show="players[3].person" class="player-name">{{players[3].person.name}}</span>
 						<span ng-show="!players[3].person" class="player-name">Waiting</span>
-						<span ng-if="game.gameBegun && players[3].inFoot" class="player-name"> &nbsp;<img src="/images/foot.png" width="40px" height="40px"></span>
-						<span ng-if="game.gameBegun && !players[3].inFoot" class="player-name"> &nbsp;<img src="/images/hand.png" width="40px" height="40px"></span>
+						<span ng-if="game.gameBegun && players[3].inFoot" class="player-name">
+							<img ng-if="players[3].turn" src="/images/foot-red.png" width="40px" height="40px">
+							<img ng-if="!players[3].turn" src="/images/foot.png" width="40px" height="40px">
+						</span>
+						<span ng-if="game.gameBegun && !players[3].inFoot" class="player-name">
+							<img ng-if="players[3].turn" src="/images/hand-red.png" width="40px" height="40px">
+							<img ng-if="!players[3].turn" src="/images/hand.png" width="40px" height="40px">
+						</span>
 					</div>
 					<div class="panel-body-close">
 						<div ng-if="players[3].person" class="playingCards simpleCards">
