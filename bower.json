@@ -1,0 +1,31 @@
+{
+  "name": "handandfoot",
+  "version": "0.0.0",
+  "authors": [
+    "Christopher Oliphant <oliphant.christopher@gmail.com>"
+  ],
+  "description": "card game",
+  "main": "app.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-audio": "~1.2.1",
+    "angular-cookies": "~1.3.2",
+    "angular-ui-router": "~0.2.12",
+    "angular-route": "~1.3.2",
+    "jQuery": "~2.1.1",
+    "ngDraggable": "*",
+    "socket.io": "~1.2.0",
+    "angular-socket-io": "~0.6.0",
+    "angular-bootstrap": "~0.11.2"
+  },
+  "resolutions": {
+    "angular": "1.3.2"
+  }
+}
