@@ -20,8 +20,6 @@
     "angular-ui-router": "~0.2.12",
     "angular-route": "~1.3.2",
     "jQuery": "~2.1.1",
-    "ngDraggable": "*",
-    "socket.io": "~1.2.0",
     "angular-socket-io": "~0.6.0",
     "angular-bootstrap": "~0.11.2"
   },
