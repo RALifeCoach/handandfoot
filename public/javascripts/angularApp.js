@@ -159,25 +159,62 @@ angular.module('handAndFoot')
 angular.module('handAndFoot')
 	.directive('playingCard', [
 		'$compile',
-		'$templateCache',
-		function($compile, $templateCache) {
+		function($compile) {
 			var linker = function(scope, element, attrs) {
 				scope.$watch('card', function() {
-					if (!scope.highlight)
-						scope.card.highlight = false;
+					var highlight = attrs.hasOwnProperty('highlight')
+						? 'ng-drag="true" ng-drag-data="card"'
+						: '';
+					var suit = '';
+					var rank = '';
+					var cardClass = attrs.hasOwnProperty('highlight') && scope.card.highlight ? 'highlight ' : '';
+					var title = '';
+					switch (scope.card.suitNumber) {
+						case 4:
+							rank = '-';
+							suit = 'Joker';
+							cardClass += 'card little joker';
+							title = 'Joker';
+							break;
+						case 0:
+							suit = '&clubs;';
+							rank = scope.card.number;
+							cardClass += 'card rank-' + scope.card.number + ' ' + scope.card.suitCard;
+							title = scope.card.number + ' of ' + scope.card.suitCard;
+							break;
+						case 1:
+							suit = '&diams;';
+							rank = scope.card.number;
+							cardClass += 'card rank-' + scope.card.number + ' ' + scope.card.suitCard;
+							title = scope.card.number + ' of ' + scope.card.suitCard;
+							break;
+						case 2:
+							suit = '&hearts;';
+							rank = scope.card.number;
+							cardClass += 'card rank-' + scope.card.number + ' ' + scope.card.suitCard;
+							title = scope.card.number + ' of ' + scope.card.suitCard;
+							break;
+						case 3:
+							suit = '&spades;';
+							rank = scope.card.number;
+							cardClass += 'card rank-' + scope.card.number + ' ' + scope.card.suitCard;
+							title = scope.card.number + ' of ' + scope.card.suitCard;
+							break;
+					}
+					var htmlText = '<div class="' + cardClass + '" ' + highlight + ' title="' + title + '">\n' +
+						'<span class="rank">' + rank + '</span>\n' +
+						'<span class="suit">' + suit + '</span>\n' +
+						'</div>';
+					element.html(htmlText);
 					$compile(element.contents())(scope);
-				});
+				}, true);
 			};
+		
 			return {
-				controller: 'PlayCtrl',
 				restrict: 'E',
-				transclude: true,
 				scope: {
-					card: '=',
-					highlight: '=',
-					dragDrop: '='
+					card: '='
 				},
-				templateUrl: '/partials/playingCard.html',
 				link: linker
 			};
 		}

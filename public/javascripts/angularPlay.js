@@ -45,8 +45,7 @@ angular.module('handAndFoot')
 			$scope.$on('socket:gameUpdate', function(event, data) {
 				console.log('game update');
 				var wasTurn = false;
-				$scope.game = data.game;
-				if (!$scope.players)
+				if (!$scope.players || $scope.game.round !== data.game.round)
 					$scope.players = data.players;
 				else {
 					wasTurn = $scope.players[0].turn;
@@ -55,6 +54,7 @@ angular.module('handAndFoot')
 					$scope.players[2] = data.players[2];
 					$scope.players[3] = data.players[3];
 				}
+				$scope.game = data.game;
 				if ($scope.players[0].turn && !wasTurn) {
 					console.log('play wave');
 					var audio = ngAudio.load("/sounds/LETSGO.mp3");
@@ -246,7 +246,7 @@ angular.module('handAndFoot')
 
 			// click on one of the cards in the hand
 			$scope.clickCard = function(event, cardIndex) {
-				event.stopPropagation();
+				//event.stopPropagation();
 
 				console.log('click ' + cardIndex);
 				$scope.message = false;
@@ -385,6 +385,8 @@ angular.module('handAndFoot')
 						if ($scope.players[0].inFoot
 						&& cards.length === 0)
 							player.sendGameMessage($scope, " is playing without cards");
+						
+						$scope.players[0].inFoot = $scope.players[0].haandCards.length = 0;
 						
 						player.sendUpdate($scope);
 						player.clearUndo($scope);

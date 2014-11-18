@@ -71,6 +71,10 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 		}
 	};
 
+	if (this.sockets.length > 4) {
+		console.log('too many sockets', this.sockets.length);
+	}
+	
 	// send update game with players properly ordered
 	for (socketIndex in this.sockets) {
 		var socket = this.sockets[socketIndex].socket;

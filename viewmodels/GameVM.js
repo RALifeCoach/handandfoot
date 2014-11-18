@@ -917,8 +917,7 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 				return callback(null, false);
 			
 			// recreate the gameVM from the new DB game
-			var mapper = new GameVM();
-			mapper.mapToVM(game, function(err, gameVM) {
+			_this.mapToVM(game, function(err, gameVM) {
 				if (err) {
 					console.log(err);
 					console.log(game);

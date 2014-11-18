@@ -76,7 +76,7 @@
 				<div class='col-md-half' ng-click="clickMeldBase()" ng-repeat="meld in teams[0].melds | inProgress">
 					<div class="playingCards simpleCards">
 						<ul class="meld">
-							<li ng-repeat="card in meld.cards" ng-drop="true"> 
+							<li ng-repeat="card in meld.cards" ng-drop="false"> 
 								<playing-card card="card" ng-click="clickMeld($event, meld)"></playing-card>
 							</li>
 						</ul>
@@ -125,6 +125,8 @@
 										</li>
 									</div>
 								</ul>
+								<img src="\images\pick-up-in-progress.png" ng-if="drawFromDiscard.topCard" 
+									style="position:absolute; top: 0; left: 0; width: 100%; height:100%;">
 							</div>
 						</div>
 					</div>
