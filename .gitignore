@@ -1,2 +1,4 @@
 /node_modules/*
 /test/*
+/dump/*
+/prod/*
