@@ -927,11 +927,11 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 				// if the game is complete, update the stats
 				if (game.gameComplete) {
 					_this.updatePlayers(gameVM, false, function(err) {
-						return callback(err, false);
+						callback(null, gameVM, results);
 					});
 					return;
 				}
-				
+
 				callback(null, gameVM, results);
 			});
 		});

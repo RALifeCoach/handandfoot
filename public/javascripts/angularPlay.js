@@ -386,7 +386,7 @@ angular.module('handAndFoot')
 						&& cards.length === 0)
 							player.sendGameMessage($scope, " is playing without cards");
 						
-						$scope.players[0].inFoot = $scope.players[0].haandCards.length = 0;
+						$scope.players[0].inFoot = $scope.players[0].handCards.length === 0;
 						
 						player.sendUpdate($scope);
 						player.clearUndo($scope);
