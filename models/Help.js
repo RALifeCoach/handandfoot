@@ -4,4 +4,4 @@ var HelpTextSchema = new mongoose.Schema({
 	helpText: String
 }, {collection: 'HelpText'});
 
-mongoose.model('HelpText', HelpTextSchema);
+mongoose.model('helpText', HelpTextSchema);
