@@ -2,6 +2,6 @@ var mongoose = require('mongoose');
 
 var HelpTextSchema = new mongoose.Schema({
 	helpText: String
-}, {collection: 'HelpText'});
+}, {collection: 'helpText'});
 
-mongoose.model('helpText', HelpTextSchema);
+mongoose.model('HelpText', HelpTextSchema);
