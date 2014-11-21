@@ -1,0 +1,17 @@
+<div class="modal-header">
+	<h3>{{modalOptions.headerText}}</h3>
+</div>
+<div class="modal-body">
+	<div class="well">{{modalOptions.hints[modalOptions.hintIndex].hint}}</div>
+	<button class="btn" 
+        data-ng-click="modalOptions.nextHint();">Next</button>
+	<div class="checkbox">
+		<label>
+			<input type="checkbox" ng-model="modalOptions.stopHints"> Click here to stop seeing hints
+		</label>
+	</div>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-primary" 
+        data-ng-click="modalOptions.ok();">{{modalOptions.actionButtonText}}</button>
+</div>

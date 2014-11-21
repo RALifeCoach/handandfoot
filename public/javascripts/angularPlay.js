@@ -6,8 +6,9 @@ angular.module('handAndFoot')
 		'melds',
 		'showModalService',
 		'resultsModalService',
+		'helpFactory',
 		'ngAudio',
-		function ($scope, $location, player, melds, showModalService, resultsModalService, ngAudio) {
+		function ($scope, $location, player, melds, showModalService, resultsModalService, helpFactory, ngAudio) {
 			var roundPoints = [ 50, 90, 120, 150, 190, 220, 250 ];
 			$scope.game = {};
 			$scope.piles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []}, {cards: []} ];
@@ -45,7 +46,9 @@ angular.module('handAndFoot')
 			$scope.$on('socket:gameUpdate', function(event, data) {
 				console.log('game update');
 				var wasTurn = false;
-				if (!$scope.players || $scope.game.round !== data.game.round)
+				if (!$scope.players 
+				|| $scope.game.round !== data.game.round
+				|| $scope.game.gameBegun !== data.game.gameBegun)
 					$scope.players = data.players;
 				else {
 					wasTurn = $scope.players[0].turn;
@@ -55,10 +58,8 @@ angular.module('handAndFoot')
 					$scope.players[3] = data.players[3];
 				}
 				$scope.game = data.game;
-				if ($scope.players[0].turn && !wasTurn) {
-					console.log('play wave');
+				if ($scope.players[0].turn && !wasTurn && $scope.game.gameBegun) {
 					var audio = ngAudio.load("/sounds/LETSGO.mp3");
-					console.log(audio);
 					audio.play();
 				}
 				$scope.piles = data.game.piles;
@@ -487,6 +488,11 @@ angular.module('handAndFoot')
 			$scope.resignGame = function() {
 				console.log('resign');
 				player.resignRequest();
+			};
+
+			$scope.showHelp = function() {
+				console.log('show help');
+				helpFactory.showHelp();
 			};
 
 			$scope.sendChat = function() {

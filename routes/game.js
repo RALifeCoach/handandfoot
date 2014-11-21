@@ -2,6 +2,8 @@ var express = require('express');
 var mongoose = require('mongoose');
 var Game = mongoose.model('Game');
 var Person = mongoose.model('Person');
+var Hint = mongoose.model('Hint');
+var HelpText = mongoose.model('HelpText');
 
 module.exports = function(mapper) {
 	var router = express.Router();
@@ -32,6 +34,18 @@ module.exports = function(mapper) {
 				);
 			}
 		);
+	});
+	
+	router.get('/getHints', function(req, res, next) {
+		Hint.find(function(err, hints){
+			res.json(hints);
+		});
+	});
+	
+	router.get('/getHelp', function(req, res, next) {
+		HelpText.find(function(err, help){
+			res.json(help[0]);
+		});
 	});
 
 	router.post('/', function(req, res, next) {

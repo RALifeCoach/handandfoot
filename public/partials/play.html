@@ -288,11 +288,12 @@
 	<div class='col-md-3'>
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<span ng-click="resignGame()" class="btn btn-default btn-sm" role="button">Resign</span>
-			</div>
-			<div class="panel-body">
-				<span ng-click="applyUndo()" class="btn btn-default btn-sm" 
-				ng-class="{disabled: undo.length === 0}" role="button">Undo</span>
+				<div class-"btn-group" role="group">
+					<button type="button" class="btn btn-default" ng-click="resignGame()">Resign</span>
+					<button type="button" class="btn btn-default" ng-click="applyUndo()"
+					ng-class="{disabled: undo.length === 0}">Undo</span>
+					<button type="button" class="btn btn-default" ng-click="showHelp()">Help</span>
+				</div>
 			</div>
 		</div>
 		<div class="panel panel-default">

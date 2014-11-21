@@ -15,6 +15,8 @@ else
 // include models
 require('./models/Person');
 require('./models/Game');
+require('./models/Hint');
+require('./models/Help');
 
 // define classes
 var PlayGame = require('./classes/playGame');

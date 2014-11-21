@@ -1,14 +1,23 @@
 angular.module('handAndFoot')
-	.factory('games', ['$http', 
+	.factory('gameFactory', ['$http', 
 		function($http){
 			var o = {
-				games: []
+				games: [],
+				hints: []
 			};
 			
 			// get all games
 			o.getAll = function(data) {
 				return $http.post('/games/getAll', data).success(function(data){
 					angular.copy(data, o.games);
+				});
+			};
+			
+			// get all hints
+			o.getHints = function(callback) {
+				return $http.get('/games/getHints').success(function(data){
+					angular.copy(data, o.hints);
+					callback();
 				});
 			};
 			
@@ -27,10 +36,12 @@ angular.module('handAndFoot')
 	.controller('GameCtrl', [
 		'$scope',
 		'$location',
-		'games',
+		'$cookieStore',
+		'gameFactory',
 		'sharedProperties',
 		'gamePasswordService',
-		function($scope, $location, games, sharedProperties, gamePasswordService){
+		'hintsService',
+		function($scope, $location, $cookieStore, games, sharedProperties, gamePasswordService, hintsService){
 			// if user not set then go to login
 			$scope.person = sharedProperties.getPerson();
 			$scope.games = [];
@@ -48,6 +59,13 @@ angular.module('handAndFoot')
 				$scope.games = games.games;
 			});			
 
+			var stopHints = $cookieStore.get('StopHints');
+			if (!stopHints) {
+				games.getHints(function() {
+					hintsService.showModal(games.hints);
+				});
+			}
+			
 			// add a new game
 			$scope.addGame = function() {
 				if ($scope.name === '') 
