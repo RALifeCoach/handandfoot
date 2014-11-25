@@ -1,6 +1,6 @@
 angular.module('handAndFoot')
 	.service('hintsService', ['$modal',
-	'$cookieStore',
+		'$cookieStore',
 		function($modal, $cookieStore){
 			var modalDefaults = {
 				backdrop: true,
