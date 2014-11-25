@@ -19,7 +19,7 @@
 				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'" class="directions icon-play"></span>
 			</div>
 			<div class="panel-body-close">
-				<div class='col-md-1'>
+				<div class='col-md-1' ng-if="game.gameBegun">
 					<div class="btn-group-vertical btn-group-sm" role='group'>
 						<button type="button" class="btn btn-default" title='Sort by number' ng-click="sortByNumber()">
 							# Number
