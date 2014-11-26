@@ -28,6 +28,11 @@
 	color: black
 }
 
+.buttons {
+	font-size: 18px;
+	color: black
+}
+
 .icon-resign:before {
 	content: "\e600";
 }

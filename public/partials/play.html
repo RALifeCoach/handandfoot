@@ -9,8 +9,8 @@
 	<div class='col-md-9'>
 		<div class="panel" ng-class="{'panel-default': !players[0].turn, 'panel-danger': players[0].turn}">
 			<div class="panel-heading">
+				<span class="directions badge" title="Round {{game.round + 1}}">{{game.round + 1}}</span>
 				<span class="player-name">{{players[0].person.name}}</span>
-				<span class="badge pull-right">{{game.round + 1}}</span>
 				<span ng-if="game.gameBegun && players[0].inFoot" class="directions icon-foot"></span>
 				<span ng-if="game.gameBegun && !players[0].inFoot" class="directions icon-hand"></span>
 				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw1'" class="directions icon-upload"></span>
@@ -19,37 +19,37 @@
 				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'" class="directions icon-play"></span>
 			</div>
 			<div class="panel-body-close">
-				<div class='col-md-1' ng-if="game.gameBegun">
-					<div class="btn-group-vertical btn-group-sm" role='group'>
-						<button type="button" class="btn btn-default" title='Sort by number' ng-click="sortByNumber()">
-							# Number
-						</button>
-						<button type="button" class="btn btn-default" title='Sort by suit' ng-click="sortBySuit()">
-							<span class="suit">&clubs;</span> Suit
-						</button>
-					</div>
+				<div class="btn-group-vertical btn-group-xs" role='group' style="float: left;">
+					<button type="button" class="btn btn-default" title='Sort by number' ng-click="sortByNumber()">
+						<span class="buttons">A-3</span>
+					</button>
+					<button type="button" class="btn btn-default" title='Sort by suit' ng-click="sortBySuit()">
+						<span class="suit buttons">&clubs;</span>-<span class="suit buttons">&spades;</span>
+					</button>
+					<button type="button" class="btn btn-default" title='Highlighed Score'">
+						<span class="buttons">{{control.highlightedScore}}</span>
+					</button>
 				</div>
-				<div class='col-md-11'>
-					<div ng-if="players[0].person" class="playingCards simpleCards">
-						<ul class="hand" ng-if="!players[0].inFoot">
-							<li ng-repeat="card in players[0].handCards" ng-drop="true" 
-							ng-drop-success="onDropComplete($index, $data, $event)">
-								<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
-							</li>
-						</ul>
-						<ul class="hand" ng-if="players[0].inFoot">
-							<li ng-repeat="card in players[0].footCards" ng-drop="true" 
-							ng-drop-success="onDropComplete($index, $data, $event)">
-								<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
-							</li>
-						</ul>
-					</div>
+				<div ng-if="players[0].person" class="playingCards simpleCards" style="float: left;">
+					<ul class="hand" ng-if="!players[0].inFoot">
+						<li ng-repeat="card in players[0].handCards" ng-drop="true" 
+						ng-drop-success="onDropComplete($index, $data, $event)">
+							<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
+						</li>
+					</ul>
+					<ul class="hand" ng-if="players[0].inFoot">
+						<li ng-repeat="card in players[0].footCards" ng-drop="true" 
+						ng-drop-success="onDropComplete($index, $data, $event)">
+							<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
+						</li>
+					</ul>
 				</div>
+				<div style="clear: both"></div>
 			</div>
 		</div>
 		<div class="panel-close panel-default">
 			<div class="panel-body" ng-click="clickMeldBase()">
-				<div class='col-md-3'>
+				<div class='col-md-2'>
 					Score: {{teams[0].score}}
 					<div ng-if="!control.hasMelds">
 						Points Needed: {{control.pointsNeeded}}<br />
@@ -155,7 +155,7 @@
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<div class='col-md-3'>
+				<div class='col-md-2'>
 					Score: {{teams[1].score}}
 					<div>
 						Base Points: {{teams[1].basePoints}}
@@ -264,13 +264,15 @@
 	<div class='col-md-3'>
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<div class-"btn-group" role="group">
+				<div class="btn-group" role="group">
 					<button type="button" class="btn btn-default" ng-click="resignGame()">
 						<span class="icon-resign" title="Resign" style="font-size: 36px"></span>
 					</button>
-					<button type="button" class="btn btn-default" ng-click="applyUndo()"
-					ng-class="{disabled: undo.length === 0}">
+					<button type="button" class="btn btn-default" ng-click="applyUndo()" ng-if="undo.length > 0">
 						<span class="icon-undo" title="Undo" style="font-size: 36px"></span>
+					</button>
+					<button type="button" class="btn btn-default" ng-click="resetCards()" ng-if="undo.length === 0 && players[0].turn">
+						<span class="icon-loop" title="Reset" style="font-size: 36px"></span>
 					</button>
 					<button type="button" class="btn btn-default" ng-click="showHelp()">
 						<span class="glyphicon glyphicon-question-sign" title="Rules" style="font-size: 36px"></span>

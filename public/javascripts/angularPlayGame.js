@@ -50,6 +50,7 @@ angular.module('handAndFoot')
 					|| player.footCards[cardIndex] != $scope.drawFromDiscard.topCard)
 						player.footCards[cardIndex].highlight = false;
 				}
+				scope.control.highlightedScore = 0;
 			};
 
 			// return any highlighted cards

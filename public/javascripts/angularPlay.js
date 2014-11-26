@@ -24,6 +24,7 @@ angular.module('handAndFoot')
 				pointsNeeded: 0,
 				pointsSoFar: 0,
 				endHand: false,
+				highlightedScore: 0,
 				gameMessages: []
 			};
 			$scope.drawFromDiscard = {};
@@ -267,6 +268,7 @@ angular.module('handAndFoot')
 				}
 				
 				cards[cardIndex].highlight = !cards[cardIndex].highlight;
+				$scope.control.highlightedScore = melds.scoreHighlightedCards(cards);
 			};
 
 			// handle drop complete
@@ -493,6 +495,11 @@ angular.module('handAndFoot')
 			$scope.showHelp = function() {
 				console.log('show help');
 				helpFactory.showHelp();
+			};
+
+			$scope.resetCards = function() {
+				console.log('reset cards');
+				player.resetHighlight($scope.players[0], $scope);
 			};
 
 			$scope.sendChat = function() {

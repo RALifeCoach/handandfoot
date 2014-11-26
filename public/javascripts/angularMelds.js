@@ -505,6 +505,23 @@ angular.module('handAndFoot')
 				return score >= scoreToMeet;
 			}
 			
+			// calculate score on highlighted cards
+			o.scoreHighlightedCards = function(cards) {
+				var score = 0;
+				
+				// score highlighted cards
+				for (var cardIndex = 0; cardIndex < cards.length; cardIndex++) {
+					if (cards[cardIndex].highlight) {
+						if (cards[cardIndex].suitNumber === 4)
+							score += 50;
+						else
+							score += cardScores[cards[cardIndex].cardNumber];
+					}
+				}
+				
+				return score;
+			}
+			
 			// calculate the score on complete melds
 			o.calculateBase = function(team) {
 				var score = 0;
