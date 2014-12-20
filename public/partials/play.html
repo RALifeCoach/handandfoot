@@ -197,7 +197,7 @@
 									<div class="card back">*</div>
 								</li>
 							</ul>
-							<ul ng-if="players[1].inFoot && players[1].footCards.length > 0" class="deck">
+							<ul ng-if="players[1].inFoot && players[1].footCards > 0" class="deck">
 								<li ng-repeat="card in [players[1].footCards] | maxCards"
 								title="{{players[1].footCards}} cards remaining">
 									<div class="card back">*</div>
@@ -223,7 +223,7 @@
 									<div class="card back">*</div>
 								</li>
 							</ul>
-							<ul ng-if="players[2].inFoot && players[2].footCards.length > 0" class="deck">
+							<ul ng-if="players[2].inFoot && players[2].footCards > 0" class="deck">
 								<li ng-repeat="card in [players[2].footCards] | maxCards"
 								title="{{players[2].footCards}} cards remaining">
 									<div class="card back">*</div>
@@ -249,7 +249,7 @@
 									<div class="card back">*</div>
 								</li>
 							</ul>
-							<ul ng-if="players[3].inFoot && players[3].footCards.length > 0" class="deck">
+							<ul ng-if="players[3].inFoot && players[3].footCards > 0" class="deck">
 								<li ng-repeat="card in [players[3].footCards] | maxCards"
 								title="{{players[3].footCards}} cards remaining">
 									<div class="card back">*</div>
