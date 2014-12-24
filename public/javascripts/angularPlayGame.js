@@ -153,6 +153,10 @@ angular.module('handAndFoot')
 						return "Minimum score for lay down not yet met.";
 
 				// can't discard a red three
+				if (this.isBlackThree(card))
+					return false;
+
+				// can't discard a red three
 				if (this.isRedThree(card))
 					return "Cannot discard a red three.";
 
