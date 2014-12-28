@@ -2,52 +2,67 @@
 	<h3>{{modalOptions.headerText}}</h3>
 </div>
 <div class="modal-body">
-	<table>
-		<tr>
-			<td>&nbsp;</td>
-			<td>Base Score</td>
-			<td>Cards Score</td>
-			<td>Total Score</td>
-		</tr>
-		<tr>
-			<td>Your Team</td>
-			<td>{{modalOptions.results.yourTeam.baseScore}}</td>
-			<td>{{modalOptions.results.yourTeam.cardsScore}}</td>
-			<td>{{modalOptions.results.yourTeam.handScore}}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td colspan="2">Previous Score</td>
-			<td>{{modalOptions.results.yourTeam.priorScore}}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td colspan="2">New Score</td>
-			<td>{{modalOptions.results.yourTeam.newScore}}</td>
-		</tr>
-		<tr>
-			<td colspan="4">&nbsp;</td>
-		</tr>
-		<tr>
-			<td>Their Team</td>
-			<td>{{modalOptions.results.theirTeam.baseScore}}</td>
-			<td>{{modalOptions.results.theirTeam.cardsScore}}</td>
-			<td>{{modalOptions.results.theirTeam.handScore}}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td colspan="2">Previous Score</td>
-			<td>{{modalOptions.results.theirTeam.priorScore}}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td colspan="2">New Score</td>
-			<td>{{modalOptions.results.theirTeam.newScore}}</td>
-		</tr>
+	<div ng-repeat="result in modalOptions.results.yourTeam">
+		<div ng-if="modalOptions.showAll || $index === modalOptions.results.yourTeam.length - 1">
+			<table class="results">
+				<tr ng-if="modalOptions.showAll">
+					<td><b>Round</b></td>
+					<td><b>{{modalOptions.results.yourTeam[$index].round + 1}}</b></td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td>Base Score</td>
+					<td>Cards Score</td>
+					<td>Total Score</td>
+				</tr>
+				<tr>
+					<td>Your Team</td>
+					<td>{{modalOptions.results.yourTeam[$index].baseScore}}</td>
+					<td>{{modalOptions.results.yourTeam[$index].cardsScore}}</td>
+					<td>{{modalOptions.results.yourTeam[$index].handScore}}</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td colspan="2">Previous Score</td>
+					<td>{{modalOptions.results.yourTeam[$index].priorScore}}</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td colspan="2">New Score</td>
+					<td>{{modalOptions.results.yourTeam[$index].newScore}}</td>
+				</tr>
+				<tr>
+					<td colspan="4">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Their Team</td>
+					<td>{{modalOptions.results.theirTeam[$index].baseScore}}</td>
+					<td>{{modalOptions.results.theirTeam[$index].cardsScore}}</td>
+					<td>{{modalOptions.results.theirTeam[$index].handScore}}</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td colspan="2">Previous Score</td>
+					<td>{{modalOptions.results.theirTeam[$index].priorScore}}</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td colspan="2">New Score</td>
+					<td>{{modalOptions.results.theirTeam[$index].newScore}}</td>
+				</tr>
+				<tr>
+					<td colspan="4">&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="4">&nbsp;</td>
+				</tr>
+			</table>
+		</div>
+	</div>
 </div>
 <div class="modal-footer">
 	<button ng-if="modalOptions.closeButtonText !== false" type="button" class="btn" 
 		data-ng-click="modalOptions.close()">{{modalOptions.closeButtonText}}</button>
-	<button ng-if="modalOptions.actionButtonText" class="btn btn-primary" 
-        data-ng-click="modalOptions.ok();">{{modalOptions.actionButtonText}}</button>
 </div>

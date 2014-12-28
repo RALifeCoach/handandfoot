@@ -182,6 +182,37 @@ var GameVM = function() {
 		return updatePlayers;
 	}
 
+	// load the player names
+	this.loadPlayers = function(game, gameVM, callback) {
+		var _this = this;
+		_this.loadPlayer(game.nsTeam[0].players[0], function(err, player){
+			if (err) return callback(err);
+			gameVM.players.push(player);
+
+			_this.loadPlayer(game.ewTeam[0].players[0], function(err, player){
+				if (err) return callback(err);
+				gameVM.players.push(player);
+
+				_this.loadPlayer(game.nsTeam[0].players[1], function(err, player){
+					if (err) return callback(err);
+					gameVM.players.push(player);
+
+					_this.loadPlayer(game.ewTeam[0].players[1], function(err, player){
+						if (err) return callback(err);
+						gameVM.players.push(player);
+
+						var players = 0;
+						for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++)
+							if (gameVM.players[playerIndex])
+								players++;
+						gameVM.playersFull = players === 4;
+
+						callback(null);
+					});
+				});
+			});
+		});
+	}
 	// score the game
 	this.scoreTheGame = function(game, winningTeam) {
 		var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 20];
@@ -382,6 +413,21 @@ var GameVM = function() {
 			{direction: 'Discard', cards: [] }
 		];
 		game.piles = piles;
+					
+		// increment the round and end the game if the final round has been played
+		if (++game.round > 6) {
+			this.endTheGame(game);
+			return;
+		}
+		
+		// deal of the new hand
+		this.dealNewHand(game);
+		
+		// set the next starting player
+		if (++game.roundStartingPlayer > 3)
+			game.roundStartingPlayer = 0;
+		game.turn = game.roundStartingPlayer;
+		game.turnState = 'draw1';
 	}
 
 	// end the game
@@ -491,6 +537,41 @@ var GameVM = function() {
 		});
 	}
 	
+	// load the rounds played into results
+	this.loadResults = function(roundsPlayed) {
+		var results = {
+			nsResults: [],
+			ewResults: []
+		};
+		for (var roundIndex = 0; roundIndex < roundsPlayed.length; roundIndex++) {
+			var nsTeam = {
+				round: roundsPlayed[roundIndex].round,
+				baseScore: roundsPlayed[roundIndex].nsTeam[0].baseScore,
+				cardsScore: roundsPlayed[roundIndex].nsTeam[0].cardsScore,
+				priorScore: roundsPlayed[roundIndex].nsTeam[0].priorScore,
+				handScore: roundsPlayed[roundIndex].nsTeam[0].baseScore 
+					+ roundsPlayed[roundIndex].nsTeam[0].cardsScore, 
+				newScore: roundsPlayed[roundIndex].nsTeam[0].baseScore 
+					+ roundsPlayed[roundIndex].nsTeam[0].cardsScore 
+					+ roundsPlayed[roundIndex].nsTeam[0].priorScore
+			};
+			results.nsResults.push(nsTeam);
+			var ewTeam = {
+				round: roundsPlayed[roundIndex].round,
+				baseScore: roundsPlayed[roundIndex].ewTeam[0].baseScore,
+				cardsScore: roundsPlayed[roundIndex].ewTeam[0].cardsScore,
+				priorScore: roundsPlayed[roundIndex].ewTeam[0].priorScore,
+				handScore: roundsPlayed[roundIndex].ewTeam[0].baseScore 
+					+ roundsPlayed[roundIndex].ewTeam[0].cardsScore,
+				newScore: roundsPlayed[roundIndex].ewTeam[0].baseScore 
+					+ roundsPlayed[roundIndex].ewTeam[0].cardsScore 
+					+ roundsPlayed[roundIndex].ewTeam[0].priorScore
+			};
+			results.ewResults.push(ewTeam);
+		}
+		return results;
+	}
+	
 	// update players - record scores
 	this.updatePlayers = function(game, personId, callback) {
 		var nsResigned = false;
@@ -556,36 +637,43 @@ GameVM.prototype.mapToVM = function(game, callback) {
 		turn: game.turn,
 		turnState: game.turnState,
 		drawCards: game.drawCards,
-		gameComplete: game.gameComplete
+		gameComplete: game.gameComplete,
+		results: this.loadResults(game.roundsPlayed)
 	};
+	
+	if (gameVM.gameBegun) {
+		var _this = this;
+		// check to see if all the pick-up cards have been drawn - if so end the hand
+		var pickupCardsLeft = gameVM.piles[0].cards.length +
+			gameVM.piles[1].cards.length +
+			gameVM.piles[2].cards.length +
+			gameVM.piles[3].cards.length;
+		if ((pickupCardsLeft < 2 && gameVM.turnState === 'draw2')
+		|| (pickupCardsLeft < 1 && gameVM.turnState === 'draw1')) {
+			// not enough cards to complete draw
+			this.scoreTheGame(game, false);
+			this.endTheHand(game);
+			
+			// save the game
+			game.save(function(err, savedGame){
+				if (err) { 
+					console.log('error saving game');
+					console.log(err);
+					console.log(game);
+					console.log(game.nsTeam);
+					console.log(game.ewTeam);
+					return callback(err); 
+				}
 
-	var _this = this;
-	_this.loadPlayer(game.nsTeam[0].players[0], function(err, player){
-		if (err) return callback(err);
-		gameVM.players.push(player);
-
-		_this.loadPlayer(game.ewTeam[0].players[0], function(err, player){
-			if (err) return callback(err);
-			gameVM.players.push(player);
-
-			_this.loadPlayer(game.nsTeam[0].players[1], function(err, player){
-				if (err) return callback(err);
-				gameVM.players.push(player);
-
-				_this.loadPlayer(game.ewTeam[0].players[1], function(err, player){
-					if (err) return callback(err);
-					gameVM.players.push(player);
-
-					var players = 0;
-					for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++)
-						if (gameVM.players[playerIndex])
-							players++;
-					gameVM.playersFull = players === 4;
-
-					callback(null, gameVM);
+				_this.loadPlayers(game, gameVM, function(err) {
+					callback(err, gameVM);
 				});
 			});
-		});
+		}
+	}
+
+	this.loadPlayers(game, gameVM, function(err) {
+		callback(err, gameVM);
 	});
 };
 
@@ -599,7 +687,9 @@ GameVM.prototype.getAllIncompleteGames = function(personId, callback) {
 		var ctr = games.length;
 		for (var gameIndex = 0; gameIndex < games.length; gameIndex++) {
 			_this.mapToVM(games[gameIndex], function(err, gameVM) {
-				if (err) { return next(err); }
+				if (err) { 
+					return next(err); 
+				}
 
 				gameVM.playerAttached = false;
 				for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
@@ -874,22 +964,6 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 				case 'endHand':
 					results = _this.scoreTheGame(game, team);
 					_this.endTheHand(game);
-					
-					// increment the round and end the game if the final round has been played
-					if (++game.round > 6) {
-						_this.endTheGame(game);
-						break;
-					}
-					
-					// deal of the new hand
-					_this.dealNewHand(game);
-					
-					// set the next starting player
-					if (++game.roundStartingPlayer > 3)
-						game.roundStartingPlayer = 0;
-					game.turn = game.roundStartingPlayer;
-					game.turnState = 'draw1';
-					
 					break;
 					
 				// if the current player's turn has ended then move on to the next player

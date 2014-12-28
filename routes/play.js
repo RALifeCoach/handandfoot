@@ -121,7 +121,8 @@ function Play(io, playGame, mapper) {
 			console.log('recieved end hand response');
 				
 			playGame.sendEndHandResponse(socket, data);
-		});		
+		});
+		
 		// message handler for update cards message
 		socket.on('updateGame', function (data) {
 			console.log('recieved update Cards');

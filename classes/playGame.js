@@ -3,22 +3,6 @@ var ConnectedGame = function(pGameId) {
 	this.sockets = [];
 }
 ConnectedGame.prototype.sendMessages = function(gameVM, results) {
-	function loadScores(resultsVM, yourTeam, theirTeam) {
-		resultsVM.yourTeam = {
-			baseScore: yourTeam.baseScore,
-			cardsScore: yourTeam.cardsScore,
-			handScore: yourTeam.baseScore + yourTeam.cardsScore,
-			priorScore: yourTeam.priorScore,
-			newScore: yourTeam.priorScore + yourTeam.baseScore + yourTeam.cardsScore
-		};
-		resultsVM.theirTeam = {
-			baseScore: theirTeam.baseScore,
-			cardsScore: theirTeam.cardsScore,
-			handScore: theirTeam.baseScore + theirTeam.cardsScore,
-			priorScore: theirTeam.priorScore,
-			newScore: theirTeam.priorScore + theirTeam.baseScore + theirTeam.cardsScore
-		};
-	}
 	var playersVM = [];
 	
 	for (playerIndex in gameVM.players) {
@@ -32,6 +16,11 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 	var teamsVM = [ gameVM.nsTeam, gameVM.ewTeam ];
 	gameVM.nsTeam = false;
 	gameVM.ewTeam = false;
+	
+	var nsResults = gameVM.results.nsResults;
+	var ewResults = gameVM.results.ewResults;
+	gameVM.results = false;
+	var resultsVM = [];
 	
 	// create player objects used to send basic information (no card details)
 	var otherPlayers = [];
@@ -54,23 +43,6 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 	playersVM[gameVM.turn].turn = true;
 	otherPlayers[gameVM.turn].turn = true;
 	
-	var resultsVM = {
-		yourTeam: {
-			baseScore: 0,
-			cardsScore: 0,
-			handScore: 0,
-			priorScore: 0,
-			newScore: 0
-		},
-		theirTeam: {
-			baseScore: 0,
-			cardsScore: 0,
-			handScore: 0,
-			priorScore: 0,
-			newScore: 0
-		}
-	};
-
 	if (this.sockets.length > 4) {
 		console.log('too many sockets', this.sockets.length);
 	}
@@ -89,8 +61,8 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 				players.push(otherPlayers[3]);
 				teams.push(teamsVM[0]);
 				teams.push(teamsVM[1]);
-				if (results)
-					loadScores(resultsVM, results.nsTeam, results.ewTeam);
+				resultsVM.push(nsResults);
+				resultsVM.push(ewResults);
 				break;
 			case 'East':
 				players.push(playersVM[1]);
@@ -99,8 +71,8 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 				players.push(otherPlayers[0]);
 				teams.push(teamsVM[1]);
 				teams.push(teamsVM[0]);
-				if (results)
-					loadScores(resultsVM, results.ewTeam, results.nsTeam);
+				resultsVM.push(ewResults);
+				resultsVM.push(nsResults);
 				break;
 			case 'South':
 				players.push(playersVM[2]);
@@ -109,8 +81,8 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 				players.push(otherPlayers[1]);
 				teams.push(teamsVM[0]);
 				teams.push(teamsVM[1]);
-				if (results)
-					loadScores(resultsVM, results.nsTeam, results.ewTeam);
+				resultsVM.push(nsResults);
+				resultsVM.push(ewResults);
 				break;
 			case 'West':
 				players.push(playersVM[3]);
@@ -119,8 +91,8 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 				players.push(otherPlayers[2]);
 				teams.push(teamsVM[1]);
 				teams.push(teamsVM[0]);
-				if (results)
-					loadScores(resultsVM, results.ewTeam, results.nsTeam);
+				resultsVM.push(ewResults);
+				resultsVM.push(nsResults);
 				break;
 		}
 		
@@ -129,7 +101,7 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 			socket.emit('handResults', resultsVM);
 			
 		// send the new data to each player
-		socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
+		socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams, results: resultsVM });
 	}
 };
 

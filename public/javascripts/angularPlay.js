@@ -17,6 +17,10 @@ angular.module('handAndFoot')
 				{ basePoints: 0, counts: [], melds: [] }, 
 				{ basePoints: 0, counts: [], melds: [] } 
 			];
+			$scope.results = {
+				yourTeam: [],
+				theirTeam: []
+			};
 			$scope.control = {
 				turnState: 'draw1',
 				hasMelds: false,
@@ -65,6 +69,8 @@ angular.module('handAndFoot')
 				}
 				$scope.piles = data.game.piles;
 				$scope.teams = data.teams;
+				$scope.results.yourTeam = data.results[0];
+				$scope.results.theirTeam = data.results[1];
 				$scope.teams[0].basePoints = melds.calculateBase($scope.teams[0]);
 				$scope.teams[1].basePoints = melds.calculateBase($scope.teams[1]);
 				$scope.control.turnState = data.game.turnState;
@@ -158,9 +164,9 @@ angular.module('handAndFoot')
 				
 				var modalOptions = {
 					closeButtonText: 'OK',
-					actionButtonText: false,
 					headerText: 'Hand Results',
-					results: results
+					showAll: false,
+					results: $scope.results
 				};
 
 				resultsModalService.showModal({}, modalOptions);
@@ -509,6 +515,18 @@ angular.module('handAndFoot')
 			$scope.showHelp = function() {
 				console.log('show help');
 				helpFactory.showHelp();
+			};
+
+			$scope.showResults = function() {
+				console.log('show results');
+				var modalOptions = {
+					closeButtonText: 'Close',
+					headerText: 'Results',
+					showAll: true,
+					results: $scope.results
+				};
+
+				resultsModalService.showModal({}, modalOptions);
 			};
 
 			$scope.resetCards = function() {
