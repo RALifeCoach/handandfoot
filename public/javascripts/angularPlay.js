@@ -402,12 +402,19 @@ angular.module('handAndFoot')
 				console.log('pile meld base');
 				
 				player.updateUndo($scope);
-				
+
+				var hasDrawnFromPile = false;
+				if ($scope.drawFromDiscard.topCard)
+					hasDrawnFromPile = true;
 				$scope.message = melds.clickMeld(false, $scope);
 				if ($scope.message) {
 					$scope.undo.pop();
 					return;
 				}
+				
+				// if drawn from pile complete then clear undo
+				if (hasDrawnFromPile && !$scope.drawFromDiscard.topCard)
+					$scope.clearUndo($scope);
 
 				// player has moved into their foot
 				if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0) {
@@ -437,11 +444,18 @@ angular.module('handAndFoot')
 
 				player.updateUndo($scope);
 
+				var hasDrawnFromPile = false;
+				if ($scope.drawFromDiscard.topCard)
+					hasDrawnFromPile = true;
 				$scope.message = melds.clickMeld(meld, $scope);
 				if ($scope.message) {
 					$scope.undo.pop();
 					return;
 				}
+				
+				// if drawn from pile complete then clear undo
+				if (hasDrawnFromPile && !$scope.drawFromDiscard.topCard)
+					$scope.clearUndo($scope);
 
 				// player has moved into their foot
 				if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0) {
