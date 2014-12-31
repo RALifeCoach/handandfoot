@@ -49,6 +49,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+app.use('/angular',  express.static(__dirname + '/angular'));
+app.use('/partials',  express.static(__dirname + '/views/partials'));
 
 if (process.env.PRODUCTION) {
 	app.get('*',function(req,res,next){
