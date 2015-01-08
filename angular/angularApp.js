@@ -3,7 +3,8 @@ angular.module('handAndFoot', ['ui.router',
 	'btford.socket-io', 
 	'ngDraggable', 
 	'ui.bootstrap',
-	'ngAudio']);
+	'ngAudio',
+	'ngLoadingSpinner']);
 
 // add config to hand the various page states
 angular.module('handAndFoot')
