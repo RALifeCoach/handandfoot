@@ -2,7 +2,7 @@ var ConnectedGame = function(pGameId) {
 	this.gameId = pGameId;
 	this.sockets = [];
 }
-ConnectedGame.prototype.sendMessages = function(gameVM, results) {
+ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, results) {
 	var playersVM = [];
 	
 	for (playerIndex in gameVM.players) {
@@ -26,8 +26,9 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 	var otherPlayers = [];
 	for (playerIndex in playersVM) {
 		var playerVM = playersVM[playerIndex];
+		playerVM.myUpdate = false;
 		if (!playerVM.person)
-			otherPlayers.push({ turn: false, person: false, inFoot: false });
+			otherPlayers.push({ turn: false, person: false, inFoot: false, myUpdate: false });
 		else {
 			otherPlayers.push({
 				person: playerVM.person,
@@ -35,7 +36,8 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 				turn: false,
 				inFoot: playerVM.inFoot,
 				footCards: playerVM.footCards.length,
-				handCards: playerVM.handCards.length
+				handCards: playerVM.handCards.length,
+				myUpdate: false
 			});
 		}
 	}
@@ -55,6 +57,7 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 		
 		switch (this.sockets[socketIndex].direction) {
 			case 'North':
+				playersVM[0].myUpdate = receiveSocket == socket;
 				players.push(playersVM[0]);
 				players.push(otherPlayers[1]);
 				players.push(otherPlayers[2]);
@@ -65,6 +68,7 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 				resultsVM.push(ewResults);
 				break;
 			case 'East':
+				playersVM[1].myUpdate = receiveSocket == socket;
 				players.push(playersVM[1]);
 				players.push(otherPlayers[2]);
 				players.push(otherPlayers[3]);
@@ -75,6 +79,7 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 				resultsVM.push(nsResults);
 				break;
 			case 'South':
+				playersVM[2].myUpdate = receiveSocket == socket;
 				players.push(playersVM[2]);
 				players.push(otherPlayers[3]);
 				players.push(otherPlayers[0]);
@@ -85,6 +90,7 @@ ConnectedGame.prototype.sendMessages = function(gameVM, results) {
 				resultsVM.push(ewResults);
 				break;
 			case 'West':
+				playersVM[3].myUpdate = receiveSocket == socket;
 				players.push(playersVM[3]);
 				players.push(otherPlayers[0]);
 				players.push(otherPlayers[1]);
@@ -149,7 +155,7 @@ PlayGame.prototype.leaveGame = function(socket, mapper) {
 			}
 			
 			// send the message to the remaining players
-			connectedGame.sendMessages(gameVM);
+			connectedGame.sendMessages(gameVM, socket);
 		}
 	});
 };

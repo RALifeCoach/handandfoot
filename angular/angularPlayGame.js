@@ -232,11 +232,15 @@ angular.module('handAndFoot')
 			};
 
 			// send an update to the server
-			playGame.sendUpdate = function(scope) {
+			playGame.sendUpdate = function(scope, action) {
+				if (!action)
+					action = false;
+					
 				var data = {
 					player: scope.players[0],
 					piles: scope.piles,
 					melds: scope.teams[0].melds,
+					action: action,
 					control: scope.control
 				};
 				chatSocket.emit('updateGame', data);
@@ -244,6 +248,16 @@ angular.module('handAndFoot')
 				for (var messageIndex = 0; messageIndex < scope.control.gameMessages.length; messageIndex++)
 					chatSocket.emit('gameMessage', { message: scope.control.gameMessages[messageIndex] });
 				scope.control.gameMessages = [];
+			};
+
+			// send request to draw card to the server
+			playGame.drawCard = function(scope, pileIndex) {
+				this.sendUpdate(scope, {action: 'drawCard', pileIndex: pileIndex});
+			};
+
+			// send request to discard card to the server
+			playGame.discardCard = function(scope, cardIndex) {
+				this.sendUpdate(scope, {action: 'discardCard', cardIndex: cardIndex});
 			};
 			
 			playGame.sendGameMessage = function(scope, message) {

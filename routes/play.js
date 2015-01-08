@@ -73,11 +73,11 @@ function Play(io, playGame, mapper) {
 						}
 							
 						// send the message
-						connectedGame.sendMessages(gameVM);
+						connectedGame.sendMessages(gameVM, socket);
 					});
 				} else {
 					// send the message
-					connectedGame.sendMessages(gameVM);
+					connectedGame.sendMessages(gameVM, socket);
 				}
 			});
 		});
@@ -132,7 +132,7 @@ function Play(io, playGame, mapper) {
 				return;
 					
 			// update the game and, optionally, the game VM
-			mapper.updateGame(connectedPlayer.gameId, data.player, data.piles, data.melds, data.control, function(err, gameVM, results) {
+			mapper.updateGame(connectedPlayer.gameId, data.player, data.piles, data.melds, data.action, data.control, function(err, gameVM, results) {
 				if (err) {
 					console.log(err);
 					console.log(data.gameId);
@@ -151,7 +151,7 @@ function Play(io, playGame, mapper) {
 							return;
 						
 						// send the updates to the other players
-						connectedGame.sendMessages(gameVM, results);
+						connectedGame.sendMessages(gameVM, socket, results);
 					}
 				}
 			});

@@ -889,7 +889,7 @@ GameVM.prototype.startNewGame = function(gameId, callback) {
 }
 
 // update cards from message from a game
-GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, control, callback) {
+GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, action, control, callback) {
 	var _this = this;
 	// find game from DB
 	var query1 = Game.findById(gameId);
@@ -937,14 +937,6 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 		_this.unloadCards(playerVM.handCards, player.handCards);
 		_this.unloadCards(playerVM.footCards, player.footCards);
 		
-		// update the 5 piles - again notify players if piles being updated
-		for (var pileIndex = 0; pileIndex < pilesVM.length; pileIndex++) {
-			if (pilesVM[pileIndex].cards.length !== game.piles[pileIndex].cards) {
-				_this.unloadCards(pilesVM[pileIndex].cards, game.piles[pileIndex].cards);
-				updatePlayers = true;
-			}
-		}
-		
 		// update the melds - again notify players if melds being updated
 		updatePlayers = _this.unloadMelds(meldsVM, team.melds);
 		
@@ -952,6 +944,25 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, contr
 		if (control.drawCards !== game.drawCards) {
 			updatePlayers = true;
 			game.drawCards = control.drawCards;
+		}
+		
+		// handle actions
+		if (action) {
+			// draw a card if so indicated
+			if (action.action === "drawCard") {
+				updatePlayers = true;
+				
+				var cards = player.inFoot ? player.footCards : player.handCards;
+				cards.push(game.piles[action.pileIndex].cards.pop());
+			} else if (action.action === "discardCard") {
+console.log('discard card');
+				updatePlayers = true;
+				
+				// discard the selected card
+				var cards = player.inFoot ? player.footCards : player.handCards;
+				game.piles[4].cards.push(cards[action.cardIndex]);
+				cards.splice(action.cardIndex, 1);
+			}
 		}
 
 		var results = false;

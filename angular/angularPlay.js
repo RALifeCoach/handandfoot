@@ -57,7 +57,10 @@ angular.module('handAndFoot')
 					$scope.players = data.players;
 				else {
 					wasTurn = $scope.players[0].turn;
-					$scope.players[0].turn = data.players[0].turn;
+					if (data.players[0].myUpdate)
+						$scope.players[0] = data.players[0];
+					else
+						$scope.players[0].turn = data.players[0].turn;
 					$scope.players[1] = data.players[1];
 					$scope.players[2] = data.players[2];
 					$scope.players[3] = data.players[3];
@@ -309,11 +312,8 @@ angular.module('handAndFoot')
 						$scope.message = "Cards are already drawn.";
 						return;
 				}
-					
-				var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
-				cards.push($scope.piles[pileIndex].cards.pop());
-				player.resetHighlight($scope.players[0], $scope);
-				player.sendUpdate($scope);
+
+				player.drawCard($scope, pileIndex);
 				player.clearUndo($scope);
 			};
 			
@@ -382,22 +382,16 @@ angular.module('handAndFoot')
 							return;
 						}
 						
-						// discard the selected card and end the turn
-						var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
-						var cardIndex = cards.indexOf(selectedCards[0]);
-						$scope.piles[4].cards.push(selectedCards[0]);
-						cards.splice(cardIndex, 1);
-						player.resetHighlight($scope.players[0], $scope);
-						
 						$scope.control.turnState = 'end';
 						// send message if the discard left the player with no cards
 						if ($scope.players[0].inFoot
 						&& cards.length === 0)
-							player.sendGameMessage($scope, " is playing without cards");
+							player.sendGameMessage($scope, "is playing without cards");
 						
-						$scope.players[0].inFoot = $scope.players[0].handCards.length === 0;
-						
-						player.sendUpdate($scope);
+						// discard the selected card and end the turn
+						var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
+						var cardIndex = cards.indexOf(selectedCards[0]);
+						player.discardCard($scope, cardIndex);
 						player.clearUndo($scope);
 						break;
 				}
@@ -427,7 +421,6 @@ angular.module('handAndFoot')
 					player.sendGameMessage($scope, "went into their foot and is still playing");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
-					$scope.players[0].inFoot = true;
 				}
 				
 				// playing without cards
@@ -435,7 +428,7 @@ angular.module('handAndFoot')
 				&& $scope.players[0].footCards.length === 0
 				&& $scope.control.drawCards === 0) {
 					$scope.control.turnState = 'end';
-					player.sendGameMessage($scope, " is playing without cards");
+					player.sendGameMessage($scope, "is playing without cards");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
 				}
