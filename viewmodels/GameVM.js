@@ -954,12 +954,14 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 			if (action.action === "drawCard") {
 				// draw a card
 				if (action.pileIndex < 0 || action.pileIndex > 3) {
+					console.log("PileIndex out of range attempting to draw a card");
 					return callback(new Error("PileIndex out of range attempting to draw a card"));
 				}
 				cards.push(game.piles[action.pileIndex].cards.pop());
 			} else if (action.action === "discardCard") {
 				// discard the selected card
 				if (action.cardIndex < 0 || action.cardIndex >= cards.length) {
+					console.log("CardIndex out of range attempting to discard");
 					return callback(new Error("CardIndex out of range attempting to discard"));
 				}
 
