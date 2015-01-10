@@ -926,7 +926,6 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 				team = game.ewTeam[0];
 				break;
 		}
-		var inFoot = player.handCards.length === 0;
 		
 		// if the size of the hand or foot has changed then the other players will be notified
 		var updatePlayers = false;
@@ -949,19 +948,31 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 		
 		// handle actions
 		if (action) {
-			// draw a card if so indicated
+			updatePlayers = true;
+			var cards = player.handCards.length === 0 ? player.footCards : player.handCards;
+			
 			if (action.action === "drawCard") {
-				updatePlayers = true;
-				
-				var cards = inFoot ? player.footCards : player.handCards;
+				// draw a card
+				if (action.pileIndex < 0 || action.pileIndex > 3) {
+					return callback(new Error("PileIndex out of range attempting to draw a card"));
+				}
 				cards.push(game.piles[action.pileIndex].cards.pop());
 			} else if (action.action === "discardCard") {
-				updatePlayers = true;
-				
 				// discard the selected card
-				var cards = inFoot ? player.footCards : player.handCards;
+				if (action.cardIndex < 0 || action.cardIndex >= cards.length) {
+					return callback(new Error("CardIndex out of range attempting to discard"));
+				}
+
 				game.piles[4].cards.push(cards[action.cardIndex]);
 				cards.splice(action.cardIndex, 1);
+			} else if (action.action === "drawSevenCards") {
+				// draw seven cards from the discard pile
+				// the first card is already moved to the player
+				game.piles[4].cards.pop();
+				
+				for (var cardIndex = 0; cardIndex < 6 && game.piles[4].cards.length > 0; cardIndex++) {
+					cards.push(game.piles[4].cards.pop());
+				}
 			}
 		}
 

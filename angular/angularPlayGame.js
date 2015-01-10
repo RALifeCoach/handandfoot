@@ -259,6 +259,11 @@ angular.module('handAndFoot')
 			playGame.discardCard = function(scope, cardIndex) {
 				this.sendUpdate(scope, {action: 'discardCard', cardIndex: cardIndex});
 			};
+
+			// send request to discard card to the server
+			playGame.drawSevenCards = function(scope) {
+				this.sendUpdate(scope, {action: 'drawSevenCards'});
+			};
 			
 			playGame.sendGameMessage = function(scope, message) {
 				scope.control.gameMessages.push(scope.players[0].person.name + " " + message);

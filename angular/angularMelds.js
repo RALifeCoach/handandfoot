@@ -342,16 +342,9 @@ angular.module('handAndFoot')
 			
 			function drawSevenCards(scope) {
 				scope.drawFromDiscard.topCard = false;
-				
-				// the first card is already moved to the player
-				scope.piles[4].cards.pop();
-				
-				var cards = scope.players[0].inFoot ? scope.players[0].footCards : scope.players[0].handCards;
-				for (var cardIndex = 0; cardIndex < 6 && scope.piles[4].cards.length > 0; cardIndex++) {
-					cards.push(scope.piles[4].cards.pop());
-				}
-				
+
 				playGame.sendGameMessage(scope, "picked up from the discard pile");
+				playGame.drawSevenCards(scope);
 			}
 
 			function calculatePointsSoFar(scope) {
