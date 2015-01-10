@@ -383,13 +383,14 @@ angular.module('handAndFoot')
 						}
 						
 						$scope.control.turnState = 'end';
+						var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
+
 						// send message if the discard left the player with no cards
 						if ($scope.players[0].inFoot
 						&& cards.length === 0)
 							player.sendGameMessage($scope, "is playing without cards");
 						
 						// discard the selected card and end the turn
-						var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
 						var cardIndex = cards.indexOf(selectedCards[0]);
 						player.discardCard($scope, cardIndex);
 						player.clearUndo($scope);

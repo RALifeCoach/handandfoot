@@ -688,7 +688,7 @@ GameVM.prototype.getAllIncompleteGames = function(personId, callback) {
 		for (var gameIndex = 0; gameIndex < games.length; gameIndex++) {
 			_this.mapToVM(games[gameIndex], function(err, gameVM) {
 				if (err) { 
-					return next(err); 
+					return callback(err); 
 				}
 
 				gameVM.playerAttached = false;
@@ -926,6 +926,7 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 				team = game.ewTeam[0];
 				break;
 		}
+		var inFoot = player.handCards.length === 0;
 		
 		// if the size of the hand or foot has changed then the other players will be notified
 		var updatePlayers = false;
@@ -952,14 +953,13 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 			if (action.action === "drawCard") {
 				updatePlayers = true;
 				
-				var cards = player.inFoot ? player.footCards : player.handCards;
+				var cards = inFoot ? player.footCards : player.handCards;
 				cards.push(game.piles[action.pileIndex].cards.pop());
 			} else if (action.action === "discardCard") {
-console.log('discard card');
 				updatePlayers = true;
 				
 				// discard the selected card
-				var cards = player.inFoot ? player.footCards : player.handCards;
+				var cards = inFoot ? player.footCards : player.handCards;
 				game.piles[4].cards.push(cards[action.cardIndex]);
 				cards.splice(action.cardIndex, 1);
 			}
