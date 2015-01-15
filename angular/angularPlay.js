@@ -266,7 +266,7 @@ angular.module('handAndFoot')
 
 				console.log('click ' + cardIndex);
 				$scope.message = false;
-				if (!$scope.players[0].turn
+				if ($scope.players[0].turn
 				&& $scope.control.turnState !== 'play') {
 					$scope.message = "Draw cards before playing.";
 					return;
