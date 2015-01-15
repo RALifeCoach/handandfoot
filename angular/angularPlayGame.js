@@ -231,6 +231,12 @@ angular.module('handAndFoot')
 				return count;
 			};
 
+			// convert card number to card value
+			playGame.convertCardNumber = function(cardNumber) {
+				var values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace' ];
+				return values[cardNumber];
+			}
+			
 			// send an update to the server
 			playGame.sendUpdate = function(scope, action) {
 				if (!action)

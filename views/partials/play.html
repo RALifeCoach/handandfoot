@@ -62,7 +62,7 @@
 					<ul class="nav nav-pills nav-stacked">
 						<li ng-repeat="count in teams[0].counts">
 							<div>
-								<span class="badge pull-right">{{count.count}}</span>
+								<span class="badge pull-right" popover-template="/partials/showMelds.html">{{count.count}}</span>
 								{{count.type}}
 							</div>
 						</li>
@@ -272,7 +272,7 @@
 					<button type="button" class="btn btn-default" ng-click="applyUndo()" ng-if="undo.length > 0">
 						<span class="icon-undo" title="Undo" style="font-size: 36px"></span>
 					</button>
-					<button type="button" class="btn btn-default" ng-click="resetCards()" ng-if="undo.length === 0 && players[0].turn">
+					<button type="button" class="btn btn-default" ng-click="resetCards()" ng-if="undo.length === 0 || !players[0].turn">
 						<span class="icon-loop" title="Reset" style="font-size: 36px"></span>
 					</button>
 					<button type="button" class="btn btn-default" ng-click="showHelp()">

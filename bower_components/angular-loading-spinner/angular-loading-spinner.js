@@ -6,7 +6,7 @@
             {
                 $rootScope.spinnerActive = false;
                 scope.isLoading = function () {
-                    return $http.pendingRequests.length > 0;
+                    return $rootScope.showSpinner ? true : $http.pendingRequests.length > 0;
                 };
 
                 scope.$watch(scope.isLoading, function (loading)

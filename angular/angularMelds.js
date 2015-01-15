@@ -221,10 +221,13 @@ angular.module('handAndFoot')
 					
 					if (meld.cards.length === 7) {
 						meld.isComplete = true;
-						if (meld.type === "Clean Meld")
+						if (meld.type === "Clean Meld") {
 							scope.teams[0].counts[1].count++;
-						else
+							playGame.sendGameMessage(scope, "completed a clean meld of " + playGame.convertCardNumber(meld.number) + "'s");
+						} else {
 							scope.teams[0].counts[2].count++;
+							playGame.sendGameMessage(scope, "completed a dirty meld of " + playGame.convertCardNumber(meld.number) + "'s");
+						}
 					}
 					
 					return false;

@@ -940,12 +940,6 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 		// update the melds - again notify players if melds being updated
 		updatePlayers = _this.unloadMelds(meldsVM, team.melds);
 		
-		// update draw cards
-		if (control.drawCards !== game.drawCards) {
-			updatePlayers = true;
-			game.drawCards = control.drawCards;
-		}
-		
 		// handle actions
 		if (action) {
 			updatePlayers = true;
@@ -957,6 +951,21 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 					console.log("PileIndex out of range attempting to draw a card");
 					return callback(new Error("PileIndex out of range attempting to draw a card"));
 				}
+
+				// set the new turn state
+				switch (control.turnState) {
+					case 'draw1':
+						control.turnState = 'draw2'
+						break;
+					case 'draw2':
+						control.turnState = 'play'
+						break;
+					case 'draw3':
+						if (--control.drawCards <= 0)
+							control.turnState = 'play'
+						break;
+				}
+				// draw the card
 				cards.push(game.piles[action.pileIndex].cards.pop());
 			} else if (action.action === "discardCard") {
 				// discard the selected card
@@ -965,6 +974,7 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 					return callback(new Error("CardIndex out of range attempting to discard"));
 				}
 
+				control.turnState = 'end';
 				game.piles[4].cards.push(cards[action.cardIndex]);
 				cards.splice(action.cardIndex, 1);
 			} else if (action.action === "drawSevenCards") {
@@ -976,6 +986,12 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 					cards.push(game.piles[4].cards.pop());
 				}
 			}
+		}
+		
+		// update draw cards
+		if (control.drawCards !== game.drawCards) {
+			updatePlayers = true;
+			game.drawCards = control.drawCards;
 		}
 
 		var results = false;
