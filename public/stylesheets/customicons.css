@@ -1,10 +1,10 @@
 @font-face {
 	font-family: 'icomoon';
-	src:url('../fonts/icomoon.eot?-8rabl');
-	src:url('../fonts/icomoon.eot?#iefix-8rabl') format('embedded-opentype'),
-		url('../fonts/icomoon.woff?-8rabl') format('woff'),
-		url('../fonts/icomoon.ttf?-8rabl') format('truetype'),
-		url('../fonts/icomoon.svg?-8rabl#icomoon') format('svg');
+	src:url('../fonts/icomoon.eot?-u739tm');
+	src:url('../fonts/icomoon.eot?#iefix-u739tm') format('embedded-opentype'),
+		url('../fonts/icomoon.woff?-u739tm') format('woff'),
+		url('../fonts/icomoon.ttf?-u739tm') format('truetype'),
+		url('../fonts/icomoon.svg?-u739tm#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -33,30 +33,42 @@
 	color: black
 }
 
+.icon-hand:before {
+	content: "\e601";
+}
+
+.icon-foot:before {
+	content: "\e602";
+}
+
+.icon-robot:before {
+	content: "\e606";
+}
+
 .icon-resign:before {
 	content: "\e600";
 }
-.icon-foot:before {
-	content: "\e601";
-}
-.icon-hand:before {
-	content: "\e602";
-}
+
 .icon-undo:before {
 	content: "\e604";
 }
+
 .icon-upload:before {
 	content: "\e603";
 }
+
 .icon-enter:before {
 	content: "\e608";
 }
+
 .icon-exit:before {
 	content: "\e609";
 }
+
 .icon-play:before {
 	content: "\e605";
 }
+
 .icon-loop:before {
 	content: "\e60a";
 }
