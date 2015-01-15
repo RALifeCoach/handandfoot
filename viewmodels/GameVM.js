@@ -54,9 +54,9 @@ var GameVM = function() {
 	this.countMelds = function(inMelds) {
 		var counts = [ 
 			{type: 'Red Threes', count: 0},
-			{type: 'Clean Melds', count: 0},
-			{type: 'Dirty Melds', count: 0},
-			{type: 'Runs', count: 0},
+			{type: 'Clean Melds', count: 0, melds: ""},
+			{type: 'Dirty Melds', count: 0, melds: ""},
+			{type: 'Runs', count: 0, melds: ""},
 			{type: 'Wild Card Melds', count: 0}
 		];
 		
@@ -71,9 +71,11 @@ var GameVM = function() {
 					break;
 				case "Clean Meld":
 					counts[1].count++;
+					counts[1].melds += counts[1].melds === "" ? cards[meld.number] : ", " + cards[meld.number];
 					break;
 				case "Dirty Meld":
 					counts[2].count++;
+					counts[2].melds += counts[2].melds === "" ? cards[meld.number] : ", " + cards[meld.number];
 					break;
 				case "Run":
 					counts[3].count++;

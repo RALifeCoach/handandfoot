@@ -62,7 +62,8 @@
 					<ul class="nav nav-pills nav-stacked">
 						<li ng-repeat="count in teams[0].counts">
 							<div>
-								<span class="badge pull-right" popover-template="/partials/showMelds.html">{{count.count}}</span>
+								<span class="badge pull-right" popover-template="/partials/showMelds.html"
+								popover="{{count.melds}}" popover-trigger="mouseenter">{{count.count}}</span>
 								{{count.type}}
 							</div>
 						</li>
@@ -164,7 +165,8 @@
 					<ul class="nav nav-pills nav-stacked">
 						<li ng-repeat="count in teams[1].counts">
 							<div>
-								<span class="badge pull-right">{{count.count}}</span>
+								<span class="badge pull-right" popover-template="/partials/showMelds.html"
+								popover="{{count.melds}}" popover-trigger="mouseenter">{{count.count}}</span>
 								{{count.type}}
 							</div>
 						</li>
