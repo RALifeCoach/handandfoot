@@ -31,7 +31,7 @@ angular.module('handAndFoot')
 				endHand: false,
 				highlightedScore: 0,
 				gameMessages: [],
-				callInProgress = false
+				callInProgress: false
 			};
 			$scope.drawFromDiscard = {};
 			$scope.drawFromDiscard.topCard = false;
