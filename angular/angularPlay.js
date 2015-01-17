@@ -30,7 +30,8 @@ angular.module('handAndFoot')
 				pointsSoFar: 0,
 				endHand: false,
 				highlightedScore: 0,
-				gameMessages: []
+				gameMessages: [],
+				callInProgress = false
 			};
 			$scope.drawFromDiscard = {};
 			$scope.drawFromDiscard.topCard = false;
@@ -93,6 +94,8 @@ angular.module('handAndFoot')
 				$scope.control.pointsNeeded = roundPoints[data.game.round];
 
 				$scope.undo = [];
+				
+				$scope.control.callInProgress = false;
 				
 				player.resetHighlight($scope.players[0], $scope);
 			});
@@ -298,7 +301,8 @@ angular.module('handAndFoot')
 			// click on one of the pick up piles
 			$scope.clickPile = function(pileIndex) {
 				$scope.message = false;
-				if (!$scope.players[0].turn)
+				if (!$scope.players[0].turn
+				|| $scope.control.callInProgress)
 					return;
 				switch ($scope.control.turnState) {
 					case 'draw1':
@@ -323,7 +327,8 @@ angular.module('handAndFoot')
 				console.log('pile discard click');
 				
 				$scope.message = false;
-				if (!$scope.players[0].turn)
+				if (!$scope.players[0].turn
+				|| $scope.control.callInProgress)
 					return;
 
 				switch ($scope.control.turnState) {
@@ -398,7 +403,8 @@ angular.module('handAndFoot')
 			// click on the meld base to start a new meld
 			$scope.clickMeldBase = function() {
 				console.log('pile meld base');
-				if (!$scope.players[0].turn)
+				if (!$scope.players[0].turn
+				|| $scope.control.callInProgress)
 					return;
 				
 				player.updateUndo($scope);
@@ -441,7 +447,8 @@ angular.module('handAndFoot')
 				event.stopPropagation();
 
 				console.log('click meld');
-				if (!$scope.players[0].turn)
+				if (!$scope.players[0].turn
+				|| $scope.control.callInProgress)
 					return;
 
 				player.updateUndo($scope);
