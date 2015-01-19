@@ -44,6 +44,11 @@ module.exports = function(mapper) {
 	
 	router.get('/getHelp', function(req, res, next) {
 		HelpText.find(function(err, help){
+			if (err) {
+				console.log(err);
+				return next(err);
+			}
+	console.log(help);
 			res.json(help[0]);
 		});
 	});
