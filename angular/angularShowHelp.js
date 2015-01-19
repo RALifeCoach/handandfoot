@@ -7,8 +7,9 @@ Array.prototype.move = function(fromIndex, toIndex) {
 
 angular.module('handAndFoot')
 	.factory('helpFactory', ['$http', 
-		'showModalService',
-		function($http, showModalService){
+		'showHelpService',
+		'$sce',
+		function($http, showHelpService, $sce){
 			var showHelp = { 
 				helpText: ''
 			};
@@ -24,14 +25,14 @@ angular.module('handAndFoot')
 
 				if (showHelp.helpText === '') {
 					return $http.get('/games/getHelp').success(function(data){
-						showHelp.helpText = data.helpText;
+						showHelp.helpText = $sce.trustAsHtml(data.helpText.join(""));
 
 						modalOptions.modalText = showHelp.helpText;
-						showModalService.showModal({}, modalOptions);
+						showHelpService.showModal({}, modalOptions);
 					});
 				}
 
-				showModalService.showModal({}, modalOptions);
+				showHelpService.showModal({}, modalOptions);
 			}
 		
 			return showHelp;
