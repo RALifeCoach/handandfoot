@@ -47,6 +47,7 @@ ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, results) 
 	
 	if (this.sockets.length > 4) {
 		console.log('too many sockets', this.sockets.length);
+		console.log(this.sockets);
 	}
 	
 	// send update game with players properly ordered
@@ -190,9 +191,19 @@ PlayGame.prototype.findCreateConnectedGame = function(socket, data) {
 			break;
 		}
 	}
+	
+	// in no connected game found then create one
 	if (!connectedGame) {
 		var connectedGame = new ConnectedGame(data.gameId);
 		this.connectedGames.push(connectedGame);
+	} else {
+		// in case the socket already exists for this direction - remove it
+		for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
+			if (connectedGame.sockets[socketIndex].direction === data.direction) {
+				connectedGame.sockets.splice(socketIndex, 1);
+				break;
+			}
+		}
 	}
 	
 	// add the socket to the game - for sending
@@ -212,7 +223,7 @@ PlayGame.prototype.findConnectedPlayer = function(socket) {
 	}
 	if (!connectedPlayer) {
 		console.log('player not playing');
-		socket.emit('updateError', { error: 'Player not playing a game' });
+		socket.emit('error', { error: 'Player not playing a game' });
 		return false;
 	}
 
@@ -230,7 +241,7 @@ PlayGame.prototype.findConnectedGame = function(socket, gameId) {
 	}
 	if (!connectedGame) {
 		console.log('game not found');
-		socket.emit('updateError', { error: 'Game not found' });
+		socket.emit('error', { error: 'Game not found' });
 		return;
 	}
 
