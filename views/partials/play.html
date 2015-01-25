@@ -7,7 +7,7 @@
 	<strong>Error!</strong> {{message}}
 </div>
 <div class='row'>
-	<div class='col-xs-12 col-sm-9 col-md-9'>
+	<div class='col-md-9'>
 		<div class="panel" ng-class="{'panel-default': !players[0].turn, 'panel-danger': players[0].turn}">
 			<div class="panel-heading">
 				<span class="directions badge" title="Round {{game.round + 1}}">{{game.round + 1}}</span>
@@ -20,7 +20,7 @@
 				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'" class="directions icon-play"></span>
 			</div>
 			<div class="panel-body-close">
-				<div class="btn-group-vertical btn-group-xs" role='group' style="float: left;">
+				<div class="btn-group-vertical btn-group-xs btn-group-sm" role='group' style="float: left;">
 					<button type="button" class="btn btn-default" title='Sort by number' ng-click="sortByNumber()">
 						<span class="buttons">A-3</span>
 					</button>
@@ -69,7 +69,7 @@
 						</li>
 					</ul>
 				</div>
-				<div class='col-md-half' ng-click="clickMeldBase()" ng-repeat="meld in teams[0].melds | inProgress">
+				<div class='col-xs-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[0].melds | inProgress">
 					<div class="playingCards simpleCards">
 						<ul class="meld">
 							<li ng-repeat="card in meld.cards" ng-drop="false"> 
@@ -172,7 +172,7 @@
 						</li>
 					</ul>
 				</div>
-				<div class='col-md-half' ng-click="clickMeldBase()" ng-repeat="meld in teams[1].melds | inProgress">
+				<div class='col-xs-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[1].melds | inProgress">
 					<div class="playingCards simpleCards">
 						<ul class="meld">
 							<li ng-repeat="card in meld.cards" ng-drop="true"> 
