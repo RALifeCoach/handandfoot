@@ -7,7 +7,7 @@
 	<strong>Error!</strong> {{message}}
 </div>
 <div class='row'>
-	<div class='col-md-9'>
+	<div class='col-xs-12 col-sm-9 col-md-9'>
 		<div class="panel" ng-class="{'panel-default': !players[0].turn, 'panel-danger': players[0].turn}">
 			<div class="panel-heading">
 				<span class="directions badge" title="Round {{game.round + 1}}">{{game.round + 1}}</span>
@@ -50,7 +50,7 @@
 		</div>
 		<div class="panel-close panel-default">
 			<div class="panel-body" ng-click="clickMeldBase()">
-				<div class='col-md-2'>
+				<div class='col-xs-4 col-sm-2 col-md-2'>
 					Score: {{teams[0].score}}
 					<div ng-if="!control.hasMelds">
 						Points Needed: {{control.pointsNeeded}}<br />
@@ -82,9 +82,9 @@
 		</div>
 		<div class="panel-close panel-default">
 			<div class="row">
-				<div class='col-md-1'>
+				<div class='hidden-xs col sm-1 col-md-1'>
 				</div>
-				<div class='col-md-2'>
+				<div class='col-xs-3 col-sm-2 col-md-2'>
 					<div class="panel-close panel-default">
 						<div class="panel-body-close">
 							<div ng-if="piles[0].cards.length > 0" class="playingCards simpleCards">
@@ -97,7 +97,7 @@
 						</div>
 					</div>
 				</div>
-				<div class='col-md-2'>
+				<div class='col-xs-3 col-sm-2 col-md-2''>
 					<div class="panel-close panel-default">
 						<div class="panel-body-close">
 							<div ng-if="piles[1].cards.length > 0" class="playingCards simpleCards">
@@ -110,7 +110,7 @@
 						</div>
 					</div>
 				</div>
-				<div class='col-md-2'>
+				<div class='col-xs-3 col-sm-2 col-md-2''>
 					<div class="panel-close panel-default" ng-click="clickDiscardPile($event)">
 						<div class="panel-body-close">
 							<div name='discardPile' id='discardPile' class="playingCards simpleCards">
@@ -127,7 +127,7 @@
 						</div>
 					</div>
 				</div>
-				<div class='col-md-2'>
+				<div class='col-xs-3 col-sm-2 col-md-2''>
 					<div class="panel-close panel-default">
 						<div class="panel-body-close">
 							<div ng-if="piles[2].cards.length > 0" class="playingCards simpleCards">
@@ -140,7 +140,7 @@
 						</div>
 					</div>
 				</div>
-				<div class='col-md-2'>
+				<div class='col-xs-3 col-sm-2 col-md-2''>
 					<div class="panel-close panel-default">
 						<div class="panel-body-close">
 							<div ng-if="piles[3].cards.length > 0" class="playingCards simpleCards">
@@ -157,7 +157,7 @@
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<div class='col-md-2'>
+				<div class='col-xs-3 col-sm-2 col-md-2'>
 					Score: {{teams[1].score}}
 					<div>
 						Base Points: {{teams[1].basePoints}}
@@ -184,7 +184,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class='col-md-4'>
+			<div class='col-xs-4 col-sm-4 col-md-4'>
 				<div class="panel-close" ng-class="{'panel-default': !players[1].turn, 'panel-danger': players[1].turn}">
 					<div class="panel-heading">
 						<span ng-show="players[1].person" class="player-name">{{players[1].person.name}}</span>
@@ -210,7 +210,7 @@
 					</div>
 				</div>
 			</div>
-			<div class='col-md-4'>
+			<div class='col-xs-4 col-sm-4 col-md-4'>
 				<div class="panel-close" ng-class="{'panel-default': !players[2].turn, 'panel-danger': players[2].turn}">
 					<div class="panel-heading">
 						<span ng-show="players[2].person" class="player-name">{{players[2].person.name}}</span>
@@ -236,7 +236,7 @@
 					</div>
 				</div>
 			</div>
-			<div class='col-md-4'>
+			<div class='col-xs-4 col-sm-4 col-md-4'>
 				<div class="panel-close" ng-class="{'panel-default': !players[3].turn, 'panel-danger': players[3].turn}">
 					<div class="panel-heading">
 						<span ng-show="players[3].person" class="player-name">{{players[3].person.name}}</span>
