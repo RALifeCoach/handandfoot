@@ -223,7 +223,7 @@ PlayGame.prototype.findConnectedPlayer = function(socket) {
 	}
 	if (!connectedPlayer) {
 		console.log('player not playing');
-		socket.emit('error', { error: 'Player not playing a game' });
+		//socket.emit('error', { error: 'Player not playing a game' });
 		return false;
 	}
 
