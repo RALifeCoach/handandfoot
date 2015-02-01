@@ -8,70 +8,67 @@
 </div>
 <div class='row'>
 	<div class='col-md-9'>
-		<div class="panel">
-			<div class="panel-heading">
-				<div class='col-xs-3'  ng-class="{'waiting': !players[0].turn, 'playing': players[0].turn}">
-					<span class="directions badge" title="Round {{game.round + 1}}">{{game.round + 1}}</span>
-					<span class="player-name">{{players[0].person.name}}</span>
-					<span ng-if="game.gameBegun && players[0].inFoot" class="directions icon-foot"></span>
-					<span ng-if="game.gameBegun && !players[0].inFoot" class="directions icon-hand"></span>
-					<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw1'" class="directions icon-upload"></span>
-					<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw2'" class="directions icon-upload"></span>
-					<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw3'" class="directions icon-upload"></span>
-					<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'" class="directions icon-play"></span>
-				</div>
-				<div class='col-xs-3' ng-class="{'waiting': !players[1].turn, 'playing': players[1].turn}">
-					<span ng-show="players[1].person" class="player-name">{{players[1].person.name}}</span>
-					<span ng-show="!players[1].person" class="player-name">Waiting</span>
-					<span ng-if="game.gameBegun && !players[1].inFoot" class="icon-hand" style="font-size: 36px; color: black"></span>
-					<span ng-if="game.gameBegun && players[1].inFoot" class="icon-foot" style="font-size: 36px; color: black"></span>
-					<span class="badge directions pull-right">{{players[1].inFoot ? players[1].footCards : players[1].handCards}}</span>
-				</div>
-				<div class='col-xs-3' ng-class="{'waiting': !players[2].turn, 'playing': players[2].turn}">
-					<span ng-show="players[2].person" class="player-name">{{players[2].person.name}}</span>
-					<span ng-show="!players[2].person" class="player-name">Waiting</span>
-					<span ng-if="game.gameBegun && !players[2].inFoot" class="icon-hand" style="font-size: 36px; color: black"></span>
-					<span ng-if="game.gameBegun && players[2].inFoot" class="icon-foot" style="font-size: 36px; color: black"></span>
-					<span class="badge directions pull-right">{{players[2].inFoot ? players[2].footCards : players[2].handCards}}</span>
-				</div>
-				<div class='col-xs-3' ng-class="{'waiting': !players[3].turn, 'playing': players[3].turn}">
-					<span ng-show="players[3].person" class="player-name">{{players[3].person.name}}</span>
-					<span ng-show="!players[3].person" class="player-name">Waiting</span>
-					<span ng-if="game.gameBegun && !players[3].inFoot" class="icon-hand" style="font-size: 36px; color: black"></span>
-					<span ng-if="game.gameBegun && players[3].inFoot" class="icon-foot" style="font-size: 36px; color: black"></span>
-					<span class="badge directions pull-right">{{players[3].inFoot ? players[3].footCards : players[3].handCards}}</span>
-				</div>
+		<div class="panel-body">
+			<div class='col-xs-3'  ng-class="{'waiting': !players[0].turn, 'playing': players[0].turn}">
+				<span class="directions badge" title="Round {{game.round + 1}}">{{game.round + 1}}</span>
+				<span class="player-name">{{players[0].person.name}}</span>
+				<span ng-if="game.gameBegun && players[0].inFoot" class="directions icon-foot"></span>
+				<span ng-if="game.gameBegun && !players[0].inFoot" class="directions icon-hand"></span>
+				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw1'" class="directions icon-upload"></span>
+				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw2'" class="directions icon-upload"></span>
+				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw3'" class="directions icon-upload"></span>
+				<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'" class="directions icon-play"></span>
 			</div>
-			<div class="panel-body-close">
-				<div class="btn-group-vertical btn-group-xs btn-group-sm" role='group' style="float: left;">
-					<button type="button" class="btn btn-default" title='Sort by number' ng-click="sortByNumber()">
-						<span class="buttons">A-3</span>
-					</button>
-					<button type="button" class="btn btn-default" title='Sort by suit' ng-click="sortBySuit()">
-						<span class="suit buttons">&clubs;</span>-<span class="suit buttons">&spades;</span>
-					</button>
-					<button type="button" class="btn btn-default" title='Highlighed Score'">
-						<span class="buttons">{{control.highlightedScore}}</span>
-					</button>
-				</div>
-				<div ng-if="players[0].person" class="playingCards simpleCards" style="float: left;">
-					<ul class="hand" ng-if="!players[0].inFoot">
-						<li ng-repeat="card in players[0].handCards" ng-drop="true" 
-						ng-drop-success="onDropComplete($index, $data, $event)">
-							<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
-						</li>
-					</ul>
-					<ul class="hand" ng-if="players[0].inFoot">
-						<li ng-repeat="card in players[0].footCards" ng-drop="true" 
-						ng-drop-success="onDropComplete($index, $data, $event)">
-							<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
-						</li>
-					</ul>
-				</div>
-				<div style="clear: both"></div>
+			<div class='col-xs-3' ng-class="{'waiting': !players[1].turn, 'playing': players[1].turn}">
+				<span ng-show="players[1].person" class="player-name">{{players[1].person.name}}</span>
+				<span ng-show="!players[1].person" class="player-name">Waiting</span>
+				<span ng-if="game.gameBegun && !players[1].inFoot" class="icon-hand" style="font-size: 36px; color: black"></span>
+				<span ng-if="game.gameBegun && players[1].inFoot" class="icon-foot" style="font-size: 36px; color: black"></span>
+				<span class="badge directions pull-right">{{players[1].inFoot ? players[1].footCards : players[1].handCards}}</span>
+			</div>
+			<div class='col-xs-3' ng-class="{'waiting': !players[2].turn, 'playing': players[2].turn}">
+				<span ng-show="players[2].person" class="player-name">{{players[2].person.name}}</span>
+				<span ng-show="!players[2].person" class="player-name">Waiting</span>
+				<span ng-if="game.gameBegun && !players[2].inFoot" class="icon-hand" style="font-size: 36px; color: black"></span>
+				<span ng-if="game.gameBegun && players[2].inFoot" class="icon-foot" style="font-size: 36px; color: black"></span>
+				<span class="badge directions pull-right">{{players[2].inFoot ? players[2].footCards : players[2].handCards}}</span>
+			</div>
+			<div class='col-xs-3' ng-class="{'waiting': !players[3].turn, 'playing': players[3].turn}">
+				<span ng-show="players[3].person" class="player-name">{{players[3].person.name}}</span>
+				<span ng-show="!players[3].person" class="player-name">Waiting</span>
+				<span ng-if="game.gameBegun && !players[3].inFoot" class="icon-hand" style="font-size: 36px; color: black"></span>
+				<span ng-if="game.gameBegun && players[3].inFoot" class="icon-foot" style="font-size: 36px; color: black"></span>
+				<span class="badge directions pull-right">{{players[3].inFoot ? players[3].footCards : players[3].handCards}}</span>
 			</div>
 		</div>
-		<div class="panel-close panel-default">
+		<div class="panel-body">
+			<div class="btn-group-vertical btn-group-xs btn-group-sm" role='group' style="float: left;">
+				<button type="button" class="btn btn-default" title='Sort by number' ng-click="sortByNumber()">
+					<span class="buttons">A-3</span>
+				</button>
+				<button type="button" class="btn btn-default" title='Sort by suit' ng-click="sortBySuit()">
+					<span class="suit buttons">&clubs;</span>-<span class="suit buttons">&spades;</span>
+				</button>
+				<button type="button" class="btn btn-default" title='Highlighed Score'">
+					<span class="buttons">{{control.highlightedScore}}</span>
+				</button>
+			</div>
+			<div ng-if="players[0].person" class="playingCards simpleCards" style="float: left;">
+				<ul class="hand" ng-if="!players[0].inFoot">
+					<li ng-repeat="card in players[0].handCards" ng-drop="true" 
+					ng-drop-success="onDropComplete($index, $data, $event)">
+						<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
+					</li>
+				</ul>
+				<ul class="hand" ng-if="players[0].inFoot">
+					<li ng-repeat="card in players[0].footCards" ng-drop="true" 
+					ng-drop-success="onDropComplete($index, $data, $event)">
+						<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="panel-body-close">
 			<div class="panel-body" ng-click="clickMeldBase()">
 				<div class='col-xs-4 col-sm-2 col-md-2'>
 					Score: {{teams[0].score}}
