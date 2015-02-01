@@ -9,6 +9,10 @@
 	font-size: 20px;
 }
 
+panel-body {
+	padding: 5px !important;
+}
+
 a {
   color: #00B7FF;
 }

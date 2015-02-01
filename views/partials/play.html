@@ -68,7 +68,7 @@
 				</ul>
 			</div>
 		</div>
-		<div class="panel-body-close">
+		<div class="panel-body">
 			<div class="panel-body" ng-click="clickMeldBase()">
 				<div class='col-xs-4 col-sm-2 col-md-2'>
 					Score: {{teams[0].score}}
@@ -100,13 +100,13 @@
 				</div>
 			</div>
 		</div>
-		<div class="panel-close panel-default">
+		<div class="panel panel-default">
 			<div class="row">
 				<div class='hidden-xs col sm-1 col-md-1'>
 				</div>
 				<div class='col-xs-3 col-sm-2 col-md-2'>
-					<div class="panel-close panel-default">
-						<div class="panel-body-close">
+					<div class="panel panel-default">
+						<div class="panel-body">
 							<div ng-if="piles[0].cards.length > 0" class="playingCards simpleCards">
 								<ul class="deck">
 									<li ng-repeat="card in [piles[0].cards.length] | maxCards">
@@ -118,8 +118,8 @@
 					</div>
 				</div>
 				<div class='col-xs-3 col-sm-2 col-md-2''>
-					<div class="panel-close panel-default">
-						<div class="panel-body-close">
+					<div class="panel panel-default">
+						<div class="panel-body">
 							<div ng-if="piles[1].cards.length > 0" class="playingCards simpleCards">
 								<ul class="deck">
 									<li ng-repeat="card in [piles[1].cards.length] | maxCards">
@@ -131,8 +131,8 @@
 					</div>
 				</div>
 				<div class='col-xs-3 col-sm-2 col-md-2''>
-					<div class="panel-close panel-default" ng-click="clickDiscardPile($event)">
-						<div class="panel-body-close">
+					<div class="panel panel-default" ng-click="clickDiscardPile($event)">
+						<div class="panel-body">
 							<div name='discardPile' id='discardPile' class="playingCards simpleCards">
 								<ul class="deck">
 									<div ng-repeat="card in piles[4].cards | maxDiscard">
@@ -148,8 +148,8 @@
 					</div>
 				</div>
 				<div class='col-xs-3 col-sm-2 col-md-2''>
-					<div class="panel-close panel-default">
-						<div class="panel-body-close">
+					<div class="panel panel-default">
+						<div class="panel-body">
 							<div ng-if="piles[2].cards.length > 0" class="playingCards simpleCards">
 								<ul class="deck">
 									<li ng-repeat="card in [piles[2].cards.length] | maxCards">
@@ -161,8 +161,8 @@
 					</div>
 				</div>
 				<div class='col-xs-3 col-sm-2 col-md-2''>
-					<div class="panel-close panel-default">
-						<div class="panel-body-close">
+					<div class="panel panel-default">
+						<div class="panel-body">
 							<div ng-if="piles[3].cards.length > 0" class="playingCards simpleCards">
 								<ul class="deck">
 									<li ng-repeat="card in [piles[3].cards.length] | maxCards">
