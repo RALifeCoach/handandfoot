@@ -22,22 +22,22 @@
 			<div class='col-xs-3' ng-class="{'waiting': !players[1].turn, 'playing': players[1].turn}">
 				<span ng-show="players[1].person" class="player-name">{{players[1].person.name}}</span>
 				<span ng-show="!players[1].person" class="player-name">Waiting</span>
-				<span ng-if="game.gameBegun && !players[1].inFoot" class="icon-hand" style="font-size: 36px; color: black"></span>
-				<span ng-if="game.gameBegun && players[1].inFoot" class="icon-foot" style="font-size: 36px; color: black"></span>
+				<span ng-if="game.gameBegun && !players[1].inFoot" class="icon-hand directions"></span>
+				<span ng-if="game.gameBegun && players[1].inFoot" class="icon-foot directions"></span>
 				<span class="badge directions pull-right">{{players[1].inFoot ? players[1].footCards : players[1].handCards}}</span>
 			</div>
 			<div class='col-xs-3' ng-class="{'waiting': !players[2].turn, 'playing': players[2].turn}">
 				<span ng-show="players[2].person" class="player-name">{{players[2].person.name}}</span>
 				<span ng-show="!players[2].person" class="player-name">Waiting</span>
-				<span ng-if="game.gameBegun && !players[2].inFoot" class="icon-hand" style="font-size: 36px; color: black"></span>
-				<span ng-if="game.gameBegun && players[2].inFoot" class="icon-foot" style="font-size: 36px; color: black"></span>
+				<span ng-if="game.gameBegun && !players[2].inFoot" class="icon-hand directions"></span>
+				<span ng-if="game.gameBegun && players[2].inFoot" class="icon-foot directions"></span>
 				<span class="badge directions pull-right">{{players[2].inFoot ? players[2].footCards : players[2].handCards}}</span>
 			</div>
 			<div class='col-xs-3' ng-class="{'waiting': !players[3].turn, 'playing': players[3].turn}">
 				<span ng-show="players[3].person" class="player-name">{{players[3].person.name}}</span>
 				<span ng-show="!players[3].person" class="player-name">Waiting</span>
-				<span ng-if="game.gameBegun && !players[3].inFoot" class="icon-hand" style="font-size: 36px; color: black"></span>
-				<span ng-if="game.gameBegun && players[3].inFoot" class="icon-foot" style="font-size: 36px; color: black"></span>
+				<span ng-if="game.gameBegun && !players[3].inFoot" class="icon-hand directions"></span>
+				<span ng-if="game.gameBegun && players[3].inFoot" class="icon-foot directions"></span>
 				<span class="badge directions pull-right">{{players[3].inFoot ? players[3].footCards : players[3].handCards}}</span>
 			</div>
 		</div>
