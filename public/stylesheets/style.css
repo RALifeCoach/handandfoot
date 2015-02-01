@@ -1,6 +1,8 @@
-body {
-  padding: 10px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.waiting {
+	background-color: #d5d5d5
+}
+.playing {
+	background-color: red
 }
 
 a {

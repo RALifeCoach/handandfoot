@@ -117,7 +117,7 @@ angular.module('handAndFoot')
         return function(input) {
 			var max = input[0] > 10 ? 10 : input[0];
             var result = [];
-            for (var i = 0; i <= max; i++)
+            for (var i = 0; i < max; i++)
                 result.push(i);
             return result;
         };
