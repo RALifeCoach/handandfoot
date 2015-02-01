@@ -22,7 +22,7 @@
     padding: .25em;
     margin: 0 .5em .5em 0;
     text-align: center;
-    font-size: 1.2em; /* @change: adjust this value to make bigger or smaller cards */
+    font-size: 1.5em; /* @change: adjust this value to make bigger or smaller cards */
     font-weight: normal;
     font-family: Arial, sans-serif;
     position: relative;
@@ -481,7 +481,7 @@
 .playingCards ul.hand,
 .playingcards ul.meld,
 .playingCards ul.deck {
-    height: 6em;
+    height: 7.5em;
 }
 .playingCards ul.hand li,
 .playingcards ul.meld li,
