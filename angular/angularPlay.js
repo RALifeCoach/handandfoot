@@ -52,21 +52,22 @@ angular.module('handAndFoot')
 			// listen for game update message
 			$scope.$on('socket:gameUpdate', function(event, data) {
 				console.log('game update');
-				// reset spinner
-				$rootScope.showSpinner = false;
 				
 				// load player data - do not load card if it isn't your turn
 				var wasTurn = false;
 				if (!$scope.players 
 				|| $scope.game.round !== data.game.round
-				|| $scope.game.gameBegun !== data.game.gameBegun)
+				|| $scope.game.gameBegun !== data.game.gameBegun) {
 					$scope.players = data.players;
-				else {
+					player.resetHighlight($scope.players[0], $scope);
+				} else {
 					wasTurn = $scope.players[0].turn;
-					if (data.players[0].myUpdate)
+					if (data.players[0].myUpdate) {
 						$scope.players[0] = data.players[0];
-					else
+						player.resetHighlight($scope.players[0], $scope);
+					} else {
 						$scope.players[0].turn = data.players[0].turn;
+					}
 					$scope.players[1] = data.players[1];
 					$scope.players[2] = data.players[2];
 					$scope.players[3] = data.players[3];
@@ -95,9 +96,9 @@ angular.module('handAndFoot')
 
 				$scope.undo = [];
 				
+				// reset spinner
+				$rootScope.showSpinner = false;
 				$scope.control.callInProgress = false;
-				
-				player.resetHighlight($scope.players[0], $scope);
 			});
 
 			// listen for game update message
@@ -315,7 +316,6 @@ angular.module('handAndFoot')
 				}
 
 				player.drawCard($scope, pileIndex);
-				$rootScope.showSpinner = true;
 				player.clearUndo($scope);
 			};
 			
@@ -393,7 +393,6 @@ angular.module('handAndFoot')
 						
 						// discard the selected card and end the turn
 						var cardIndex = cards.indexOf(selectedCards[0]);
-						$rootScope.showSpinner = true;
 						player.discardCard($scope, cardIndex);
 						player.clearUndo($scope);
 						break;

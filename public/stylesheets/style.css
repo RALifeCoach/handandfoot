@@ -14,6 +14,10 @@
 	padding-bottom: 8px !important;
 }
 
+.panel {
+	margin-bottom: 2px !important;
+}
+
 .directions {
 	font-size: 20px;
 	color: black

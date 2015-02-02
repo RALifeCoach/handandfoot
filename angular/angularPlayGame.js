@@ -251,6 +251,7 @@ angular.module('handAndFoot')
 				};
 				chatSocket.emit('updateGame', data);
 				scope.control.callInProgress = true;
+				$rootScope.showSpinner = true;
 				
 				for (var messageIndex = 0; messageIndex < scope.control.gameMessages.length; messageIndex++)
 					chatSocket.emit('gameMessage', { message: scope.control.gameMessages[messageIndex] });
