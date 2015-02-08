@@ -405,10 +405,7 @@ angular.module('handAndFoot')
 			// click on the meld base to start a new meld
 			$scope.clickMeldBase = function() {
 				console.log('pile meld base');
-				if (!$scope.players[0].turn
-				|| $scope.control.callInProgress)
-					return;
-				
+					
 				player.updateUndo($scope);
 
 				var wasInFoot = $scope.players[0].inFoot;
@@ -417,7 +414,10 @@ angular.module('handAndFoot')
 					hasDrawnFromPile = true;
 				$scope.message = melds.clickMeld(false, $scope);
 				if ($scope.message) {
-					$scope.undo.pop();
+					if ($scope.message === 'ignore')
+						$scope.message = "";
+					else
+						$scope.undo.pop();
 					return;
 				}
 				
@@ -449,9 +449,6 @@ angular.module('handAndFoot')
 				event.stopPropagation();
 
 				console.log('click meld');
-				if (!$scope.players[0].turn
-				|| $scope.control.callInProgress)
-					return;
 
 				player.updateUndo($scope);
 

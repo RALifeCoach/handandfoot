@@ -379,7 +379,7 @@ angular.module('handAndFoot')
 			o.makeMelds = function(clickedMeld, scope) {
 				cardArrays.buildCardArrays(scope.players[0]);
 				if (cardArrays.selectedCards.length === 0)
-					return "Select one or more cards for a meld.";
+					return "ignore";
 
 				var cards = cardArrays.selectedCards;
 
@@ -415,11 +415,11 @@ angular.module('handAndFoot')
 
 			o.clickMeld = function(meld, scope) {
 				scope.message = false;
-				if (!scope.players[0].turn)
-					return;
-				
-				if (scope.control.turnState !== 'play')
-					return "Draw cards before playing.";
+
+				if (!scope.players[0].turn
+				|| scope.control.callInProgress
+				|| scope.control.turnState !== 'play')
+					return 'ignore';
 				
 				var message = this.makeMelds(meld, scope);
 				if (message)
