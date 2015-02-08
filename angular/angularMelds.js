@@ -627,7 +627,6 @@ angular.module('handAndFoot')
 						suitOrder.push(2);
 						suitOrder.push(3);
 					} else {
-						suitOrder.push(0);
 						suitOrder.push(3);
 					}	
 				} else if (cardArrays.suits[1].cards.length > 0
@@ -640,7 +639,6 @@ angular.module('handAndFoot')
 						suitOrder.push(3);
 						suitOrder.push(2);
 					} else {
-						suitOrder.push(1);
 						suitOrder.push(2);
 					}
 				} else {
