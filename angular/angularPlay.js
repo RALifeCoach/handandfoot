@@ -59,14 +59,18 @@ angular.module('handAndFoot')
 				|| $scope.game.round !== data.game.round
 				|| $scope.game.gameBegun !== data.game.gameBegun) {
 					$scope.players = data.players;
+					$scope.teams = data.teams;
 					player.resetHighlight($scope.players[0], $scope);
 				} else {
 					wasTurn = $scope.players[0].turn;
 					if (data.players[0].myUpdate) {
+						$scope.teams = data.teams;
 						$scope.players[0] = data.players[0];
 						player.resetHighlight($scope.players[0], $scope);
 					} else {
 						$scope.players[0].turn = data.players[0].turn;
+						if (!$scope.players[0].turn)
+							$scope.teams = data.teams;
 					}
 					$scope.players[1] = data.players[1];
 					$scope.players[2] = data.players[2];
@@ -78,7 +82,6 @@ angular.module('handAndFoot')
 					audio.play();
 				}
 				$scope.piles = data.game.piles;
-				$scope.teams = data.teams;
 				$scope.results.yourTeam = data.results[0];
 				$scope.results.theirTeam = data.results[1];
 				$scope.teams[0].basePoints = melds.calculateBase($scope.teams[0]);
@@ -489,8 +492,10 @@ angular.module('handAndFoot')
 				melds.sortByNumber($scope.players[0]);
 
 				player.resetHighlight($scope.players[0], $scope);
-				if ($scope.control.turnState !== 'play')
+				if (!$scope.players[0].turn) {
 					player.sendUpdate($scope);
+					$rootScope.showSpinner = false;
+				}
 			};
 
 			$scope.sortBySuit = function() {
@@ -500,8 +505,10 @@ angular.module('handAndFoot')
 				melds.sortBySuit($scope.players[0]);
 
 				player.resetHighlight($scope.players[0], $scope);
-				if ($scope.control.turnState !== 'play')
+				if (!$scope.players[0].turn) {
 					player.sendUpdate($scope);
+					$rootScope.showSpinner = false;
+				}
 			};
 
 			$scope.applyUndo = function() {
