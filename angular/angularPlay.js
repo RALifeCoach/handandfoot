@@ -457,7 +457,10 @@ angular.module('handAndFoot')
 					hasDrawnFromPile = true;
 				$scope.message = melds.clickMeld(meld, $scope);
 				if ($scope.message) {
-					$scope.undo.pop();
+					if ($scope.message === 'ignore')
+						$scope.message = "";
+					else
+						$scope.undo.pop();
 					return;
 				}
 				
