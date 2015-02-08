@@ -7,9 +7,10 @@ Array.prototype.move = function(fromIndex, toIndex) {
 
 angular.module('handAndFoot')
 	.factory('playGame', ['$http', 
+		'$rootScope',
 		'chatSocket',
 		'sharedProperties',
-		function($http, chatSocket, sharedProperties){
+		function($http, $rootScope, chatSocket, sharedProperties){
 			var playGame = { 
 				gameId: sharedProperties.getGameId(),
 				person: sharedProperties.getPerson(),
