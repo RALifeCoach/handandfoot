@@ -38,10 +38,12 @@ angular.module('handAndFoot')
 		'$location',
 		'$cookieStore',
 		'gameFactory',
+		'helpFactory',
+		'addGameService',
 		'sharedProperties',
 		'gamePasswordService',
 		'hintsService',
-		function($scope, $location, $cookieStore, games, sharedProperties, gamePasswordService, hintsService){
+		function($scope, $location, $cookieStore, games, helpFactory, addGameService, sharedProperties, gamePasswordService, hintsService){
 			// if user not set then go to login
 			$scope.person = sharedProperties.getPerson();
 			$scope.games = [];
@@ -65,17 +67,17 @@ angular.module('handAndFoot')
 					hintsService.showModal(games.hints);
 				});
 			}
+
+			$scope.showHelp = function() {
+				console.log('show help');
+				helpFactory.showHelp();
+			};
 			
 			// add a new game
 			$scope.addGame = function() {
-				if ($scope.name === '') 
-					return;
-				games.create({
-					name: $scope.name,
-					password: $scope.password
+				addGameService.showModal(function(game) {
+					games.create(game);
 				});
-				$scope.name = '';
-				$scope.password = '';
 			};
 
 			// join an existing game

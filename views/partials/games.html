@@ -2,9 +2,18 @@
 </div>
 <div class='col-md-6'>
 	<div class="page-header">
-		<h3>
-			Games Awaiting Players - {{person.name}}
-		</h3>
+		<div class="row">
+			<div class="col-xs-9">
+				<h3>
+					Games Awaiting Players - {{person.name}}
+				</h3>
+			</div>
+			<div class="col-xs-3">
+				<button type="button" class="btn btn-default" ng-click="showHelp()">
+					<span class="glyphicon glyphicon-question-sign" title="Rules" style="font-size: 36px"></span>
+				</button>
+			</div>
+		</div>
 	</div>
 
 	<div ng-repeat="game in games | orderBy:'-startDate'">
@@ -52,15 +61,7 @@
 		</span>
 	</div>
 
-	<form ng-submit="addGame()" style="margin-top:30px;">
-		<h3>Add a new game</h3>
-
-		<div class="form-group">
-			<input type="text" class="form-control" placeholder="name" ng-model="name"></input>
-		</div>
-		<div class="form-group">
-			<input type="text" class="form-control" placeholder="password" ng-model="password"></input>
-		</div>
-		<button type="submit" class="btn btn-primary">Post</button>
-	</form>
+	<div>
+		<a ng-click="addGame()"><h3>Add a new game</h3></a>
+	</div>
 </div>
