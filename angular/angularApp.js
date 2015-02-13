@@ -94,6 +94,7 @@ angular.module('handAndFoot')
 			playSocket.forward('endHandQuestion');
 			playSocket.forward('endHandResponse');
 			playSocket.forward('handResults');
+			playSocket.forward('refreshGames');
 			playSocket.forward('error');
 			return playSocket;
 		}

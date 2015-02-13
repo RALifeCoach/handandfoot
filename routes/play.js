@@ -1,5 +1,6 @@
 function Play(io, playGame, mapper) {
 	io.on('connection', function (socket) {
+		console.log('play connection');
 		// message handler for the chat message
 		socket.on('sendChat', function (data) {
 			console.log('recieved chat');
@@ -62,6 +63,8 @@ function Play(io, playGame, mapper) {
 				var connectedGame = playGame.findCreateConnectedGame(socket, data);
 				if (!connectedGame)
 					return;
+
+				io.sockets.emit('refreshGames');
 	
 				// if the game has 4 players then begin the game
 				if (gameVM.playersFull && !gameVM.gameBegun) {

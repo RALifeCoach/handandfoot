@@ -5,7 +5,11 @@ var Person = mongoose.model('Person');
 var Hint = mongoose.model('Hint');
 var HelpText = mongoose.model('HelpText');
 
-module.exports = function(mapper) {
+module.exports = function(io, mapper) {
+	io.on('connection', function (socket) {
+		console.log('game connection');
+	});
+	
 	var router = express.Router();
 	
 	router.post('/getAll', function(req, res, next) {
@@ -48,13 +52,13 @@ module.exports = function(mapper) {
 				console.log(err);
 				return next(err);
 			}
-	console.log(help);
+
 			res.json(help[0]);
 		});
 	});
 
 	router.post('/', function(req, res, next) {
-		var game = new Game(req.body);
+		var game = new Game(req.body.game);
 		var player = { person: [], direction: '', handCards: [], footCards: []};
 		var team = { score: 0, players: [player, player]};
 		
@@ -75,6 +79,9 @@ module.exports = function(mapper) {
 				if(err){ return next(err); }
 
 				res.json(gameVM);
+
+				// broadcast to all players
+				io.sockets.emit('refreshGames');
 			});
 		});
 	});

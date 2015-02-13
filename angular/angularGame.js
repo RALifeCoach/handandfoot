@@ -43,7 +43,8 @@ angular.module('handAndFoot')
 		'sharedProperties',
 		'gamePasswordService',
 		'hintsService',
-		function($scope, $location, $cookieStore, games, helpFactory, addGameService, sharedProperties, gamePasswordService, hintsService){
+		'chatSocket',
+		function($scope, $location, $cookieStore, games, helpFactory, addGameService, sharedProperties, gamePasswordService, hintsService, chatSocket){
 			// if user not set then go to login
 			$scope.person = sharedProperties.getPerson();
 			$scope.games = [];
@@ -54,6 +55,13 @@ angular.module('handAndFoot')
 			// get all games awaiting players
 			games.getAll( {personId: $scope.person._id} );
 			$scope.games = games.games;
+
+			// listen for game update message
+			$scope.$on('socket:refreshGames', function(event) {
+				console.log('game update');
+				
+				games.getAll( {personId: $scope.person._id} );
+			});
 
 			$scope.$on('$routeChangeSuccess', function () {
 				// get all games awaiting players
@@ -76,12 +84,13 @@ angular.module('handAndFoot')
 			// add a new game
 			$scope.addGame = function() {
 				addGameService.showModal(function(game) {
-					games.create(game);
+					games.create({ personId: $scope.person._id, game: game });
 				});
 			};
 
 			// join an existing game
 			$scope.joinGame = function(game, direction, existingPlayer) {
+				console.log('join game ' + direction);
 				if (!existingPlayer && game.password && game.password !== '') {
 					// show the model to get the password
 					var modalOptions = {

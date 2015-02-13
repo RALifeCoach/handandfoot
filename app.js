@@ -26,16 +26,14 @@ var gameMapper = new GameVM.GameVM();
 var PersonVM = require('./viewmodels/PersonVM');
 var personMapper = new PersonVM.PersonVM();
 
-// include routes
-var people = require('./routes/person')(personMapper);
-var games = require('./routes/game')(gameMapper);
-
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-// for socket communications
-var socket = require('./routes/play')(io, playGame, gameMapper);
+// include routes
+var people = require('./routes/person')(personMapper);
+var games = require('./routes/game')(io, gameMapper);
+var play = require('./routes/play')(io, playGame, gameMapper);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

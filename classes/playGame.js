@@ -167,8 +167,9 @@ PlayGame.prototype.newConnectedPlayer = function(socket, data) {
 		if (this.connectedPlayers[playerIndex].personId.toString() === data.personId.toString()) {
 			console.log(this.connectedPlayers[playerIndex]);
 			console.log('player already playing');
-			socket.emit('joinError', { error: 'Player already playing a game' });
-			return false;
+			
+			this.connectedPlayers.splice(playerIndex, 1);
+			break;
 		}
 	}
 				
