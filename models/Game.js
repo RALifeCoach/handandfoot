@@ -1,12 +1,13 @@
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var OptionsSchema = new mongoose.Schema({
+var OptionsSchema = new Schema({
 	teams: Number,
 	runScores: [ 
-		new mongoose.Schema({
+		{
 			score: Number,
 			sevenRule: Boolean
-		})
+		}
 	],
 	cardScores: [ Number ],
 	redThreeScore: Number,
@@ -22,49 +23,6 @@ var OptionsSchema = new mongoose.Schema({
 	discardPickupCount: Number
 });
 
-var CardSchema = new mongoose.Schema({
-	suit: Number,
-	number: Number
-});
-
-var PileSchema = new mongoose.Schema({
-	direction: String,
-	cards: [ CardSchema ]
-});
-
-var MeldSchema = new mongoose.Schema({
-	type: String,
-	number: Number,
-	isComplete: { type: Boolean, default: false },
-	cards: [ CardSchema ]
-});
-
-var PlayerSchema = new mongoose.Schema({
-	person: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Person' }],
-	direction: String,
-	connected: { type: Boolean, default: false },
-	handCards: [ CardSchema ],
-	footCards: [ CardSchema ]
-});
-
-var TeamSchema = new mongoose.Schema({
-	score: Number,
-	melds: [ MeldSchema ],
-	players: [ PlayerSchema ]
-});
-
-var ScoresSchema = new mongoose.Schema({
-	baseScore: Number,
-	cardsScore: Number,
-	priorScore: Number
-});
-
-var RoundSchema = new mongoose.Schema({
-	round: Number,
-	nsTeam: [ ScoresSchema ],
-	ewTeam: [ ScoresSchema ],
-});
-
 var GameSchema = new mongoose.Schema({
 	name: String,
 	password: String,
@@ -75,12 +33,49 @@ var GameSchema = new mongoose.Schema({
 	turn: { type: Number, default: 0},
 	turnState: { type: String, default: ''},
 	drawCards: { type: Number, default: 0}, // the number of cards to draw after playing red threes
-	nsTeam: [ TeamSchema ],
-	ewTeam: [ TeamSchema ],
-	piles: [ PileSchema ],
-	roundsPlayed: [ RoundSchema],
+	teams: [{
+		score: Number,
+		melds: {
+			type: String,
+			number: Number,
+			isComplete: { type: Boolean, default: false },
+			cards: [ {
+				suit: Number,
+				number: Number
+			}]
+		},
+		players: [{
+			personOffset: Number,
+			direction: String,
+			connected: { type: Boolean, default: false },
+			handCards: [{
+				suit: Number,
+				number: Number
+			}],
+			footCards: [{
+				suit: Number,
+				number: Number
+			}]
+		}]
+	}],
+	piles: [{
+		direction: String,
+		cards: [{
+			suit: Number,
+			number: Number
+		}]
+	}],
+	roundsPlayed: [{
+		round: Number,
+		teams: [{
+			baseScore: Number,
+			cardsScore: Number,
+			priorScore: Number
+		}]
+	}],
 	gameBegun: { type: Boolean, default: false },
-	gameComplete: { type: Boolean, default: false }
+	gameComplete: { type: Boolean, default: false },
+	people: [ type: type: Schema.Types.ObjectId, ref: 'Person' }]
 });
 
 mongoose.model('Game', GameSchema);

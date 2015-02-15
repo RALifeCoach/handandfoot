@@ -1,13 +1,14 @@
+'use strict';
 var mongoose = require('mongoose');
 var Person = mongoose.model('Person');
-var Game = mongoose.model('Game');
+var gameIo = require('../classes/gameDL');
 
 var GameVM = function() {
 	var cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 	var suitsCard = ['clubs', 'diams', 'hearts', 'spades', 'joker'];
-	this.loadPlayer = function(player, callback) {
+	this.loadPlayer = function(player) {
 		if (player.direction === '')
-			return callback(null, false);
+			return false;
 
 		var playerVM = {
 				person: {
@@ -22,16 +23,9 @@ var GameVM = function() {
 		
 		playerVM.inFoot = playerVM.handCards.length === 0;
 		
-		var query = Person.findById(player.person[0]);
-
-		query.exec(function (err, person){
-			if (err) { return callback(err); }
-			if (!person) { return callback(new Error("can't find person")); }
-
-			playerVM.person.name = person.name;
-
-			callback(null, playerVM);
-		});
+		playerVM.person.name = player.person.name;
+		
+		return playerVM;
 	}
 
 	// move melds from game to gameVM
@@ -184,37 +178,6 @@ var GameVM = function() {
 		return updatePlayers;
 	}
 
-	// load the player names
-	this.loadPlayers = function(game, gameVM, callback) {
-		var _this = this;
-		_this.loadPlayer(game.nsTeam[0].players[0], function(err, player){
-			if (err) return callback(err);
-			gameVM.players.push(player);
-
-			_this.loadPlayer(game.ewTeam[0].players[0], function(err, player){
-				if (err) return callback(err);
-				gameVM.players.push(player);
-
-				_this.loadPlayer(game.nsTeam[0].players[1], function(err, player){
-					if (err) return callback(err);
-					gameVM.players.push(player);
-
-					_this.loadPlayer(game.ewTeam[0].players[1], function(err, player){
-						if (err) return callback(err);
-						gameVM.players.push(player);
-
-						var players = 0;
-						for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++)
-							if (gameVM.players[playerIndex])
-								players++;
-						gameVM.playersFull = players === 4;
-
-						callback(null);
-					});
-				});
-			});
-		});
-	}
 	// score the game
 	this.scoreTheGame = function(game, winningTeam) {
 		var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 20];
@@ -642,6 +605,17 @@ GameVM.prototype.mapToVM = function(game, callback) {
 		gameComplete: game.gameComplete,
 		results: this.loadResults(game.roundsPlayed)
 	};
+
+	gameVM.players.push(this.loadPlayer(game.nsTeam[0].players[0]));
+	gameVM.players.push(this.loadPlayer(game.nsTeam[0].players[1]));
+	gameVM.players.push(this.loadPlayer(game.ewTeam[0].players[0]));
+	gameVM.players.push(this.loadPlayer(game.ewTeam[0].players[1]));
+
+	var players = 0;
+	for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++)
+		if (gameVM.players[playerIndex])
+			players++;
+	gameVM.playersFull = players === 4;
 	
 	if (gameVM.gameBegun) {
 		var _this = this;
@@ -657,31 +631,20 @@ GameVM.prototype.mapToVM = function(game, callback) {
 			this.endTheHand(game);
 			
 			// save the game
-			game.save(function(err, savedGame){
-				if (err) { 
-					console.log('error saving game');
-					console.log(err);
-					console.log(game);
-					console.log(game.nsTeam);
-					console.log(game.ewTeam);
+			gameIo.save(game, function(err, savedGame){
+				if (err)
 					return callback(err); 
-				}
-
-				_this.loadPlayers(game, gameVM, function(err) {
-					callback(err, gameVM);
-				});
+				callback(err, gameVM);
 			});
+			return;
 		}
 	}
-
-	this.loadPlayers(game, gameVM, function(err) {
-		callback(err, gameVM);
-	});
+	callback(null, gameVM);
 };
 
 GameVM.prototype.getAllIncompleteGames = function(personId, callback) {
 	var _this = this;
-	Game.find().where({gameComplete: false}).exec(function(err, games){
+	gameIo.getIncompleteGames(function(err, games){
 		if(err)
 			return callback(err);
 
@@ -716,18 +679,9 @@ GameVM.prototype.getAllIncompleteGames = function(personId, callback) {
 };
 	
 GameVM.prototype.addPlayer = function(gameId, personId, direction, callback) {
-	var query1 = Game.findById(gameId);
-	query1.exec(function (err, game){
-		if (err) {
-			console.log(err);
-			console.log(gameId);
-			return callback(err); 
-		}
-		if (!game) { 
-			console.log("can't find game");
-			console.log(gameId);
-			return callback(new Error("can't find game")); 
-		}
+	gameIo.getGameById(gameId, function (err, game){
+		if (err) 
+			return callback(err);
 		
 		// create the new player
 		var player = {};
@@ -753,15 +707,9 @@ GameVM.prototype.addPlayer = function(gameId, personId, direction, callback) {
 			player.person.push(personId);
 	
 		// save the game
-		game.save(function(err, savedGame){
-			if (err) { 
-				console.log('error saving game');
-				console.log(err);
-				console.log(game);
-				console.log(game.nsTeam);
-				console.log(game.ewTeam);
+		gameIo.save(game, function(err, savedGame){
+			if (err)
 				return callback(err); 
-			}
 
 			// recreate the gameVM from the new DB game
 			var mapper = new GameVM();
@@ -779,18 +727,9 @@ GameVM.prototype.addPlayer = function(gameId, personId, direction, callback) {
 }
 
 GameVM.prototype.removePlayer = function(gameId, personId, callback) {
-	var query1 = Game.findById(gameId);
-	query1.exec(function (err, game){
-		if (err) {
-			console.log(err);
-			console.log(gameId);
-			return callback(err); 
-		}
-		if (!game) { 
-			console.log("can't find game");
-			console.log(gameId);
-			return callback(new Error("can't find game")); 
-		}
+	gameIo.getGameById(gameId, function (err, game){
+		if (err) 
+			return callback(err);
 		
 		// create the existing player
 		var player = false;
@@ -814,15 +753,9 @@ GameVM.prototype.removePlayer = function(gameId, personId, callback) {
 		player.connected = false;
 	
 		// save the game
-		game.save(function(err, savedGame){
-			if (err) { 
-				console.log('error saving game');
-				console.log(err);
-				console.log(game);
-				console.log(game.nsTeam);
-				console.log(game.ewTeam);
+		gameIo.save(game, function(err, savedGame){
+			if (err)
 				return callback(err); 
-			}
 
 			// recreate the gameVM from the new DB game
 			var mapper = new GameVM();
@@ -842,18 +775,9 @@ GameVM.prototype.removePlayer = function(gameId, personId, callback) {
 GameVM.prototype.startNewGame = function(gameId, callback) {
 	var _this = this;
 	// find game from DB
-	var query1 = Game.findById(gameId);
-	query1.exec(function (err, game){
-		if (err) {
-			console.log(err);
-			console.log(gameId);
-			return callback(err); 
-		}
-		if (!game) { 
-			console.log("can't find game");
-			console.log(gameId);
-			return callback(new Error("can't find game")); 
-		}
+	gameIo.getGameById(gameId, function (err, game){
+		if (err) 
+			return callback(err);
 		
 		_this.dealNewHand(game);
 		
@@ -865,15 +789,9 @@ GameVM.prototype.startNewGame = function(gameId, callback) {
 		game.turnState = "draw1";
 		
 		// save the game
-		game.save(function(err, savedGame){
-			if (err) { 
-				console.log('error saving game');
-				console.log(err);
-				console.log(game);
-				console.log(game.nsTeam);
-				console.log(game.ewTeam);
+		gameIo.save(game, function(err, savedGame){
+			if (err)
 				return callback(err); 
-			}
 
 			// recreate the gameVM from the new DB game
 			var mapper = new GameVM();
@@ -894,18 +812,9 @@ GameVM.prototype.startNewGame = function(gameId, callback) {
 GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, action, control, callback) {
 	var _this = this;
 	// find game from DB
-	var query1 = Game.findById(gameId);
-	query1.exec(function (err, game){
-		if (err) {
-			console.log(err);
-			console.log(gameId);
-			return callback(err); 
-		}
-		if (!game) { 
-			console.log("can't find game");
-			console.log(gameId);
-			return callback(new Error("can't find game")); 
-		}
+	gameIo.getGameById(gameId, function (err, game){
+		if (err) 
+			return callback(err);
 
 		// get the player and team to be updated
 		var player = false;
@@ -1018,15 +927,9 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 		}
 		
 		// save the game
-		game.save(function(err, savedGame){
-			if (err) { 
-				console.log('error saving game');
-				console.log(err);
-				console.log(game);
-				console.log(game.nsTeam);
-				console.log(game.ewTeam);
+		gameIo.save(game, function(err, savedGame){
+			if (err)
 				return callback(err); 
-			}
 
 			// if the other players do not need to be notified then callback with no gameVM
 			if (!updatePlayers)
@@ -1058,30 +961,17 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 GameVM.prototype.endGame = function(gameId, personId, callback) {
 	var _this = this;
 	// find game from DB
-	var query1 = Game.findById(gameId);
-	query1.exec(function (err, game){
-		if (err) {
-			console.log(err);
-			console.log(gameId);
-			return callback(err); 
-		}
-		if (!game) { 
-			console.log("can't find game");
-			console.log(gameId);
-			return callback(new Error("can't find game")); 
-		}
+	gameIo.getGameById(gameId, function (err, game){
+		if (err) 
+			return callback(err);
 
 		_this.scoreTheGame(game, null);
 		_this.endTheGame(game);
 		
 		// save the game
-		game.save(function(err, savedGame){
-			if (err) { 
-				console.log('error saving game');
-				console.log(err);
-				console.log(game);
+		gameIo.save(game, function(err, savedGame){
+			if (err)
 				return callback(err); 
-			}
 
 			// recreate the gameVM from the new DB game
 			var mapper = new GameVM();
