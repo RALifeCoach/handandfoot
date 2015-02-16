@@ -14,12 +14,16 @@ angular.module('handAndFoot')
 			var playGame = { 
 				gameId: sharedProperties.getGameId(),
 				person: sharedProperties.getPerson(),
-				direction: sharedProperties.getDirection()
+				position: sharedProperties.getPosition()
 			};
 			
 			// join game message
 			playGame.joinGame = function() {
-				chatSocket.emit('joinGame', {gameId: this.gameId, personId: this.person._id, name: this.person.name, direction: this.direction});
+				chatSocket.emit('joinGame', {
+					gameId: this.gameId, 
+					personId: this.person._id, 
+					name: this.person.name, 
+					position: this.position});
 			}
 			
 			// leave the game
@@ -39,6 +43,7 @@ angular.module('handAndFoot')
 
 			// reset any highlighted flags
 			playGame.resetHighlight = function(player, scope) {
+console.log(player);
 				for (var cardIndex = 0; cardIndex < player.handCards.length; cardIndex++) {
 					// do not reset if it is drawn from the discard pile
 					if (!scope.drawFromDiscard.topCard

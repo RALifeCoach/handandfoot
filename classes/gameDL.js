@@ -19,13 +19,14 @@ module.exports = (function() {
 						console.log('cannot find game with id: ' + gameId);
 						return callback(new Error('Cannot find game with id: ' + gameId));
 					}
-console.log(game.people);
+
 					callback(null, game);
 				});
 		}
 		, getIncompleteGames: function(callback) {
 			Game
 				.find()
+				.populate('people')
 				.where({gameComplete: false})
 				.exec(function(err, games){
 					if (err) {

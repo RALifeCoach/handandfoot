@@ -11,7 +11,7 @@ var http = require('http');
 if (process.env.DB_CONNECT)
 	mongoose.connect(process.env.DB_CONNECT);
 else
-	mongoose.connect('mongodb://localhost/handandfoot');
+	mongoose.connect('mongodb://localhost/handf');
 // include models
 require('./models/Person');
 require('./models/Game');

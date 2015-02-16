@@ -89,8 +89,8 @@ angular.module('handAndFoot')
 			};
 
 			// join an existing game
-			$scope.joinGame = function(game, direction, existingPlayer) {
-				console.log('join game ' + direction);
+			$scope.joinGame = function(game, position, existingPlayer) {
+				console.log('join game ' + position);
 				if (!existingPlayer && game.password && game.password !== '') {
 					// show the model to get the password
 					var modalOptions = {
@@ -101,13 +101,13 @@ angular.module('handAndFoot')
 
 					gamePasswordService.showModal({}, modalOptions, game.password).then(function (result) {
 						sharedProperties.setGameId(game._id);
-						sharedProperties.setDirection(direction);
+						sharedProperties.setPosition(position);
 
 						$location.path('/play');
 					});
 				} else {
 					sharedProperties.setGameId(game._id);
-					sharedProperties.setDirection(direction);
+					sharedProperties.setPosition(position);
 
 					$location.path("/play");
 				}

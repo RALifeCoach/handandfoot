@@ -30,15 +30,19 @@ var GameSchema = new mongoose.Schema({
 	lastPlayedDate: { type: Date, default: Date.now },
 	round: { type: Number, default: 0},
 	roundStartingPlayer: { type: Number, default: 0},
+	currentPlayer: { type: Number, default: 0 },
+	gameBegun: { type: Boolean, default: false },
+	gameComplete: { type: Boolean, default: false },
 	turn: { type: Number, default: 0},
 	turnState: { type: String, default: ''},
 	drawCards: { type: Number, default: 0}, // the number of cards to draw after playing red threes
 	teams: [{
 		score: Number,
+		redThrees: Number,
 		melds: {
 			type: String,
 			number: Number,
-			isComplete: { type: Boolean, default: false },
+			isComplete: Boolean,
 			cards: [ {
 				suit: Number,
 				number: Number
@@ -46,8 +50,8 @@ var GameSchema = new mongoose.Schema({
 		},
 		players: [{
 			personOffset: Number,
-			direction: String,
-			connected: { type: Boolean, default: false },
+			position: Number,
+			connected: Boolean,
 			handCards: [{
 				suit: Number,
 				number: Number
@@ -56,26 +60,27 @@ var GameSchema = new mongoose.Schema({
 				suit: Number,
 				number: Number
 			}]
+		}],
+		results: [{
+			round: Number,
+			baseScore: Number,
+			priorScore: Number
 		}]
 	}],
-	piles: [{
-		direction: String,
+	drawPiles: [{
 		cards: [{
 			suit: Number,
 			number: Number
 		}]
 	}],
-	roundsPlayed: [{
-		round: Number,
-		teams: [{
-			baseScore: Number,
-			cardsScore: Number,
-			priorScore: Number
+	discardPile: {
+		cards: [{
+			suit: Number,
+			number: Number
 		}]
-	}],
-	gameBegun: { type: Boolean, default: false },
-	gameComplete: { type: Boolean, default: false },
-	people: [ type: type: Schema.Types.ObjectId, ref: 'Person' }]
+	},
+	numberOfPlayers: Number,
+	people: [ {type: Schema.Types.ObjectId, ref: 'Person' }]
 });
 
 mongoose.model('Game', GameSchema);

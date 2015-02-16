@@ -59,30 +59,48 @@ module.exports = function(io, mapper) {
 
 	router.post('/', function(req, res, next) {
 		var game = new Game(req.body.game);
-		var player = { person: [], direction: '', handCards: [], footCards: []};
-		var team = { score: 0, players: [player, player]};
+		game.numberOfPlayers = 4;
+		for (var teamIndex = 0; teamIndex < 2; teamIndex++) {
+			var team = { 
+				score: 0, 
+				redThrees: 0, 
+				melds: [], 
+				players: [],
+				results: []
+			};
+			for (var personIndex = 0; personIndex < 2; personIndex++) {
+				team.players.push({ 
+					personOffset: -1, 
+					position: personIndex * 2 + teamIndex, 
+					connected: false, 
+					handCards: [], 
+					footCards: []
+				});
+			}
+			game.teams.push(team);
+		}
 		
-		game.nsTeam.push(team);
-		game.ewTeam.push(team);
-		game.piles = [
-			{ direction: 'North', cards: [] },
-			{ direction: 'East', cards: [] },
-			{ direction: 'South', cards: [] },
-			{ direction: 'West', cards: [] },
-			{ direction: 'Discard', cards: [] }
+		game.drawPiles = [
+			{ cards: [] },
+			{ cards: [] },
+			{ cards: [] },
+			{ cards: [] }
 		];
+		game.discardPile = {
+			cards: []
+		};
+		game.people = [];
 
-		mapper.mapToVM(game, function(err, gameVM) {
-			if (err) 
-				return next(err);
-			game.save(function(err, game){
-				if(err){ return next(err); }
+		game.save(function(err, game){
+			if (err) { 
+				console.log(err.stack);
+				return next(err); 
+			}
 
-				res.json(gameVM);
+			res.json(mapper.mapToVM(game));
 
-				// broadcast to all players
-				io.sockets.emit('refreshGames');
-			});
+			// broadcast to all players
+			io.sockets.emit('refreshGames');
 		});
 	});
 

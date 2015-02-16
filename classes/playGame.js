@@ -2,37 +2,41 @@ var ConnectedGame = function(pGameId) {
 	this.gameId = pGameId;
 	this.sockets = [];
 }
-ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, results) {
+ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, showResults) {
 	var playersVM = [];
-	
-	for (playerIndex in gameVM.players) {
-		if (!gameVM.players[playerIndex])
-			playersVM.push({ turn: false, person: false });
+	for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
+		if (gameVM.players[playerIndex].personOffset === -1)
+			playersVM.push({ 
+				turn: false, 
+				person: false, 
+				position: gameVM.players[playerIndex].position 
+			});
 		else
 			playersVM.push(gameVM.players[playerIndex]);
 	}
 	gameVM.players = [];
 
-	var teamsVM = [ gameVM.nsTeam, gameVM.ewTeam ];
-	gameVM.nsTeam = false;
-	gameVM.ewTeam = false;
-	
-	var nsResults = gameVM.results.nsResults;
-	var ewResults = gameVM.results.ewResults;
-	gameVM.results = false;
-	var resultsVM = [];
+	var teamsVM = [];
+	for (var teamIndex = 0; teamIndex < gameVM.teams.length; teamIndex++)
+		teamsVM.push(gameVM.teams[teamIndex]);
+	gameVM.teams = [];
 	
 	// create player objects used to send basic information (no card details)
 	var otherPlayers = [];
-	for (playerIndex in playersVM) {
+	for (var playerIndex = 0; playerIndex < playersVM.length; playerIndex++) {
 		var playerVM = playersVM[playerIndex];
 		playerVM.myUpdate = false;
 		if (!playerVM.person)
-			otherPlayers.push({ turn: false, person: false, inFoot: false, myUpdate: false });
+			otherPlayers.push({ 
+				turn: false, 
+				person: false, 
+				inFoot: false, 
+				position: playerVM.position,
+				myUpdate: false });
 		else {
 			otherPlayers.push({
 				person: playerVM.person,
-				direction: playerVM.direction,
+				position: playerVM.position,
 				turn: false,
 				inFoot: playerVM.inFoot,
 				footCards: playerVM.footCards.length,
@@ -45,70 +49,51 @@ ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, results) 
 	playersVM[gameVM.turn].turn = true;
 	otherPlayers[gameVM.turn].turn = true;
 	
-	if (this.sockets.length > 4) {
+	if (this.sockets.length > gameVM.numberOfPlayers) {
 		console.log('too many sockets', this.sockets.length);
 		console.log(this.sockets);
 	}
 	
-	// send update game with players properly ordered
-	for (socketIndex in this.sockets) {
-		var socket = this.sockets[socketIndex].socket;
+	// send update game with players and teams properly ordered
+	for (var socketIndex = 0; socketIndex < this.sockets.length; socketIndex++) {
+		var socket = this.sockets[socketIndex];
+
+		// assemble players
 		var players = [];
-		var teams = [];
+		for (var playerIndex = 0; playerIndex < playersVM.length; playerIndex++) {
+			var socketPlayerIndex = playerIndex + socket.position;
+			if (socketPlayerIndex >= playersVM.length)
+				socketPlayerIndex -= playersVM.length;
+			
+			if (playerIndex === 0) {
+				playersVM[socketPlayerIndex].myUpdate = receiveSocket == socket;
+				players.push(playersVM[socketPlayerIndex]);
+			} else {
+				players.push(otherPlayers[socketPlayerIndex]);
+			}
+		}
 		
-		switch (this.sockets[socketIndex].direction) {
-			case 'North':
-				playersVM[0].myUpdate = receiveSocket == socket;
-				players.push(playersVM[0]);
-				players.push(otherPlayers[1]);
-				players.push(otherPlayers[2]);
-				players.push(otherPlayers[3]);
-				teams.push(teamsVM[0]);
-				teams.push(teamsVM[1]);
-				resultsVM.push(nsResults);
-				resultsVM.push(ewResults);
-				break;
-			case 'East':
-				playersVM[1].myUpdate = receiveSocket == socket;
-				players.push(playersVM[1]);
-				players.push(otherPlayers[2]);
-				players.push(otherPlayers[3]);
-				players.push(otherPlayers[0]);
-				teams.push(teamsVM[1]);
-				teams.push(teamsVM[0]);
-				resultsVM.push(ewResults);
-				resultsVM.push(nsResults);
-				break;
-			case 'South':
-				playersVM[2].myUpdate = receiveSocket == socket;
-				players.push(playersVM[2]);
-				players.push(otherPlayers[3]);
-				players.push(otherPlayers[0]);
-				players.push(otherPlayers[1]);
-				teams.push(teamsVM[0]);
-				teams.push(teamsVM[1]);
-				resultsVM.push(nsResults);
-				resultsVM.push(ewResults);
-				break;
-			case 'West':
-				playersVM[3].myUpdate = receiveSocket == socket;
-				players.push(playersVM[3]);
-				players.push(otherPlayers[0]);
-				players.push(otherPlayers[1]);
-				players.push(otherPlayers[2]);
-				teams.push(teamsVM[1]);
-				teams.push(teamsVM[0]);
-				resultsVM.push(ewResults);
-				resultsVM.push(nsResults);
-				break;
+		// assemble teams
+		var teams = [];
+		var teamPosition = socket.position % teamsVM.length;
+		for (var teamIndex = 0; teamIndex < teamsVM.length; teamIndex++) {
+			var socketTeamIndex = teamIndex + teamPosition;
+			if (socketTeamIndex >= teamsVM.length)
+				socketTeamIndex -= teamsVM.length;
+			teams.push(teamsVM[socketTeamIndex]);
 		}
 		
 		// if the hand ended, send the results
-		if (results)
+		if (showResults) {
+			var results = [];
+			for (var teamIndex = 0; teamIndex < teamsVM.length; teamIndex++) {
+				results.push(teams[teamIndex].results.splice(-1)[0]);
+			}
 			socket.emit('handResults', resultsVM);
-			
+		}
+
 		// send the new data to each player
-		socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams, results: resultsVM });
+		socket.socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
 	}
 };
 
@@ -165,7 +150,6 @@ PlayGame.prototype.newConnectedPlayer = function(socket, data) {
 	// check to see if the player is already playing a game
 	for (var playerIndex = 0; playerIndex < this.connectedPlayers.length; playerIndex++) {
 		if (this.connectedPlayers[playerIndex].personId.toString() === data.personId.toString()) {
-			console.log(this.connectedPlayers[playerIndex]);
 			console.log('player already playing');
 			
 			this.connectedPlayers.splice(playerIndex, 1);
@@ -198,9 +182,9 @@ PlayGame.prototype.findCreateConnectedGame = function(socket, data) {
 		var connectedGame = new ConnectedGame(data.gameId);
 		this.connectedGames.push(connectedGame);
 	} else {
-		// in case the socket already exists for this direction - remove it
+		// in case the socket already exists for this position - remove it
 		for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-			if (connectedGame.sockets[socketIndex].direction === data.direction) {
+			if (connectedGame.sockets[socketIndex].position === data.position) {
 				connectedGame.sockets.splice(socketIndex, 1);
 				break;
 			}
@@ -208,7 +192,7 @@ PlayGame.prototype.findCreateConnectedGame = function(socket, data) {
 	}
 	
 	// add the socket to the game - for sending
-	connectedGame.sockets.push({ direction: data.direction, socket: socket} );
+	connectedGame.sockets.push({ position: data.position, socket: socket} );
 	
 	return connectedGame;
 };
@@ -265,7 +249,7 @@ PlayGame.prototype.sendEndHandQuestion = function(socket) {
 	for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
 		var socket = connectedGame.sockets[socketIndex].socket;
 		
-		socket.emit('endHandQuestion', { direction: connectedPlayer.direction, personName: connectedPlayer.personName });
+		socket.emit('endHandQuestion', { position: connectedPlayer.position, personName: connectedPlayer.personName });
 	}
 };
 
@@ -305,7 +289,7 @@ PlayGame.prototype.sendResignRequest = function(socket) {
 	for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
 		var socket = connectedGame.sockets[socketIndex].socket;
 		
-		socket.emit('resignRequest', { direction: connectedPlayer.direction, personName: connectedPlayer.personName });
+		socket.emit('resignRequest', { position: connectedPlayer.position, personName: connectedPlayer.personName });
 	}
 };
 	
@@ -329,7 +313,7 @@ PlayGame.prototype.endTheGame = function(socket, mapper, wasResigned) {
 		// send the resign response
 		for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
 			var socket = connectedGame.sockets[socketIndex].socket;
-			var direction = connectedGame.sockets[socketIndex].direction;
+			var position = connectedGame.sockets[socketIndex].position;
 			var results = 'loser';
 			switch (direction) {
 				case 'North':

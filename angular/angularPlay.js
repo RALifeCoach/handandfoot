@@ -10,6 +10,12 @@ angular.module('handAndFoot')
 		'helpFactory',
 		'ngAudio',
 		function ($rootScope, $scope, $location, player, melds, showModalService, resultsModalService, helpFactory, ngAudio) {
+			// if no game present then go get it
+			if (!player.gameId) {
+				$location.path('/games');
+				return;
+			}
+
 			var roundPoints = [ 50, 90, 120, 150, 190, 220, 250 ];
 			$scope.game = {};
 			$scope.piles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []}, {cards: []} ];
@@ -41,12 +47,6 @@ angular.module('handAndFoot')
 			$scope.chatLine = '';
 			$scope.chatText = '';
 
-			// if no game present then go get it
-			if (!player.gameId) {
-				$location.path('/games');
-				return;
-			}
-
             player.joinGame();
 
 			// listen for game update message
@@ -60,7 +60,8 @@ angular.module('handAndFoot')
 				|| $scope.game.gameBegun !== data.game.gameBegun) {
 					$scope.players = data.players;
 					$scope.teams = data.teams;
-					player.resetHighlight($scope.players[0], $scope);
+					if ($scope.players[0].person)
+						player.resetHighlight($scope.players[0], $scope);
 				} else {
 					wasTurn = $scope.players[0].turn;
 					if (data.players[0].myUpdate) {
@@ -72,28 +73,22 @@ angular.module('handAndFoot')
 						if (!$scope.players[0].turn)
 							$scope.teams = data.teams;
 					}
-					$scope.players[1] = data.players[1];
-					$scope.players[2] = data.players[2];
-					$scope.players[3] = data.players[3];
+					for (var playerIndex = 1; playerIndex < data.players.length; playerIndex++)
+						$scope.players[playerIndex] = data.players[playerIndex];
 				}
 				$scope.game = data.game;
 				if ($scope.players[0].turn && !wasTurn && $scope.game.gameBegun) {
 					var audio = ngAudio.load("/sounds/LETSGO.mp3");
 					audio.play();
 				}
-				$scope.piles = data.game.piles;
-				$scope.results.yourTeam = data.results[0];
-				$scope.results.theirTeam = data.results[1];
-				$scope.teams[0].basePoints = melds.calculateBase($scope.teams[0]);
-				$scope.teams[1].basePoints = melds.calculateBase($scope.teams[1]);
+				$scope.drawPiles = data.game.drawPiles;
+				$scope.discardPile = data.game.discardPile;
+				for (var teamIndex = 0; teamIndex < data.teams.length; teamIndex++)
+					$scope.teams[teamIndex].basePoints = melds.calculateBase($scope.teams[teamIndex]);
+
 				$scope.control.turnState = data.game.turnState;
-				$scope.control.hasMelds = false;
-				for (var meldIndex = 0; meldIndex < data.teams[0].melds.length; meldIndex++) {
-					if (data.teams[0].melds[meldIndex].type !== 'Red Three') {
-						$scope.control.hasMelds = true;
-						break;
-					}
-				}
+				$scope.control.hasMelds = data.teams[0].melds.length > 0;
+
 				$scope.control.drawCards = data.game.drawCards;
 				$scope.control.pointsNeeded = roundPoints[data.game.round];
 

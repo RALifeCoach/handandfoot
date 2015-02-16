@@ -6,24 +6,26 @@ var gameIo = require('../classes/gameDL');
 var GameVM = function() {
 	var cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 	var suitsCard = ['clubs', 'diams', 'hearts', 'spades', 'joker'];
-	this.loadPlayer = function(player) {
-		if (player.direction === '')
-			return false;
-
+	this.loadPlayer = function(player, people) {
+		// build player
 		var playerVM = {
-				person: {
-				id: player.person[0]
-			},
-			direction: player.direction,
+			person: {},
+			personOffset: player.personOffset,
+			position: player.position,
 			connected: player.connected,
 			turn: false,
+			inFoot: player.handCards.length === 0,
 			footCards: this.loadCards(player.footCards),
 			handCards: this.loadCards(player.handCards)
 		};
-		
-		playerVM.inFoot = playerVM.handCards.length === 0;
-		
-		playerVM.person.name = player.person.name;
+
+		// add person if present
+		if (player.personOffset !== -1) {
+			playerVM.person = {
+				id: people[player.personOffset]._id.toString(),
+				name: people[player.personOffset].name
+			};
+		}
 		
 		return playerVM;
 	}
@@ -85,56 +87,36 @@ var GameVM = function() {
 	
 	// move card data from game to gameVM
 	this.loadCards = function(inPile) {
-		try {
-			var outPile = [];
-			if (inPile.length > 0) {
-				for (var cardIndex = 0; cardIndex < inPile.length; cardIndex++) {
-					var card = inPile[cardIndex];
-					cardVM = {
-						suitNumber: card.suit,
-						cardNumber: card.number,
-						suitCard: suitsCard[card.suit],
-						number: card.number > -1 ? cards[card.number] : -1
-					};
-					outPile.push(cardVM);
-				}
-			}
-		}
-		catch (ex) {
-			console.log(inPile);
-			console.log(ex);
-			throw ex;
+		var outPile = [];
+		for (var cardIndex = 0; cardIndex < inPile.length; cardIndex++) {
+			var card = inPile[cardIndex];
+			var cardVM = {
+				suitNumber: card.suit,
+				cardNumber: card.number,
+				suitCard: suitsCard[card.suit],
+				number: card.number > -1 ? cards[card.number] : -1
+			};
+			outPile.push(cardVM);
 		}
 
 		return outPile;
 	}
 
 	// move card data from gameVM to game
-	this.unloadCards = function(inPile, outPile) {
-		var inCount = inPile.length;
-		var outCount = outPile.length;
-		var combinedCount = inCount < outCount ? inCount : outCount;
-		
-		// update cards for cards in both piles
-		for (var cardIndex = 0; cardIndex < combinedCount; cardIndex++) {
-			outPile[cardIndex].suit = inPile[cardIndex].suitNumber;
-			outPile[cardIndex].number = inPile[cardIndex].cardNumber;
-		}
-		
-		// if the in pile has more cards then add to out pile
-		for (var cardIndex = combinedCount; cardIndex < inCount; cardIndex++) {
+	this.unloadCards = function(inPile) {
+		var outPile = [];
+		for (var cardIndex = 0; cardIndex < inPile.length; cardIndex++) {
+			var card = inPile[cardIndex];
 			outPile.push({
 				suit: inPile[cardIndex].suitNumber,
 				number: inPile[cardIndex].cardNumber
 			});
 		}
-		
-		// if the out pile has more cards then delete them
-		if (outPile.length > combinedCount) {
-			outPile.splice(combinedCount, outCount - combinedCount);
-		}
+
+		return outPile;
 	}
 
+	// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 	// move meld data from gameVM to game
 	this.unloadMelds = function(inMelds, outMelds) {
 		var updatePlayers = false;
@@ -181,27 +163,17 @@ var GameVM = function() {
 	// score the game
 	this.scoreTheGame = function(game, winningTeam) {
 		var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 20];
-		var results = {
-			nsTeam: {
-				baseScore: 0,
-				cardsScore: 0,
-				priorScore: 0
-			},
-			ewTeam: {
-				baseScore: 0,
-				cardsScore: 0,
-				priorScore: 0
-			}
+		var roundPlayed = {
+			round: game.round,
+			teams: []
 		};
-
-		for (var teamIndex = 0; teamIndex < 2; teamIndex++) {
-			var team, scores;
-			if (teamIndex === 0) {
-				team = game.nsTeam[0];
-				scores = results.nsTeam;
-			} else {
-				team = game.ewTeam[0];
-				scores = results.ewTeam;
+		
+		for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
+			var team = game.teams[teamIndex];
+			var scores = {
+				baseScore: 0,
+				cardsScore: 0,
+				priorScore: 0
 			}
 			
 			var baseScore = 0;
@@ -209,13 +181,16 @@ var GameVM = function() {
 			if (team == winningTeam)
 				scores.baseScore += 100;
 				
+			// add/subtract 100 points for each red three
+			if (team.melds.length === 0)
+				scores.baseScore += team.redThrees * -100;
+			else
+				scores.baseScore += team.redThrees * 100;
+			
 			// score the team's melds
 			for (var meldIndex = 0; meldIndex < team.melds.length; meldIndex++) {
 				var meld = team.melds[meldIndex];
 				switch (meld.type) {
-					case 'Red Three':
-						scores.baseScore += 100;
-						continue;
 					case 'Clean Meld':
 						scores.baseScore += meld.isComplete ? 500 : 0;
 						break;
@@ -239,7 +214,7 @@ var GameVM = function() {
 				}
 			}
 			
-			// now score the cards left in players hands
+			// now score the cards left in player's hand & foot
 			for (var playerIndex = 0; playerIndex < team.players.length; playerIndex++) {
 				for (var handIndex = 0; handIndex < 2; handIndex++) {
 					var cards = handIndex === 0 ? team.players[playerIndex].handCards : team.players[playerIndex].footCards;
@@ -259,31 +234,16 @@ var GameVM = function() {
 
 			scores.priorScore = team.score;
 			team.score += scores.baseScore + scores.cardsScore;
+			
+			roundPlayed.teams.push(scores);
 		}
 		
-		var roundPlayed = {
-			round: game.round,
-			nsTeam: [
-				{
-					baseScore: results.nsTeam.baseScore,
-					cardsScore: results.nsTeam.cardsScore,
-					priorScore: results.nsTeam.priorScore
-				}
-			],
-			ewTeam: [
-				{
-					baseScore: results.ewTeam.baseScore,
-					cardsScore: results.ewTeam.cardsScore,
-					priorScore: results.ewTeam.priorScore
-				}
-			]
-		};
 		game.roundsPlayed.push(roundPlayed);
-		return results;
 	}
 
 	// deal a new hand
 	this.dealNewHand = function(game) {
+		var _this = this;
 		var allCards = [];
 		var deckIndex, cardIndex, suitIndex;
 		var playerIndex, handIndex, cardPosition;
@@ -304,22 +264,8 @@ var GameVM = function() {
 		}
 
 		// load players cards
-		for (playerIndex = 0; playerIndex < 4; playerIndex++) {
-			var cards;
-			switch (playerIndex) {
-				case 0: //north
-					cards = game.nsTeam[0].players[0];
-					break;
-				case 1: //east
-					cards = game.ewTeam[0].players[0];
-					break;
-				case 2: //south
-					cards = game.nsTeam[0].players[1];
-					break;
-				case 3: //west
-					cards = game.ewTeam[0].players[1];
-					break;
-			}
+		for (playerIndex = 0; playerIndex < game.numberOfPlayers; playerIndex++) {
+			var player = _this.getPlayer(game, playerIndex);
 
 			for (handIndex = 0; handIndex < 2; handIndex++) {
 				var hand = [];
@@ -330,31 +276,22 @@ var GameVM = function() {
 				}
 				switch (handIndex) {
 					case 0:
-						cards.handCards = hand;
+						player.handCards = hand;
 						break;
 					default:
-						cards.footCards = hand;
+						player.footCards = hand;
 						break;
 				}
 			}
 		}
 
 		// load pickup and discard piles
-		var pileMax = Math.floor(allCards.length / 4);
-		piles = [ {direction: 'North', cards: [] },
-			{direction: 'East', cards: [] },
-			{direction: 'South', cards: [] },
-			{direction: 'West', cards: [] },
-			{direction: 'Discard', cards: [] }
-		];
-		for (pileIndex = 0; pileIndex < 4; pileIndex++) {
-			for (cardIndex = 0; cardIndex < pileMax; cardIndex++) {
-				cardPosition = Math.floor(Math.random() * allCards.length);
-				piles[pileIndex].cards.push(allCards[cardPosition]);
-				allCards.splice(cardPosition, 1);
-			}
+		while (allCards.length > 0) {
+			var cardIndex = Math.floor(Math.random() * allCards.length);
+			var pileIndex = Math.floor(Math.random() * 4);
+			game.drawPiles[pileIndex].cards.push(allCards[cardIndex]);
+			allCards.splice(cardIndex, 1);
 		}
-		game.piles = piles;
 	}
 
 	// end the hand
@@ -502,39 +439,25 @@ var GameVM = function() {
 		});
 	}
 	
-	// load the rounds played into results
-	this.loadResults = function(roundsPlayed) {
-		var results = {
-			nsResults: [],
-			ewResults: []
-		};
-		for (var roundIndex = 0; roundIndex < roundsPlayed.length; roundIndex++) {
-			var nsTeam = {
-				round: roundsPlayed[roundIndex].round,
-				baseScore: roundsPlayed[roundIndex].nsTeam[0].baseScore,
-				cardsScore: roundsPlayed[roundIndex].nsTeam[0].cardsScore,
-				priorScore: roundsPlayed[roundIndex].nsTeam[0].priorScore,
-				handScore: roundsPlayed[roundIndex].nsTeam[0].baseScore 
-					+ roundsPlayed[roundIndex].nsTeam[0].cardsScore, 
-				newScore: roundsPlayed[roundIndex].nsTeam[0].baseScore 
-					+ roundsPlayed[roundIndex].nsTeam[0].cardsScore 
-					+ roundsPlayed[roundIndex].nsTeam[0].priorScore
+	// map results for a team
+	this.loadResults = function(results) {
+		var resultsVM = [];
+		for (var resultIndex = 0; resultIndex < results.length; resultIndex++) {
+			var result = results[resultIndex];
+			var resultVM = {
+				round: result.round,
+				baseScore: result.baseScore,
+				cardsScore: result.cardsScore,
+				priorScore: result.priorScore,
+				handScore: result.baseScore 
+					+ result.cardsScore, 
+				newScore: result.baseScore 
+					+ result.cardsScore 
+					+ result.priorScore
 			};
-			results.nsResults.push(nsTeam);
-			var ewTeam = {
-				round: roundsPlayed[roundIndex].round,
-				baseScore: roundsPlayed[roundIndex].ewTeam[0].baseScore,
-				cardsScore: roundsPlayed[roundIndex].ewTeam[0].cardsScore,
-				priorScore: roundsPlayed[roundIndex].ewTeam[0].priorScore,
-				handScore: roundsPlayed[roundIndex].ewTeam[0].baseScore 
-					+ roundsPlayed[roundIndex].ewTeam[0].cardsScore,
-				newScore: roundsPlayed[roundIndex].ewTeam[0].baseScore 
-					+ roundsPlayed[roundIndex].ewTeam[0].cardsScore 
-					+ roundsPlayed[roundIndex].ewTeam[0].priorScore
-			};
-			results.ewResults.push(ewTeam);
+			resultsVM.push(resultVM);
 		}
-		return results;
+		return resultsVM;
 	}
 	
 	// update players - record scores
@@ -568,6 +491,13 @@ var GameVM = function() {
 			});
 		});
 	}
+
+	this.getPlayer = function(game, position) {
+		// get the player from the position
+		var noTeams = game.teams.length;
+		var team = game.teams[position % noTeams];
+		return team.players[Math.floor(position / noTeams)];
+	}
 };
 	
 GameVM.prototype.mapToVM = function(game, callback) {
@@ -580,146 +510,134 @@ GameVM.prototype.mapToVM = function(game, callback) {
 		round: game.round,
 		roundStartingPlayer: game.roundStartingPlayer,
 		currentPlayer: game.currentPlayer,
-		nsTeam: {
-			score: game.nsTeam[0].score,
-			melds: this.loadMelds(game.nsTeam[0].melds),
-			counts: this.countMelds(game.nsTeam[0].melds)
-		},
-		ewTeam: {
-			score: game.ewTeam[0].score,
-			melds: this.loadMelds(game.ewTeam[0].melds),
-			counts: this.countMelds(game.ewTeam[0].melds)
-		},
-		players: [],
-		piles: [
-			{ direction: 'North', cards: this.loadCards(game.piles[0].cards) },
-			{ direction: 'East', cards: this.loadCards(game.piles[1].cards) },
-			{ direction: 'South', cards: this.loadCards(game.piles[2].cards) },
-			{ direction: 'West', cards: this.loadCards(game.piles[3].cards) },
-			{ direction: 'Discard', cards: this.loadCards(game.piles[4].cards) }
-		],
 		gameBegun: game.gameBegun,
+		gameComplete: game.gameComplete,
 		turn: game.turn,
 		turnState: game.turnState,
 		drawCards: game.drawCards,
-		gameComplete: game.gameComplete,
-		results: this.loadResults(game.roundsPlayed)
+		teams: [],
+		players: [],
+		drawPiles: [
+			{ cards: this.loadCards(game.drawPiles[0].cards) },
+			{ cards: this.loadCards(game.drawPiles[1].cards) },
+			{ cards: this.loadCards(game.drawPiles[2].cards) },
+			{ cards: this.loadCards(game.drawPiles[3].cards) },
+		],
+		discardPile: {
+			cards: this.loadCards(game.discardPile.cards) 
+		}
 	};
 
-	gameVM.players.push(this.loadPlayer(game.nsTeam[0].players[0]));
-	gameVM.players.push(this.loadPlayer(game.nsTeam[0].players[1]));
-	gameVM.players.push(this.loadPlayer(game.ewTeam[0].players[0]));
-	gameVM.players.push(this.loadPlayer(game.ewTeam[0].players[1]));
-
-	var players = 0;
-	for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++)
-		if (gameVM.players[playerIndex])
-			players++;
-	gameVM.playersFull = players === 4;
-	
-	if (gameVM.gameBegun) {
-		var _this = this;
-		// check to see if all the pick-up cards have been drawn - if so end the hand
-		var pickupCardsLeft = gameVM.piles[0].cards.length +
-			gameVM.piles[1].cards.length +
-			gameVM.piles[2].cards.length +
-			gameVM.piles[3].cards.length;
-		if ((pickupCardsLeft < 2 && gameVM.turnState === 'draw2')
-		|| (pickupCardsLeft < 1 && gameVM.turnState === 'draw1')) {
-			// not enough cards to complete draw
-			this.scoreTheGame(game, false);
-			this.endTheHand(game);
-			
-			// save the game
-			gameIo.save(game, function(err, savedGame){
-				if (err)
-					return callback(err); 
-				callback(err, gameVM);
-			});
-			return;
-		}
+	// build team
+	for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
+		var team = game.teams[teamIndex];
+		var teamVM = {
+			score: team.score,
+			redThrees: team.redThrees,
+			melds: this.loadMelds(team.melds),
+			counts: this.countMelds(team.melds),
+			results: this.loadResults(team.results)
+		};
+		gameVM.teams.push(teamVM);
 	}
-	callback(null, gameVM);
+	
+	// now do players
+	var players = 0;
+	for (var personIndex = 0; personIndex < game.numberOfPlayers; personIndex++) {
+		var noTeams = game.teams.length;
+		var team = game.teams[personIndex % noTeams];
+		var player = team.players[Math.floor(personIndex / noTeams)];
+
+		var player = this.loadPlayer(player, game.people);
+		gameVM.players.push(player);
+		if (player.personOffset > -1)
+			players++;
+	}
+
+	gameVM.playersFull = players === game.numberOfPlayers;
+	
+	return gameVM;
 };
 
 GameVM.prototype.getAllIncompleteGames = function(personId, callback) {
 	var _this = this;
 	gameIo.getIncompleteGames(function(err, games){
-		if(err)
+		if (err)
 			return callback(err);
 
 		var gamesVM = [];
 		var ctr = games.length;
 		for (var gameIndex = 0; gameIndex < games.length; gameIndex++) {
-			_this.mapToVM(games[gameIndex], function(err, gameVM) {
-				if (err) { 
-					return callback(err); 
-				}
+			var gameVM = _this.mapToVM(games[gameIndex]);
 
-				gameVM.playerAttached = false;
-				for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
-					if (gameVM.players[playerIndex].person 
-					&& gameVM.players[playerIndex].person.id.toString() === personId.toString()) {
-						gameVM.playerAttached = true;
-						break;
-					}
+			gameVM.playerAttached = false;
+			for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
+				if (gameVM.players[playerIndex].personOffset !== -1 
+				&& gameVM.players[playerIndex].person.id === personId.toString()) {
+					gameVM.playerAttached = true;
+					break;
 				}
-				
-				// add game if it is still awaiting players
-				if (!gameVM.playersFull || gameVM.playerAttached)
-					gamesVM.push(gameVM);
+			}
+			
+			// add game if it is still awaiting players
+			if (!gameVM.playersFull || gameVM.playerAttached)
+				gamesVM.push(gameVM);
 
-				// when all games have been mapped to gameVM return the message to the front end
-				if (--ctr === 0) {
-					callback(null, gamesVM);
-				}
-			});
+			// when all games have been mapped to gameVM return the message to the front end
+			if (--ctr === 0) {
+				callback(null, gamesVM);
+			}
 		}
 	});
 };
 	
-GameVM.prototype.addPlayer = function(gameId, personId, direction, callback) {
+GameVM.prototype.addPlayer = function(gameId, personId, position, callback) {
+	var _this = this;
 	gameIo.getGameById(gameId, function (err, game){
 		if (err) 
 			return callback(err);
 		
-		// create the new player
-		var player = {};
+		Person.findById(personId, function(err, person) {
+			if (err) {
+				console.log('cannot find person with id: ' + personId);
+				console.log(err.stack);
+				return callback(err);
+			}
+			if (!game) {
+				console.log('cannot find person with id: ' + personId);
+				return callback(new Error('cannot find person with id: ' + personId));
+			}
+			
+			// add the player to the game
+			var player = _this.getPlayer(game, position);
 		
-		// add the player to the game
-		switch (direction) {
-			case 'North':
-				player = game.nsTeam[0].players[0];
-				break
-			case 'South':
-				player = game.nsTeam[0].players[1];
-				break;
-			case 'East':
-				player = game.ewTeam[0].players[0];
-				break
-			case 'West':
-				player = game.ewTeam[0].players[1];
-				break;
-		}
-		player.direction = direction;
-		player.connected = true;
-		if (player.person.length === 0)
-			player.person.push(personId);
-	
-		// save the game
-		gameIo.save(game, function(err, savedGame){
-			if (err)
-				return callback(err); 
+			// add person to the people collection
+			if (player.personOffset === -1) {
+				game.people.push(person);
+				player.personOffset = game.people.length - 1;
+			}
 
-			// recreate the gameVM from the new DB game
-			var mapper = new GameVM();
-			mapper.mapToVM(game, function(err, gameVM) {
-				if (err) {
-					console.log(err);
-					console.log(game);
+			player.connected = true;
+
+			// if the game has 4 players then begin the game
+			var gameVM = _this.mapToVM(game);
+			if (gameVM.playersFull && !gameVM.gameBegun) {
+				_this.dealNewHand(game);
+				
+				game.gameBegun = true;
+				game.turn = Math.floor(Math.random() * 4);
+				if (game.turn > 3)
+					game.turn = 0;
+				game.roundStartingPlayer = game.turn;
+				game.turnState = "draw1";
+			}
+
+			// save the game
+			gameIo.save(game, function(err, savedGame){
+				if (err)
 					return callback(err); 
-				}
 
+				// recreate the gameVM from the new DB game
 				callback(null, gameVM);
 			});
 		});
@@ -727,83 +645,39 @@ GameVM.prototype.addPlayer = function(gameId, personId, direction, callback) {
 }
 
 GameVM.prototype.removePlayer = function(gameId, personId, callback) {
+	var _this = this;
 	gameIo.getGameById(gameId, function (err, game){
 		if (err) 
 			return callback(err);
 		
-		// create the existing player
+		// find the existing player
 		var player = false;
-		if (game.nsTeam[0].players[0].direction !== '' && game.nsTeam[0].players[0].person[0].toString() === personId.toString())
-			player = game.nsTeam[0].players[0];
-		else if (game.nsTeam[0].players[1].direction !== '' && game.nsTeam[0].players[1].person[0].toString() === personId.toString())
-			player = game.nsTeam[0].players[1];
-		else if (game.ewTeam[0].players[0].direction !== '' && game.ewTeam[0].players[0].person[0].toString() === personId.toString())
-			player = game.ewTeam[0].players[0];
-		else if (game.ewTeam[0].players[1].direction !== '' && game.ewTeam[0].players[1].person[0].toString() === personId.toString())
-			player = game.ewTeam[0].players[1];
+		for (var playerIndex = 0; playerIndex < game.numberOfPlayers; playerIndex++) {
+			var gamePlayer = _this.getPlayer(game, playerIndex);
+			
+			if (gamePlayer.personOffset > -1 && game.people[gamePlayer.personOffset]._id.toString() === personId.toString()) {
+				player = gamePlayer;
+				break;
+			}
+		}
 		
 		if (!player) {
 			console.log('player not found in game');
 			console.log(personId);
-			console.log(game.nsTeam[0].players);
-			console.log(game.ewTeam[0].players);
 			return callback(new Error('player not found in game')); 
 		}
 		
 		player.connected = false;
 	
-		// save the game
-		gameIo.save(game, function(err, savedGame){
-			if (err)
-				return callback(err); 
-
-			// recreate the gameVM from the new DB game
-			var mapper = new GameVM();
-			mapper.mapToVM(game, function(err, gameVM) {
-				if (err) {
-					console.log(err);
-					console.log(game);
-					return callback(err); 
-				}
-						
-				callback(null, gameVM);
-			});
-		});
-	});
-}
-
-GameVM.prototype.startNewGame = function(gameId, callback) {
-	var _this = this;
-	// find game from DB
-	gameIo.getGameById(gameId, function (err, game){
-		if (err) 
-			return callback(err);
-		
-		_this.dealNewHand(game);
-		
-		game.gameBegun = true;
-		game.turn = Math.floor(Math.random() * 4);
-		game.roundStartingPlayer = game.turn;
-		if (game.turn > 3)
-			game.turn = 0;
-		game.turnState = "draw1";
+		// recreate the gameVM from the new DB game
+		var gameVM = _this.mapToVM(game);
 		
 		// save the game
 		gameIo.save(game, function(err, savedGame){
 			if (err)
 				return callback(err); 
-
-			// recreate the gameVM from the new DB game
-			var mapper = new GameVM();
-			mapper.mapToVM(game, function(err, gameVM) {
-				if (err) {
-					console.log(err);
-					console.log(game);
-					return callback(err); 
-				}
-				
-				callback(null, gameVM);
-			});
+			
+			callback(null, gameVM);
 		});
 	});
 }
@@ -837,6 +711,39 @@ GameVM.prototype.updateGame = function(gameId, playerVM, pilesVM, meldsVM, actio
 				team = game.ewTeam[0];
 				break;
 		}
+
+
+
+	
+	if (gameVM.gameBegun) {
+		var _this = this;
+		// check to see if all the pick-up cards have been drawn - if so end the hand
+		var pickupCardsLeft = gameVM.piles[0].cards.length +
+			gameVM.piles[1].cards.length +
+			gameVM.piles[2].cards.length +
+			gameVM.piles[3].cards.length;
+		if ((pickupCardsLeft < 2 && gameVM.turnState === 'draw2')
+		|| (pickupCardsLeft < 1 && gameVM.turnState === 'draw1')) {
+			// not enough cards to complete draw
+			this.scoreTheGame(game, false);
+			this.endTheHand(game);
+			
+			// save the game
+			gameIo.save(game, function(err, savedGame){
+				if (err)
+					return callback(err); 
+				callback(err, gameVM);
+			});
+			return;
+		}
+	}
+
+
+
+
+
+
+
 		
 		// if the size of the hand or foot has changed then the other players will be notified
 		var updatePlayers = false;

@@ -43,7 +43,7 @@ angular.module('handAndFoot')
 		function($cookieStore) {
 			var sharedGameId = false;
 			var sharedPerson = false;
-			var sharedDirection = false;
+			var sharedPosition = false;
 			return { 
 				getGameId: function() { 
 					if (!sharedGameId) {
@@ -68,15 +68,15 @@ angular.module('handAndFoot')
 					else
 						$cookieStore.put('person', person);
 				},
-				getDirection: function() { 
-					if (!sharedDirection) {
-						sharedDirection = $cookieStore.get('direction');
+				getPosition: function() { 
+					if (!sharedPosition) {
+						sharedPosition = $cookieStore.get('position');
 					}
-					return sharedDirection; 
+					return sharedPosition; 
 				},
-				setDirection: function(direction) { 
-					sharedDirection = direction; 
-					$cookieStore.put('direction', direction);
+				setPosition: function(position) { 
+					sharedPosition = position; 
+					$cookieStore.put('position', position);
 				}
 			};
 		}
@@ -126,6 +126,9 @@ angular.module('handAndFoot')
 angular.module('handAndFoot')
 	.filter('maxDiscard', function() {
         return function(inPile) {
+			if (!inPile)
+				return;
+			
 			var max = inPile.length > 10 ? 10 : inPile.length;
             var result = [];
             for (cardIndex = inPile.length - max; cardIndex < inPile.length; cardIndex++)

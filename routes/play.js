@@ -47,16 +47,14 @@ function Play(io, playGame, mapper) {
 
 		// message handler for join game message
 		socket.on('joinGame', function (data) {
-			console.log('recieved join');
+			console.log('received join');
 
 			if (!playGame.newConnectedPlayer(socket, data))
 				return;
 
 			// add the player to the game and game VM
-			mapper.addPlayer(data.gameId, data.personId, data.direction, function(err, gameVM) {
+			mapper.addPlayer(data.gameId, data.personId, data.position, function(err, gameVM) {
 				if (err) {
-					console.log(err);
-					console.log(data.gameId);
 					return; 
 				}
 						
@@ -65,23 +63,9 @@ function Play(io, playGame, mapper) {
 					return;
 
 				io.sockets.emit('refreshGames');
-	
-				// if the game has 4 players then begin the game
-				if (gameVM.playersFull && !gameVM.gameBegun) {
-					mapper.startNewGame(data.gameId, function(err, gameVM) {
-						if (err) {
-							console.log(err);
-							console.log(data.gameId);
-							return; 
-						}
-							
-						// send the message
-						connectedGame.sendMessages(gameVM, socket);
-					});
-				} else {
-					// send the message
-					connectedGame.sendMessages(gameVM, socket);
-				}
+
+				// send the message
+				connectedGame.sendMessages(gameVM, socket);
 			});
 		});
 
