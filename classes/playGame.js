@@ -1,3 +1,5 @@
+'use strict';
+
 var ConnectedGame = function(pGameId) {
 	this.gameId = pGameId;
 	this.sockets = [];
@@ -66,7 +68,7 @@ ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, showResul
 				socketPlayerIndex -= playersVM.length;
 			
 			if (playerIndex === 0) {
-				playersVM[socketPlayerIndex].myUpdate = receiveSocket == socket;
+				playersVM[socketPlayerIndex].myUpdate = receiveSocket == socket.socket;
 				players.push(playersVM[socketPlayerIndex]);
 			} else {
 				players.push(otherPlayers[socketPlayerIndex]);
@@ -93,6 +95,9 @@ ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, showResul
 		}
 
 		// send the new data to each player
+console.log(gameVM);
+console.log(players);
+console.log(teams);
 		socket.socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
 	}
 };

@@ -119,29 +119,37 @@ function Play(io, playGame, mapper) {
 				return;
 					
 			// update the game and, optionally, the game VM
-			mapper.updateGame(connectedPlayer.gameId, data.player, data.piles, data.melds, data.action, data.control, function(err, gameVM, results) {
-				if (err) {
-					console.log(err);
-					console.log(data.gameId);
-					return; 
-				}
-				
-				// game view model is only returned if the update affects other player displays
-				if (gameVM) {
-					// the game is over
-					if (gameVM.gameComplete) {
-						playGame.endTheGame(socket, mapper, false);
-					} else {
-						// find the game, error if it doesn't exist
-						var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
-						if (!connectedGame)
-							return;
-						
-						// send the updates to the other players
-						connectedGame.sendMessages(gameVM, socket, results);
+			mapper.updateGame(
+				connectedPlayer.gameId, 
+				data.player, 
+				data.melds, 
+				data.redThrees, 
+				data.action, 
+				data.control, 
+				function(err, gameVM, showResults) {
+					if (err) {
+						console.log(err);
+						console.log(data.gameId);
+						return; 
+					}
+					
+					// game view model is only returned if the update affects other player displays
+					if (gameVM) {
+						// the game is over
+						if (gameVM.gameComplete) {
+							playGame.endTheGame(socket, mapper, false);
+						} else {
+							// find the game, error if it doesn't exist
+							var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
+							if (!connectedGame)
+								return;
+							
+							// send the updates to the other players
+							connectedGame.sendMessages(gameVM, socket, showResults);
+						}
 					}
 				}
-			});
+			);
 		});
 		
 		// message handler for disconnect

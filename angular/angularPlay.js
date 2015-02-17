@@ -1,3 +1,5 @@
+'use strict';
+
 // controller for play game
 angular.module('handAndFoot')
 	.controller('PlayCtrl', ['$rootScope',
@@ -18,7 +20,8 @@ angular.module('handAndFoot')
 
 			var roundPoints = [ 50, 90, 120, 150, 190, 220, 250 ];
 			$scope.game = {};
-			$scope.piles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []}, {cards: []} ];
+			$scope.drawPiles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []} ];
+			$scope.discardPile = { cards: [] };
 			$scope.players = false;
 			$scope.teams = [ 
 				{ basePoints: 0, counts: [], melds: [] }, 
@@ -58,17 +61,21 @@ angular.module('handAndFoot')
 				if (!$scope.players 
 				|| $scope.game.round !== data.game.round
 				|| $scope.game.gameBegun !== data.game.gameBegun) {
+console.log('1');					
 					$scope.players = data.players;
 					$scope.teams = data.teams;
 					if ($scope.players[0].person)
 						player.resetHighlight($scope.players[0], $scope);
 				} else {
+console.log('2');					
 					wasTurn = $scope.players[0].turn;
 					if (data.players[0].myUpdate) {
+console.log('3');					
 						$scope.teams = data.teams;
 						$scope.players[0] = data.players[0];
 						player.resetHighlight($scope.players[0], $scope);
 					} else {
+console.log('4');
 						$scope.players[0].turn = data.players[0].turn;
 						if (!$scope.players[0].turn)
 							$scope.teams = data.teams;
@@ -91,6 +98,7 @@ angular.module('handAndFoot')
 
 				$scope.control.drawCards = data.game.drawCards;
 				$scope.control.pointsNeeded = roundPoints[data.game.round];
+				$scope.control.pointsSoFar = 0;
 
 				$scope.undo = [];
 				
@@ -99,7 +107,7 @@ angular.module('handAndFoot')
 				$scope.control.callInProgress = false;
 			});
 
-			// listen for game update message
+			// listen for chat update message
 			$scope.$on('socket:chatUpdate', function(event, data) {
 				console.log('chatUpdate');
 				
@@ -315,6 +323,36 @@ angular.module('handAndFoot')
 
 				player.drawCard($scope, pileIndex);
 				player.clearUndo($scope);
+			};
+			
+			// click on one of the pick up piles
+			$scope.clickEmptyPickup = function() {
+				$scope.message = false;
+				if (!$scope.players[0].turn
+				|| $scope.control.callInProgress)
+					return;
+
+				switch ($scope.control.turnState) {
+					case 'draw1':
+					case 'draw2':
+					case 'draw3':
+						break;
+					default:
+						return;
+				}
+
+				var sumCards = 
+					$scope.drawPiles[0] +
+					$scope.drawPiles[1] +
+					$scope.drawPiles[2] +
+					$scope.drawPiles[3];
+
+				if (!sumCards) {
+					$scope.control.turnState = 'endHand';
+					
+					player.sendUpdate($scope);
+					player.clearUndo($scope);
+				}
 			};
 			
 			// click on the discard pile

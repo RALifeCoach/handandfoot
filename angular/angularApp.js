@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('handAndFoot', ['ui.router', 
 	'ngCookies', 
 	'btford.socket-io', 
@@ -118,8 +120,8 @@ angular.module('handAndFoot')
         return function(input) {
 			var max = input[0] > 10 ? 10 : input[0];
             var result = [];
-            for (var i = 0; i < max; i++)
-                result.push(i);
+            for (var cardIndex = 0; cardIndex < max; cardIndex++)
+                result.push(cardIndex);
             return result;
         };
     });
@@ -131,7 +133,7 @@ angular.module('handAndFoot')
 			
 			var max = inPile.length > 10 ? 10 : inPile.length;
             var result = [];
-            for (cardIndex = inPile.length - max; cardIndex < inPile.length; cardIndex++)
+            for (var cardIndex = inPile.length - max; cardIndex < inPile.length; cardIndex++)
                 result.push(inPile[cardIndex]);
             return result;
         };

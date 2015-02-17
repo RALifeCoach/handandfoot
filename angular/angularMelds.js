@@ -21,11 +21,7 @@ angular.module('handAndFoot')
 					return "Red threes must be played without other cards.";
 
 				for (var cardIndex = 0; cardIndex < cardArrays.redThrees.length; cardIndex++) {
-					scope.teams[0].melds.push({ 
-						type: "Red Three", 
-						isComplete: true, 
-						number: -1, 
-						cards: [ cardArrays.redThrees[cardIndex] ] });
+					scope.teams[0].redThrees++;
 					scope.teams[0].counts[0].count++;
 					scope.control.turnState = 'draw3';
 					scope.control.drawCards++
@@ -355,10 +351,6 @@ angular.module('handAndFoot')
 				
 				for (var meldIndex = 0; meldIndex < scope.teams[0].melds.length; meldIndex++) {
 					var meld = scope.teams[0].melds[meldIndex];
-					//ignore red threes
-					if (meld.type === 'Red Three')
-						continue;
-					
 					// score each card in the meld
 					for (var cardIndex = 0; cardIndex < meld.cards.length; cardIndex++) {
 						if (meld.cards[cardIndex].suitNumber === 4)
@@ -482,9 +474,6 @@ angular.module('handAndFoot')
 				
 				for (var meldIndex = 0; meldIndex < scope.teams[0].melds.length; meldIndex++) {
 					var meld = scope.teams[0].melds[meldIndex];
-					//ignore red threes
-					if (meld.type === 'Red Three')
-						continue;
 					// true if a meld is complete (except a dirty meld) and auto on 7 cards is true
 					if (autoOnSeven && meld.isComplete && meld.type !== "Dirty Meld")
 						return true;
@@ -520,15 +509,12 @@ angular.module('handAndFoot')
 			
 			// calculate the score on complete melds
 			o.calculateBase = function(team) {
-				var score = 0;
+				var score = team.redThrees * team.melds.count === 0 ? -100 : 100;
 				
 				for (var meldIndex = 0; meldIndex < team.melds.length; meldIndex++) {
 					var meld = team.melds[meldIndex];
 					
 					switch (meld.type) {
-						case 'Red Three':
-							score += 100;
-							break;
 						case 'Clean Meld':
 							score += meld.isComplete ? 500 : 0;
 							break;

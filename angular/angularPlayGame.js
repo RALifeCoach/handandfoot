@@ -1,9 +1,4 @@
-// factory for play game view
-Array.prototype.move = function(fromIndex, toIndex) {
-	var element = this[fromIndex];
-	this.splice(fromIndex, 1);
-	this.splice(toIndex, 0, element);
-};
+'use strict';
 
 angular.module('handAndFoot')
 	.factory('playGame', ['$http', 
@@ -43,7 +38,6 @@ angular.module('handAndFoot')
 
 			// reset any highlighted flags
 			playGame.resetHighlight = function(player, scope) {
-console.log(player);
 				for (var cardIndex = 0; cardIndex < player.handCards.length; cardIndex++) {
 					// do not reset if it is drawn from the discard pile
 					if (!scope.drawFromDiscard.topCard
@@ -147,20 +141,9 @@ console.log(player);
 			playGame.canDiscard = function(scope, card, melds) {
 				// if there were no melds and now there are melds, ensure that the score
 				// is high enough
-				var nowHasMelds = false;
-				for (var meldIndex = 0; meldIndex < scope.teams[0].melds.length; meldIndex++) {
-					if (scope.teams[0].melds[meldIndex].type !== 'Red Three') {
-						nowHasMelds = true;
-						break;
-					}
-				}
-				if (!scope.control.hasMelds && nowHasMelds)
+				if (!scope.control.hasMelds && scope.teams[0].melds.length > 0)
 					if (!melds.layDownScoreMet(scope))
 						return "Minimum score for lay down not yet met.";
-
-				// can't discard a red three
-				if (this.isBlackThree(card))
-					return false;
 
 				// can't discard a red three
 				if (this.isRedThree(card))
@@ -181,7 +164,7 @@ console.log(player);
 					var meld = scope.teams[0].melds[meldIndex];
 					if (meld.isComplete)
 						continue;
-					if (meld.type === "Red Three" || meld.type === "Wild Card Meld")
+					if (meld.type === "Wild Card Meld")
 						continue;
 						
 					// if the card number matches on regular meld then error
@@ -250,8 +233,8 @@ console.log(player);
 					
 				var data = {
 					player: scope.players[0],
-					piles: scope.piles,
 					melds: scope.teams[0].melds,
+					redThrees: scope.teams[0].redThrees,
 					action: action,
 					control: scope.control
 				};

@@ -39,7 +39,7 @@ var GameSchema = new mongoose.Schema({
 	teams: [{
 		score: Number,
 		redThrees: Number,
-		melds: {
+		melds: [{
 			type: String,
 			number: Number,
 			isComplete: Boolean,
@@ -47,7 +47,7 @@ var GameSchema = new mongoose.Schema({
 				suit: Number,
 				number: Number
 			}]
-		},
+		}],
 		players: [{
 			personOffset: Number,
 			position: Number,
@@ -64,6 +64,7 @@ var GameSchema = new mongoose.Schema({
 		results: [{
 			round: Number,
 			baseScore: Number,
+			cardsScore: Number,
 			priorScore: Number
 		}]
 	}],
