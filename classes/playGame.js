@@ -302,9 +302,25 @@ PlayGame.prototype.endTheGame = function(socket, mapper, wasResigned) {
 	var connectedPlayer = this.findConnectedPlayer(socket);
 	if (!connectedPlayer)
 		return;
+
+	// get the resigned team and winning team
+	var resignPosition = wasResigned ? connectedPlayer.position : false;
+	var resignedTeam = false;
+	if (resignPosition !== false)
+		resignedTeam = _this.getTeam(game, resignPosition);
+	var winningTeam = false;
+	for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
+		var gameTeam = games.teams[teamIndex];
+		if (gameTeam != resignedTeam) {
+			if (!winningTeam)
+				winningTeam = gameTeam;
+			else if (winningTeam.score < gameTeam.score)
+				winningTeam = gameTeam;
+		}
+	}
 	
-	var position = wasResigned ? connectedPlayer.position : false;
-	mapper.endGame(connectedPlayer.gameId, position, function(err, game) {
+	// end the game
+	mapper.endGame(connectedPlayer.gameId, resignTeam, winningTeam, function(err, game) {
 		if (err)
 			return;
 			
@@ -317,28 +333,16 @@ PlayGame.prototype.endTheGame = function(socket, mapper, wasResigned) {
 		for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
 			var socket = connectedGame.sockets[socketIndex].socket;
 			var position = connectedGame.sockets[socketIndex].position;
-			var results = 'loser';
-			switch (direction) {
-				case 'North':
-				case 'South':
-					if (wasResigned
-					&& (connectedPlayer.direction === 'East' || connectedPlayer.direction === 'West'))
-						results = 'winner';
-					if (game.nsTeam[0].score > game.ewTeam[0].score)
-						results = 'winner';
-					break;
-				case 'East':
-				case 'West':
-					if (wasResigned
-					&& (connectedPlayer.direction === 'North' || connectedPlayer.direction === 'South'))
-						results = 'winner';
-					if (game.nsTeam[0].score < game.ewTeam[0].score)
-						results = 'winner';
-					break;
-			}
+
+			var teamGame = _this.getTeam(game, position);
+			var status = 'loss';
+			if (gameTeam == resignedTeam)
+				status = 'resigned';
+			else if (gameTeam == winningTeam)
+				status = 'win';
 			
 			// send the resign response to each player
-			socket.emit('resignResponse', { result: results });
+			socket.emit('resignResponse', { result: status });
 		}
 	});
 };

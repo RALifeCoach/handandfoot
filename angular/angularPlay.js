@@ -117,31 +117,37 @@ angular.module('handAndFoot')
 				console.log('end hand question');
 				
 				// show the end hand question modal
-				if (data.direction === $scope.players[0].direction) {
+				if (data.position === $scope.players[0].position) {
 					var modalOptions = {
 						closeButtonText: false,
 						actionButtonText: false,
 						headerText: 'End Hand',
 						modalText: "You have asked to end the hand. Awaiting your partner's response."
 					};
-				} else if ((data.direction === 'North' && $scope.players[0].direction === 'South')
-				|| (data.direction === 'East' && $scope.players[0].direction === 'West')
-				|| (data.direction === 'South' && $scope.players[0].direction === 'North')
-				|| (data.direction === 'West' && $scope.players[0].direction === 'East')) {
-					var modalOptions = {
-						closeButtonText: 'No',
-						actionButtonText: 'Yes',
-						headerText: 'End Hand',
-						modalText: 'Your partner has asked to end the hand. Do you agree?'
-					};
 				} else {
-					var text = data.personName + " has asked to end the hand. Awaiting their partner's response.";
-					var modalOptions = {
-						closeButtonText: false,
-						actionButtonText: false,
-						headerText: 'End Hand',
-						modalText: text
-					};
+					var endTeamIndex = -1;
+					for (var playerIndex = 0; playerIndex < $scope.players.length; playerIndex++) {
+						if ($scope.players[playerIndex].position === data.position) {
+							endTeamIndex = $scope.players[playerIndex].teamIndex;
+							break;
+						}
+					}
+					if ($scope.players[0].teamIndex === endTeamIndex)
+						var modalOptions = {
+							closeButtonText: 'No',
+							actionButtonText: 'Yes',
+							headerText: 'End Hand',
+							modalText: 'Your partner has asked to end the hand. Do you agree?'
+						};
+					} else {
+						var text = data.personName + " has asked to end the hand. Awaiting their partner's response.";
+						var modalOptions = {
+							closeButtonText: false,
+							actionButtonText: false,
+							headerText: 'End Hand',
+							modalText: text
+						};
+					}
 				}
 
 				showModalService.showModal({}, modalOptions).then(function (result) {
@@ -191,31 +197,37 @@ angular.module('handAndFoot')
 				console.log('resignRequest');
 				
 				// show the resign modal
-				if (data.direction === $scope.players[0].direction) {
+				if (data.position === $scope.players[0].position) {
 					var modalOptions = {
 						closeButtonText: false,
 						actionButtonText: false,
 						headerText: 'Resign Request',
 						modalText: "You have asked to resign. Awaiting your partner's response."
 					};
-				} else if ((data.direction === 'North' && $scope.players[0].direction === 'South')
-				|| (data.direction === 'East' && $scope.players[0].direction === 'West')
-				|| (data.direction === 'South' && $scope.players[0].direction === 'North')
-				|| (data.direction === 'West' && $scope.players[0].direction === 'East')) {
-					var modalOptions = {
-						closeButtonText: 'No',
-						actionButtonText: 'Yes',
-						headerText: 'Resign Request',
-						modalText: 'Your partner has asked to resign. Do you agree?'
-					};
 				} else {
-					var text = data.direction + " has asked to resign. Awaiting their partner's response.";
-					var modalOptions = {
-						closeButtonText: false,
-						actionButtonText: false,
-						headerText: 'Resign Request',
-						modalText: text
-					};
+					var endTeamIndex = -1;
+					for (var playerIndex = 0; playerIndex < $scope.players.length; playerIndex++) {
+						if ($scope.players[playerIndex].position === data.position) {
+							endTeamIndex = $scope.players[playerIndex].teamIndex;
+							break;
+						}
+					}
+					if ($scope.players[0].teamIndex === endTeamIndex)
+						var modalOptions = {
+							closeButtonText: 'No',
+							actionButtonText: 'Yes',
+							headerText: 'End Hand',
+							modalText: 'Your partner has asked to resign. Do you agree?'
+						};
+					} else {
+						var text = data.personName + " has asked to resign. Awaiting their partner's response.";
+						var modalOptions = {
+							closeButtonText: false,
+							actionButtonText: false,
+							headerText: 'End Hand',
+							modalText: text
+						};
+					}
 				}
 
 				showModalService.showModal({}, modalOptions).then(function (result) {

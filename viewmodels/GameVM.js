@@ -6,7 +6,7 @@ var gameIo = require('../classes/gameDL');
 var GameVM = function() {
 	var cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 	var suitsCard = ['clubs', 'diams', 'hearts', 'spades', 'joker'];
-	this.loadPlayer = function(player, people) {
+	this.loadPlayer = function(player, teamIndex, people) {
 		// build player
 		var playerVM = {
 			person: {},
@@ -15,6 +15,7 @@ var GameVM = function() {
 			connected: player.connected,
 			turn: false,
 			inFoot: player.handCards.length === 0,
+			teamIndex: teamIndex,
 			footCards: this.loadCards(player.footCards),
 			handCards: this.loadCards(player.handCards)
 		};
@@ -317,19 +318,7 @@ var GameVM = function() {
 	}
 
 	// add the stats from the game to each of the players
-	function addStats(game, position, resignedTeam, callback) {
-		// build the fields needed to get the stats
-		var winningTeam = false;
-		for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
-			var gameTeam = games.teams[teamIndex];
-			if (gameTeam != resignedTeam) {
-				if (!winningTeam)
-					winningTeam = gameTeam;
-				else if (winningTeam.score < gameTeam.score)
-					winningTeam = gameTeam;
-			}
-		}
-
+	function addStats(game, position, resignedTeam, winningTeam, callback) {
 		// start building the score object
 		var teamGame = this.getTeam(game, position);
 		var status = 'loss';
@@ -413,17 +402,11 @@ var GameVM = function() {
 	}
 	
 	// update players - record scores
-	this.updatePlayers = function(game, position, callback) {
-		// get the team that resigned, if present
-		var resignedTeam = false;
-		if (position !== false) {
-			resignedTeam = this.getTeam(game, position);
-		}
-
+	this.updatePlayers = function(game, resignTeam, winningTeam, callback) {
 		// update all the players
 		var numberOfPlayers = game.numberOfPlayers;
 		for (var playerIndex = 0; playerIndex < numberOfPlayers; playerIndex++) {
-			addStats(game, playerIndex, resignedTeam, function(err) {
+			addStats(game, playerIndex, resignedTeam, winningTeam, function(err) {
 				if (err)
 					return callback(err);
 
@@ -491,11 +474,11 @@ GameVM.prototype.mapToVM = function(game, callback) {
 	// now do players
 	var players = 0;
 	for (var personIndex = 0; personIndex < game.numberOfPlayers; personIndex++) {
-		var noTeams = game.teams.length;
-		var team = game.teams[personIndex % noTeams];
-		var player = team.players[Math.floor(personIndex / noTeams)];
+		var team = this.getTeam(game, personIndex);
+		var teamIndex = game.teams.indexOf(team);
+		var player = this.getPlayer(game, personIndex);
 
-		var player = this.loadPlayer(player, game.people);
+		var player = this.loadPlayer(player, teamIndex, game.people);
 		gameVM.players.push(player);
 		if (player.personOffset > -1)
 			players++;
@@ -639,11 +622,6 @@ GameVM.prototype.updateGame = function(
 	control, 
 	callback
 ) {
-console.log(playerVM);
-console.log(meldsVM);
-console.log(redThrees);
-console.log(action);
-console.log(control);
 	var _this = this;
 	// find game from DB
 	gameIo.getGameById(gameId, function (err, game){
@@ -763,8 +741,18 @@ console.log(control);
 			var gameVM = _this.mapToVM(game);
 			
 			// if the game is complete, update the stats
+			var winningTeam = false;
+			for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
+				var gameTeam = games.teams[teamIndex];
+				if (gameTeam != resignedTeam) {
+					if (!winningTeam)
+						winningTeam = gameTeam;
+					else if (winningTeam.score < gameTeam.score)
+						winningTeam = gameTeam;
+				}
+			}
 			if (game.gameComplete) {
-				_this.updatePlayers(gameVM, false, function(err) {
+				_this.updatePlayers(gameVM, false, winningTeam, function(err) {
 					callback(null, gameVM, showResults);
 				});
 				return;
@@ -776,7 +764,7 @@ console.log(control);
 };
 
 // end the game
-GameVM.prototype.endGame = function(gameId, position, callback) {
+GameVM.prototype.endGame = function(gameId, resignTeam, winningTeam, callback) {
 	var _this = this;
 	// find game from DB
 	gameIo.getGameById(gameId, function (err, game){
@@ -794,7 +782,7 @@ GameVM.prototype.endGame = function(gameId, position, callback) {
 			// recreate the gameVM from the new DB game
 			var gameVM = _this.mapToVM(game); 
 
-			_this.updatePlayers(gameVM, position, function(err) {
+			_this.updatePlayers(gameVM, resignTeam, winningTeam, function(err) {
 				return callback(err, game);
 			});
 		});
