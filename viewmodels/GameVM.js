@@ -114,41 +114,38 @@ var GameVM = function() {
 	}
 
 	// move meld data from gameVM to game
-	this.unloadMelds = function(inMelds, outMelds) {
-console.log(inMelds);
-console.log(outMelds);
-		var updatePlayers = inMelds.length !== outMelds.length;
+	this.unloadMelds = function(inMelds, team) {
+		var updatePlayers = inMelds.length !== team.melds.length;
 
 		// check for changes in melds
-		if (!updatePlayers) {
-			for (var meldIndex = 0; meldIndex < inMelds.length && !updatePlayers; meldIndex++) {
-				if (outMelds[meldIndex].isComplete !== inMelds[meldIndex].isComplete) {
-					updatePlayers = true;
-				} else if (outMelds[meldIndex].type !== inMelds[meldIndex].type) {
-					updatePlayers = true;
-				} else if (outMelds[meldIndex].number !== inMelds[meldIndex].number) {
-					updatePlayers = true;
-				} else if (outMelds[meldIndex].cards.length !== inMelds[meldIndex].cards.length)
-					updatePlayers = true;
-			}
+		for (var meldIndex = 0; meldIndex < inMelds.length && !updatePlayers; meldIndex++) {
+			if (team.melds[meldIndex].isComplete !== inMelds[meldIndex].isComplete) {
+				updatePlayers = true;
+			} else if (team.melds[meldIndex].type !== inMelds[meldIndex].type) {
+				updatePlayers = true;
+			} else if (team.melds[meldIndex].number !== inMelds[meldIndex].number) {
+				updatePlayers = true;
+			} else if (team.melds[meldIndex].cards.length !== inMelds[meldIndex].cards.length)
+				updatePlayers = true;
 		}
 
-console.log(updatePlayers);
 		if (updatePlayers) {
-			// if change the re-create the melds
-			outMelds = [];
+console.log(team.melds);
+			// if change then re-create the melds
+			team.melds = [];
 			
 			for (var meldIndex = 0; meldIndex < inMelds.length; meldIndex++) {
 				var inMeld = inMelds[meldIndex];
-				var meld = {
+				var outMeld = {
 					type: inMeld.type,
 					number: inMeld.number,
 					isComplete: inMeld.isComplete,
 					cards: this.unloadCards(inMeld.cards)
 				};
-				
-				outMelds.push(meld);
+console.log(outMeld);
+				team.melds.push(outMeld);
 			}
+console.log(team.melds);
 		}
 		
 		return updatePlayers;
@@ -713,7 +710,7 @@ console.log(control);
 		// update the melds - again notify players if melds being updated
 console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
 console.log(team);
-		if (_this.unloadMelds(meldsVM, team.melds))
+		if (_this.unloadMelds(meldsVM, team))
 			updatePlayers = true;
 console.log(team);
 console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');

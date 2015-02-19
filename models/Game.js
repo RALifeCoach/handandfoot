@@ -43,7 +43,7 @@ var GameSchema = new mongoose.Schema({
 			type: String,
 			number: Number,
 			isComplete: Boolean,
-			cards: [ {
+			cards: [{
 				suit: Number,
 				number: Number
 			}]
