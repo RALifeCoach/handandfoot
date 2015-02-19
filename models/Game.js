@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var OptionsSchema = new Schema({
 	teams: Number,
-	runScores: [ 
+	roundScores: [ 
 		{
 			score: Number,
 			sevenRule: Boolean
@@ -39,7 +39,7 @@ var GameSchema = new mongoose.Schema({
 	teams: [{
 		score: Number,
 		redThrees: Number,
-		melds: [{
+		melds: [new Schema({
 			type: String,
 			number: Number,
 			isComplete: Boolean,
@@ -47,8 +47,8 @@ var GameSchema = new mongoose.Schema({
 				suit: Number,
 				number: Number
 			}]
-		}],
-		players: [{
+		})],
+		players: [new Schema({
 			personOffset: Number,
 			position: Number,
 			connected: Boolean,
@@ -60,13 +60,13 @@ var GameSchema = new mongoose.Schema({
 				suit: Number,
 				number: Number
 			}]
-		}],
-		results: [{
+		})],
+		results: [new Schema({
 			round: Number,
 			baseScore: Number,
 			cardsScore: Number,
 			priorScore: Number
-		}]
+		})]
 	}],
 	drawPiles: [{
 		cards: [{

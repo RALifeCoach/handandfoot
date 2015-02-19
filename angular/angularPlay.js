@@ -76,9 +76,9 @@ console.log('3');
 						player.resetHighlight($scope.players[0], $scope);
 					} else {
 console.log('4');
-						$scope.players[0].turn = data.players[0].turn;
 						if (!$scope.players[0].turn)
 							$scope.teams = data.teams;
+						$scope.players[0].turn = data.players[0].turn;
 					}
 					for (var playerIndex = 1; playerIndex < data.players.length; playerIndex++)
 						$scope.players[playerIndex] = data.players[playerIndex];

@@ -130,7 +130,6 @@ var GameVM = function() {
 		}
 
 		if (updatePlayers) {
-console.log(team.melds);
 			// if change then re-create the melds
 			team.melds = [];
 			
@@ -142,10 +141,8 @@ console.log(team.melds);
 					isComplete: inMeld.isComplete,
 					cards: this.unloadCards(inMeld.cards)
 				};
-console.log(outMeld);
 				team.melds.push(outMeld);
 			}
-console.log(team.melds);
 		}
 		
 		return updatePlayers;
@@ -609,9 +606,8 @@ GameVM.prototype.addPlayer = function(gameId, personId, position, callback) {
 
 			player.connected = true;
 
-			// if the game has 4 players then begin the game
-			var gameVM = _this.mapToVM(game);
-			if (gameVM.playersFull && !gameVM.gameBegun) {
+			// if the game has enough players then begin the game
+			if (game.people.length === game.numberOfPlayers && !gameVM.gameBegun) {
 				_this.dealNewHand(game);
 				
 				game.gameBegun = true;
@@ -628,6 +624,7 @@ GameVM.prototype.addPlayer = function(gameId, personId, position, callback) {
 					return callback(err); 
 
 				// recreate the gameVM from the new DB game
+				var gameVM = _this.mapToVM(game);
 				callback(null, gameVM);
 			});
 		});
@@ -708,12 +705,8 @@ console.log(control);
 		player.footCards = _this.unloadCards(playerVM.footCards);
 		
 		// update the melds - again notify players if melds being updated
-console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
-console.log(team);
 		if (_this.unloadMelds(meldsVM, team))
 			updatePlayers = true;
-console.log(team);
-console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
 		
 		if (redThrees !== team.redThrees) {
 			updatePlayers = true;
