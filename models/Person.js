@@ -1,25 +1,12 @@
 var mongoose = require('mongoose');
 
 var StatsSchema = new mongoose.Schema({
-	gameId: String,
 	gameName: String,
 	dateEnded: { type: Date, default: Date.now },
 	status: String,
 	roundsPlayed: Number,
-	yourTeam: [{
-		partner: [{
-			personId: String,
-			name:String
-		}],
-		score: Number
-	}],
-	theirTeam: [{
-		player1: [{
-			personId: String,
-			name:String
-		}],
-		player2: [{
-			personId: String,
+	teams: [{
+		players: [{
 			name:String
 		}],
 		score: Number

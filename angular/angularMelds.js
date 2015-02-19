@@ -509,7 +509,7 @@ angular.module('handAndFoot')
 			
 			// calculate the score on complete melds
 			o.calculateBase = function(team) {
-				var score = team.redThrees * team.melds.count === 0 ? -100 : 100;
+				var score = team.redThrees * (team.melds.count === 0 ? -100 : 100);
 				
 				for (var meldIndex = 0; meldIndex < team.melds.length; meldIndex++) {
 					var meld = team.melds[meldIndex];

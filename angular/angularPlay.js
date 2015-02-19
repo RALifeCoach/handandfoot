@@ -61,21 +61,17 @@ angular.module('handAndFoot')
 				if (!$scope.players 
 				|| $scope.game.round !== data.game.round
 				|| $scope.game.gameBegun !== data.game.gameBegun) {
-console.log('1');					
 					$scope.players = data.players;
 					$scope.teams = data.teams;
 					if ($scope.players[0].person)
 						player.resetHighlight($scope.players[0], $scope);
 				} else {
-console.log('2');					
 					wasTurn = $scope.players[0].turn;
 					if (data.players[0].myUpdate) {
-console.log('3');					
 						$scope.teams = data.teams;
 						$scope.players[0] = data.players[0];
 						player.resetHighlight($scope.players[0], $scope);
 					} else {
-console.log('4');
 						if (!$scope.players[0].turn)
 							$scope.teams = data.teams;
 						$scope.players[0].turn = data.players[0].turn;

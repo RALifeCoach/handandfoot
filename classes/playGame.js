@@ -95,9 +95,6 @@ ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, showResul
 		}
 
 		// send the new data to each player
-console.log(gameVM);
-console.log(players);
-console.log(teams);
 		socket.socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
 	}
 };
@@ -165,7 +162,7 @@ PlayGame.prototype.newConnectedPlayer = function(socket, data) {
 	// add the new player to the list of players
 	this.connectedPlayers.push({ 
 		personId: data.personId, 
-		direction: data.direction, 
+		position: data.position, 
 		personName: data.name,
 		socketId: socket.id, 
 		gameId: data.gameId});
@@ -297,7 +294,8 @@ PlayGame.prototype.sendResignRequest = function(socket) {
 		socket.emit('resignRequest', { position: connectedPlayer.position, personName: connectedPlayer.personName });
 	}
 };
-	
+
+// end the game
 PlayGame.prototype.endTheGame = function(socket, mapper, wasResigned) {
 	var _this = this;
 	// find the player, error if not found
@@ -305,8 +303,8 @@ PlayGame.prototype.endTheGame = function(socket, mapper, wasResigned) {
 	if (!connectedPlayer)
 		return;
 	
-	var personId = wasResigned ? connectedPlayer.personId : false;
-	mapper.endGame(connectedPlayer.gameId, personId, function(err, game) {
+	var position = wasResigned ? connectedPlayer.position : false;
+	mapper.endGame(connectedPlayer.gameId, position, function(err, game) {
 		if (err)
 			return;
 			

@@ -316,82 +316,54 @@ var GameVM = function() {
 		game.gameComplete = true;
 	}
 
-	// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-	function addStats(game, direction, youResigned, theyResigned, callback) {
+	// add the stats from the game to each of the players
+	function addStats(game, position, resignedTeam, callback) {
 		// build the fields needed to get the stats
-		var yourScore, yourPartner, theirScore, opponent1, opponent2, personId, status;
-		switch (direction) {
-			case 'North':
-				personId = game.players[0].person.id;
-				yourScore = game.nsTeam.score;
-				yourPartner = game.players[2];
-				theirScore = game.ewTeam.score;
-				oppenent1 = game.players[1];
-				oppenent2 = game.players[3];
-				break;
-			case 'South':
-				personId = game.players[2].person.id;
-				yourScore = game.nsTeam.score;
-				yourPartner = game.players[0];
-				theirScore = game.ewTeam.score;
-				oppenent1 = game.players[1];
-				oppenent2 = game.players[3];
-				break;
-			case 'East':
-				personId = game.players[1].person.id;
-				yourScore = game.ewTeam.score;
-				yourPartner = game.players[3];
-				theirScore = game.nsTeam.score;
-				oppenent1 = game.players[0];
-				oppenent2 = game.players[2];
-				break;
-			case 'West':
-				personId = game.players[3].person.id;
-				yourScore = game.ewTeam.score;
-				yourPartner = game.players[1];
-				theirScore = game.nsTeam.score;
-				oppenent1 = game.players[0];
-				oppenent2 = game.players[2];
-				break;
+		var winningTeam = false;
+		for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
+			var gameTeam = games.teams[teamIndex];
+			if (gameTeam != resignedTeam) {
+				if (!winningTeam)
+					winningTeam = gameTeam;
+				else if (winningTeam.score < gameTeam.score)
+					winningTeam = gameTeam;
+			}
+		}
+
+		// start building the score object
+		var teamGame = this.getTeam(game, position);
+		var status = 'loss';
+		if (gameTeam == resignedTeam)
+			status = 'resigned';
+		else if (gameTeam == winningTeam)
+			status = 'win';
+		var score = {
+			gameName: game.name
+			, game.status: status
+			, roundsPlayed: game.round
+			, teams: []
+		};
+		
+		var teamPosition = game.teams.indexOf(gameTeam);
+		for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
+			var offsetTeam = teamIndex + teamPosition;
+			if (offsetTeam >= game.teams.length)
+				offsetTeam -= game.teams.length;
+			var gameTeam = game.teams[offsetTeam];
+			
+			var team = {
+				players: []
+				, score: gameTeam.score
+			}
+		
+			for (var playerIndex = 0; playerIndex < gameTeam.players.length; playerIndex++) {
+				var gamePlayer = gameTeam.players[playerIndex];
+				team.players.push({ name: gamePlayer.person.name });
+			}
+			
+			score.teams.push(team);
 		}
 		
-		if (youResigned)
-			status = "loss";
-		else if (theyResigned)
-			status = "win";
-		else if (yourScore > theirScore)
-			status = "win";
-		else if (yourScore < theirScore)
-			status = "loss";
-		else
-			status = "tie";
-		
-		// build the stats for the game
-		var stat = {
-			gameName: game.name,
-			gameId: game._id,
-			status: status,
-			roundsPlayed: game.round,
-			yourTeam: [{ 
-				partner: [{
-					personId: yourPartner.person.id,
-					name: yourPartner.person.name
-				}],
-				score: youResigned ? -99999 : yourScore,
-			}],
-			theirTeam: [{
-				player1: [{
-					personId: oppenent1.person.id,
-					name: oppenent1.person.name
-				}],
-				player2: [{
-					personId: oppenent2.person.id,
-					name: oppenent2.person.name
-				}],
-				score: theyResigned ? -99999 : theirScore
-			}]
-		};
-
 		// update the person document
 		Person.findById(personId, function(err, person) {
 			if (err) {
@@ -440,37 +412,25 @@ var GameVM = function() {
 		return resultsVM;
 	}
 	
-	// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 	// update players - record scores
-	this.updatePlayers = function(game, personId, callback) {
-		var nsResigned = false;
-		var ewResigned = false;
-		if (personId) {
-			if (personId.toString() === game.players[0].person.id.toString()
-			|| personId.toString() === game.players[2].person.id.toString())
-				nsResigned = true;
-			else
-				ewResigned = true;
+	this.updatePlayers = function(game, position, callback) {
+		// get the team that resigned, if present
+		var resignedTeam = false;
+		if (position !== false) {
+			resignedTeam = this.getTeam(game, position);
 		}
 
-		addStats(game, 'North', nsResigned, ewResigned, function(err) {
-			if (err)
-				return callback(err);
-			addStats(game, 'South', nsResigned, ewResigned, function(err) {
+		// update all the players
+		var numberOfPlayers = game.numberOfPlayers;
+		for (var playerIndex = 0; playerIndex < numberOfPlayers; playerIndex++) {
+			addStats(game, playerIndex, resignedTeam, function(err) {
 				if (err)
-					callback(err);
-				addStats(game, 'East', ewResigned, nsResigned, function(err) {
-					if (err)
-						callback(err);
-					addStats(game, 'West', ewResigned, nsResigned, function(err) {
-						if (err)
-							callback(err);
-						
-						callback(null);
-					});
-				});
+					return callback(err);
+
+				if (--numberOfPlayers === 0)
+					callback(null);
 			});
-		});
+		}
 	}
 
 	this.getPlayer = function(game, position) {
@@ -607,7 +567,7 @@ GameVM.prototype.addPlayer = function(gameId, personId, position, callback) {
 			player.connected = true;
 
 			// if the game has enough players then begin the game
-			if (game.people.length === game.numberOfPlayers && !gameVM.gameBegun) {
+			if (game.people.length === game.numberOfPlayers && !game.gameBegun) {
 				_this.dealNewHand(game);
 				
 				game.gameBegun = true;
@@ -816,7 +776,7 @@ console.log(control);
 };
 
 // end the game
-GameVM.prototype.endGame = function(gameId, personId, callback) {
+GameVM.prototype.endGame = function(gameId, position, callback) {
 	var _this = this;
 	// find game from DB
 	gameIo.getGameById(gameId, function (err, game){
@@ -834,7 +794,7 @@ GameVM.prototype.endGame = function(gameId, personId, callback) {
 			// recreate the gameVM from the new DB game
 			var gameVM = _this.mapToVM(game); 
 
-			_this.updatePlayers(gameVM, personId, function(err) {
+			_this.updatePlayers(gameVM, position, function(err) {
 				return callback(err, game);
 			});
 		});
