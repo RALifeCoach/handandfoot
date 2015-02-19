@@ -68,9 +68,9 @@ angular.module('handAndFoot')
 						$scope.players[0] = data.players[0];
 						player.resetHighlight($scope.players[0], $scope);
 					} else {
-						$scope.players[0].turn = data.players[0].turn;
 						if (!$scope.players[0].turn)
 							$scope.teams = data.teams;
+						$scope.players[0].turn = data.players[0].turn;
 					}
 					$scope.players[1] = data.players[1];
 					$scope.players[2] = data.players[2];
