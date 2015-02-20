@@ -1,4 +1,5 @@
 ﻿'use strict';
+
 var events = require('events');
 var eventHandler = new events.EventEmitter();
 var robot = require('./robot')(eventHandler);
@@ -39,7 +40,8 @@ module.exports = function (gameId) {
 					person: false, 
 					inFoot: false, 
 					position: playerVM.position,
-					myUpdate: false
+					myUpdate: false,
+					teamIndex: playerVM.teamIndex
 				});
 			else {
 				otherPlayers.push({
@@ -49,7 +51,8 @@ module.exports = function (gameId) {
 					inFoot: playerVM.inFoot,
 					footCards: playerVM.footCards.length,
 					handCards: playerVM.handCards.length,
-					myUpdate: false
+					myUpdate: false,
+					teamIndex: playerVM.teamIndex
 				});
 			}
 		}

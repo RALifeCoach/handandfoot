@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('handAndFoot')
 	.service('showHelpService', [
 		'$modal',

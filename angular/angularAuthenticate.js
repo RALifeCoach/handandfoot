@@ -1,3 +1,5 @@
+'use strict';
+
 // authenticate factory
 angular.module('handAndFoot')
 	.factory('authenticate', ['$http', 

@@ -1,9 +1,4 @@
-// factory for play game view
-Array.prototype.move = function(fromIndex, toIndex) {
-	var element = this[fromIndex];
-	this.splice(fromIndex, 1);
-	this.splice(toIndex, 0, element);
-};
+'use strict';
 
 angular.module('handAndFoot')
 	.factory('helpFactory', ['$http', 

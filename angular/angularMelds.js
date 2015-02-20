@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('handAndFoot')
 	.factory('melds', ['cardArrays',
 		'playGame',
