@@ -2,7 +2,7 @@
 
 var events = require('events');
 var eventHandler = new events.EventEmitter();
-var robot = require('./robot')(eventHandler);
+var Robot = require('./robot');
 
 module.exports = function (gameId) {
     var sockets = [];
@@ -108,17 +108,42 @@ module.exports = function (gameId) {
 			}
 			
 			// send the new data to each player
-			socket.socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
+			if (socket.socket)
+				socket.socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
+			else
+				socket.robot.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
 		}
 	};
 	
 	// send chat message
 	connectedGame.sendChatMessage = function(data) {
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-			var socket = sockets[socketIndex].socket;
+			var socket = sockets[socketIndex];
 	
 			// send the new data to each player
-			socket.emit('chatUpdate', data);
+			if (socket.socket)
+				socket.socket.emit('chatUpdate', data);
+			else
+				socket.robot.emit('chatUpdate', data);
+		}
+	};
+	
+	// add a player to a game
+	connectedGame.addPlayer = function(gameId, position, socket) {
+		// in case the socket already exists for this position - remove it
+		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
+			if (sockets[socketIndex].position === position) {
+				sockets.splice(socketIndex, 1);
+				break;
+			}
+		}
+		
+		// push new player
+		if (socket === 'robot') {
+			var robot = new Robot(gameId, position);
+			sockets.push({ position: position, robot: robot} );
+		} else {
+			sockets.push({ position: position, socket: socket} );
 		}
 	};
 
@@ -140,27 +165,16 @@ module.exports = function (gameId) {
 		this.sendMessages(gameVM, socket);
 	};
 	
-	// add a player to a game
-	connectedGame.addPlayer = function(position, socket) {
-		// in case the socket already exists for this position - remove it
-		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-			if (sockets[socketIndex].position === position) {
-				sockets.splice(socketIndex, 1);
-				break;
-			}
-		}
-		
-		// add the socket to the game - for sending
-		sockets.push({ position: position, socket: socket} );
-	};
-	
 	// send end hand question
 	connectedGame.sendEndHandQuestion = function(connectedPlayer) {
 		// send to each player
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-			var socket = sockets[socketIndex].socket;
+			var socket = sockets[socketIndex];
 			
-			socket.emit('endHandQuestion', { position: connectedPlayer.position, personName: connectedPlayer.personName });
+			if (socket.socket)
+				socket.socket.emit('endHandQuestion', { position: connectedPlayer.position, personName: connectedPlayer.personName });
+			else
+				socket.robot.emit('endHandQuestion', { position: connectedPlayer.position, personName: connectedPlayer.personName });
 		}
 	};
 	
@@ -168,9 +182,12 @@ module.exports = function (gameId) {
 	connectedGame.sendEndHandResponse = function(data) {
 		// send to each player
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-			var socket = sockets[socketIndex].socket;
+			var socket = sockets[socketIndex];
 			
-			socket.emit('endHandResponse', data);
+			if (socket.socket)
+				socket.socket.emit('endHandResponse', data);
+			else
+				socket.robot.emit('endHandResponse', data);
 		}
 	};
 	
@@ -178,9 +195,12 @@ module.exports = function (gameId) {
 	connectedGame.sendResignRequest = function(connectedPlayer) {
 		// send to each player
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-			var socket = sockets[socketIndex].socket;
+			var socket = sockets[socketIndex];
 			
-			socket.emit('resignRequest', { position: connectedPlayer.position, personName: connectedPlayer.personName });
+			if (socket.socket)
+				socket.socket.emit('resignRequest', { position: connectedPlayer.position, personName: connectedPlayer.personName });
+			else
+				socket.robot.emit('resignRequest', { position: connectedPlayer.position, personName: connectedPlayer.personName });
 		}
 	};
 	
@@ -188,28 +208,34 @@ module.exports = function (gameId) {
 	connectedGame.sendResignNoResponse = function() {
 		// send to each player
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-			var socket = sockets[socketIndex].socket;
+			var socket = sockets[socketIndex];
 			
-			socket.emit('resignResponse', { result: 'no'});
+			if (socket.socket)
+				socket.socket.emit('resignResponse', { result: 'no'});
+			else
+				socket.robot.emit('resignResponse', { result: 'no'});
 		}
 	};
 	
 	// send resign response
 	connectedGame.sendResignYesResponse = function(resignedTeam, winningTeam) {
 		// send to each player
-			for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-				var socket = sockets[socketIndex].socket;
-				var position = sockets[socketIndex].position;
+		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
+			var socket = sockets[socketIndex];
+			var position = sockets[socketIndex].position;
 
-				var teamGame = _this.getTeam(game, position);
-				var status = 'loss';
-				if (gameTeam == resignedTeam)
-					status = 'resigned';
-				else if (gameTeam == winningTeam)
-					status = 'win';
-				
-				socket.emit('resignResponse', { result: status });
-			}
+			var teamGame = _this.getTeam(game, position);
+			var status = 'loss';
+			if (gameTeam == resignedTeam)
+				status = 'resigned';
+			else if (gameTeam == winningTeam)
+				status = 'win';
+			
+			if (socket.socket)
+				socket.socket.emit('resignResponse', { result: status });
+			else
+				socket.robot.emit('resignResponse', { result: status });
+		}
 	};
 	
 	return connectedGame;
