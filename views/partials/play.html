@@ -78,7 +78,7 @@
 						<div class="panel-body">
 							<div class="playingCards simpleCards">
 								<ul class="deck">
-									<li ng-repeat="card in [drawPiles[0].cards.length] | maxCards">
+									<li ng-repeat="card in [drawPiles[0].cards] | maxCards">
 										<div class="card back" ng-click="clickPile(0)">*</div>
 									</li>
 								</ul>
@@ -91,7 +91,7 @@
 						<div class="panel-body">
 							<div class="playingCards simpleCards">
 								<ul class="deck">
-									<li ng-repeat="card in [drawPiles[1].cards.length] | maxCards">
+									<li ng-repeat="card in [drawPiles[1].cards] | maxCards">
 										<div class="card back" ng-click="clickPile(1)">*</div>
 									</li>
 								</ul>
@@ -121,7 +121,7 @@
 						<div class="panel-body">
 							<div class="playingCards simpleCards">
 								<ul class="deck">
-									<li ng-repeat="card in [drawPiles[2].cards.length] | maxCards">
+									<li ng-repeat="card in [drawPiles[2].cards] | maxCards">
 										<div class="card back" ng-click="clickPile(2)">*</div>
 									</li>
 								</ul>
@@ -134,7 +134,7 @@
 						<div class="panel-body">
 							<div class="playingCards simpleCards">
 								<ul class="deck">
-									<li ng-repeat="card in [drawPiles[3].cards.length] | maxCards">
+									<li ng-repeat="card in [drawPiles[3].cards] | maxCards">
 										<div class="card back" ng-click="clickPile(3)">*</div>
 									</li>
 								</ul>

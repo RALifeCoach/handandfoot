@@ -273,7 +273,6 @@ angular.module('handAndFoot')
 			playGame.updateUndo = function(scope) {
 				var undo = {
 					game: angular.copy(scope.game),
-					piles: angular.copy(scope.piles),
 					players: angular.copy(scope.players),
 					teams: angular.copy(scope.teams),
 					control: angular.copy(scope.control),
@@ -288,7 +287,6 @@ angular.module('handAndFoot')
 
 				var undo = scope.undo.pop();
 				scope.game = undo.game;
-				scope.piles = undo.piles;
 				scope.players = undo.players;
 				scope.teams = undo.teams;
 				scope.control = undo.control;
