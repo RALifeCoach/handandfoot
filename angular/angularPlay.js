@@ -20,7 +20,7 @@ angular.module('handAndFoot')
 
 			var roundPoints = [ 50, 90, 120, 150, 190, 220, 250 ];
 			$scope.game = {};
-			$scope.drawPiles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []} ];
+			$scope.drawPiles = [ { cards: 0}, {cards: 0}, {cards: 0}, {cards: 0} ];
 			$scope.discardPile = { cards: [] };
 			$scope.players = false;
 			$scope.teams = [ 
@@ -350,10 +350,10 @@ angular.module('handAndFoot')
 				}
 
 				var sumCards = 
-					$scope.drawPiles[0] +
-					$scope.drawPiles[1] +
-					$scope.drawPiles[2] +
-					$scope.drawPiles[3];
+					$scope.drawPiles[0].cards +
+					$scope.drawPiles[1].cards +
+					$scope.drawPiles[2].cards +
+					$scope.drawPiles[3].cards;
 
 				if (!sumCards) {
 					$scope.control.turnState = 'endHand';

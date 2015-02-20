@@ -60,6 +60,10 @@ module.exports = function (gameId) {
 		playersVM[gameVM.turn].turn = true;
 		otherPlayers[gameVM.turn].turn = true;
 		
+		for (var pileIndex = 0; pileIndex < 4; pileIndex++) {
+			game.drawPiles[pileIndex].cards = game.drawPiles[pileIndex].cards.length;
+		}
+		
 		if (sockets.length > gameVM.numberOfPlayers) {
 			console.log('too many sockets', sockets.length);
 			console.log(sockets);
