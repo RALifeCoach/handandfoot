@@ -96,9 +96,6 @@ ConnectedGame.prototype.sendMessages = function (gameVM, receiveSocket, showResu
         }
         
         // send the new data to each player
-        console.log(gameVM);
-        console.log(players);
-        console.log(teams);
         socket.socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
     }
 };
