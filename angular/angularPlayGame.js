@@ -70,14 +70,14 @@ angular.module('handAndFoot')
 			
 			// check to see if the player is allowed to draw from discard pile
 			playGame.canDrawFromDiscard = function(scope) {
-				var discardPile = scope.piles[4];
+				var discardPile = scope.discardPile;
 				
 				// are there cards on the discard pile?
 				if (discardPile.cards.length === 0)
 					return "There are no cards to draw from the discard pile.";
 					
 				// cannot draw if the top card is a wild card or black 3
-				var topCard = discardPile.cards[scope.piles[4].cards.length - 1];
+				var topCard = discardPile.cards[scope.discardPile.cards.length - 1];
 				if (this.isWildCard(topCard))
 					return "Cannot draw from discard pile when there is a wild card on top.";
 				if (this.isBlackThree(topCard))

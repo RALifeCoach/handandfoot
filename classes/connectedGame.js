@@ -100,7 +100,7 @@ module.exports = function (gameId) {
 				for (var teamIndex = 0; teamIndex < teamsVM.length; teamIndex++) {
 					results.push(teams[teamIndex].results.splice(-1)[0]);
 				}
-				socket.emit('handResults', resultsVM);
+				socket.socket.emit('handResults', results);
 			}
 			
 			// send the new data to each player

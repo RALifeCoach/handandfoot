@@ -277,9 +277,10 @@ module.exports = (function() {
 	// end the hand
 	function endTheHand(game) {
 		for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
-			var team = games.teams[teamIndex];
+			var team = game.teams[teamIndex];
 			
 			team.melds = [];
+			team.redThrees = 0;
 			
 			for (var playerIndex = 0; playerIndex < team.players.length; playerIndex++) {
 				var player = team.players[playerIndex];
@@ -288,7 +289,7 @@ module.exports = (function() {
 			}
 		}
 
-		piles = [ {cards: [] },
+		var piles = [ {cards: [] },
 			{cards: [] },
 			{cards: [] },
 			{cards: [] }

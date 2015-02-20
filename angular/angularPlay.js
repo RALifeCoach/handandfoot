@@ -384,7 +384,7 @@ angular.module('handAndFoot')
 						player.updateUndo($scope);
 						// set the topCard in scope to the top card from the pile
 						// do not draw the 7 cards until the meld (or melds) have been played
-						$scope.drawFromDiscard.topCard = $scope.piles[4].cards[$scope.piles[4].cards.length - 1];
+						$scope.drawFromDiscard.topCard = $scope.discardPile.cards[$scope.discardPile.cards.length - 1];
 						$scope.drawFromDiscard.topCard.highlight = true;
 						if ($scope.players[0].inFoot)
 							$scope.players[0].footCards.push($scope.drawFromDiscard.topCard);
@@ -430,9 +430,9 @@ angular.module('handAndFoot')
 						}
 						
 						var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
-						// send message if the discard left the player with no cards
+						// send message if the discard will leave the player with no cards
 						if ($scope.players[0].inFoot
-						&& cards.length === 0)
+						&& cards.length === 1)
 							player.sendGameMessage($scope, "is playing without cards");
 						
 						// discard the selected card and end the turn
@@ -464,7 +464,7 @@ angular.module('handAndFoot')
 				
 				// if drawn from pile complete then clear undo
 				if (hasDrawnFromPile && !$scope.drawFromDiscard.topCard)
-					$scope.clearUndo($scope);
+					player.clearUndo($scope);
 
 				// player has moved into their foot
 				if (!wasInFoot && $scope.players[0].handCards.length === 0) {
@@ -509,7 +509,7 @@ angular.module('handAndFoot')
 				
 				// if drawn from pile complete then clear undo
 				if (hasDrawnFromPile && !$scope.drawFromDiscard.topCard)
-					$scope.clearUndo($scope);
+					player.clearUndo($scope);
 
 				// player has moved into their foot
 				if (!wasInFoot && $scope.players[0].handCards.length === 0) {
