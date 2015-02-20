@@ -13,14 +13,7 @@ function Play(io, playGame, mapper) {
 			if (!connectedGame)
 				return;
 
-			// send update game with players properly ordered
-			for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-				var connection = connectedGame.sockets[socketIndex];
-		
-				// send the new data to each player
-				var text = connectedPlayer.personName + ": " + data.chat;
-				connection.socket.emit('chatUpdate', { chatText: text });
-			}
+			connectedGame.sendChatMessage({chatText: connectedPlayer.personName + ": " + data.chat});
 		});
 
 		// message handler for messages from the game
@@ -35,22 +28,14 @@ function Play(io, playGame, mapper) {
 			if (!connectedGame)
 				return;
 
-			// send update game with players properly ordered
-			for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-				var connection = connectedGame.sockets[socketIndex];
-		
-				// send the new data to each player
-				var text = "Game: " + data.message;
-				connection.socket.emit('chatUpdate', { chatText: text });
-			}
+			connectedGame.sendChatMessage({ chatText: "Game: " + data.message });
 		});
 
 		// message handler for join game message
 		socket.on('joinGame', function (data) {
 			console.log('received join');
 
-			if (!playGame.newConnectedPlayer(socket, data))
-				return;
+			playGame.newConnectedPlayer(socket, data);
 
 			// add the player to the game and game VM
 			mapper.addPlayer(data.gameId, data.personId, data.position, function(err, gameVM) {
@@ -74,7 +59,7 @@ function Play(io, playGame, mapper) {
 			console.log('recieved leave game');
 
 			// this is moved to a common method because it is also performed in 'disconnect'
-			playGame.leaveGame(socket, mapper);
+			playGame.leaveGame(socket);
 		});
 
 		// message handler for the leave game message
@@ -90,7 +75,7 @@ function Play(io, playGame, mapper) {
 
 			// end the game
 			if (data.result === 'yes') {
-				return playGame.endTheGame(socket, mapper, true);
+				return playGame.endTheGame(socket, true);
 			}
 				
 			playGame.sendResignNoResponse(socket);
@@ -137,7 +122,7 @@ function Play(io, playGame, mapper) {
 					if (gameVM) {
 						// the game is over
 						if (gameVM.gameComplete) {
-							playGame.endTheGame(socket, mapper, false);
+							playGame.endTheGame(socket, false);
 						} else {
 							// find the game, error if it doesn't exist
 							var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
@@ -156,7 +141,7 @@ function Play(io, playGame, mapper) {
 		socket.on('disconnect', function () {
 			console.log('recieved disconnect');
 
-			playGame.leaveGame(socket, mapper);
+			playGame.leaveGame(socket);
 		});	
 	});
 };

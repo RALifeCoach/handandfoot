@@ -132,7 +132,7 @@ angular.module('handAndFoot')
 							break;
 						}
 					}
-					if ($scope.players[0].teamIndex === endTeamIndex)
+					if ($scope.players[0].teamIndex === endTeamIndex) {
 						var modalOptions = {
 							closeButtonText: 'No',
 							actionButtonText: 'Yes',
@@ -212,7 +212,7 @@ angular.module('handAndFoot')
 							break;
 						}
 					}
-					if ($scope.players[0].teamIndex === endTeamIndex)
+					if ($scope.players[0].teamIndex === endTeamIndex) {
 						var modalOptions = {
 							closeButtonText: 'No',
 							actionButtonText: 'Yes',
@@ -471,6 +471,7 @@ angular.module('handAndFoot')
 					player.sendGameMessage($scope, "went into their foot and is still playing");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
+					$scope.players[0].inFoot = true;
 				}
 				
 				// playing without cards
@@ -493,6 +494,7 @@ angular.module('handAndFoot')
 
 				player.updateUndo($scope);
 
+				var wasInFoot = $scope.players[0].inFoot;
 				var hasDrawnFromPile = false;
 				if ($scope.drawFromDiscard.topCard)
 					hasDrawnFromPile = true;
@@ -510,7 +512,7 @@ angular.module('handAndFoot')
 					$scope.clearUndo($scope);
 
 				// player has moved into their foot
-				if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0) {
+				if (!wasInFoot && $scope.players[0].handCards.length === 0) {
 					player.sendGameMessage($scope, "went into their foot and is still playing");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);

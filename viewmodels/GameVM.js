@@ -3,10 +3,10 @@ var mongoose = require('mongoose');
 var Person = mongoose.model('Person');
 var gameIo = require('../classes/gameDL');
 
-var GameVM = function() {
+module.exports = (function() {
 	var cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 	var suitsCard = ['clubs', 'diams', 'hearts', 'spades', 'joker'];
-	this.loadPlayer = function(player, teamIndex, people) {
+	function loadPlayer(player, teamIndex, people) {
 		// build player
 		var playerVM = {
 			person: {},
@@ -16,8 +16,8 @@ var GameVM = function() {
 			turn: false,
 			inFoot: player.handCards.length === 0,
 			teamIndex: teamIndex,
-			footCards: this.loadCards(player.footCards),
-			handCards: this.loadCards(player.handCards)
+			footCards: loadCards(player.footCards),
+			handCards: loadCards(player.handCards)
 		};
 
 		// add person if present
@@ -32,7 +32,7 @@ var GameVM = function() {
 	}
 
 	// move melds from game to gameVM
-	this.loadMelds = function(inMelds) {
+	function loadMelds(inMelds) {
 		var outMelds = [];
 		
 		for (var meldIndex = 0; meldIndex < inMelds.length; meldIndex++) {
@@ -40,7 +40,7 @@ var GameVM = function() {
 				type: inMelds[meldIndex].type,
 				number: inMelds[meldIndex].number,
 				isComplete: inMelds[meldIndex].isComplete,
-				cards: this.loadCards(inMelds[meldIndex].cards)
+				cards: loadCards(inMelds[meldIndex].cards)
 			} );
 		}
 		
@@ -48,7 +48,7 @@ var GameVM = function() {
 	}
 
 	// count meld types
-	this.countMelds = function(team) {
+	function countMelds(team) {
 		var counts = [ 
 			{type: 'Red Threes', count: team.redThrees, melds: ""},
 			{type: 'Clean Melds', count: 0, melds: ""},
@@ -84,7 +84,7 @@ var GameVM = function() {
 	}
 	
 	// move card data from game to gameVM
-	this.loadCards = function(inPile) {
+	function loadCards(inPile) {
 		var outPile = [];
 		for (var cardIndex = 0; cardIndex < inPile.length; cardIndex++) {
 			var card = inPile[cardIndex];
@@ -101,7 +101,7 @@ var GameVM = function() {
 	}
 
 	// move card data from gameVM to game
-	this.unloadCards = function(inPile) {
+	function unloadCards(inPile) {
 		var outPile = [];
 		for (var cardIndex = 0; cardIndex < inPile.length; cardIndex++) {
 			var card = inPile[cardIndex];
@@ -115,7 +115,7 @@ var GameVM = function() {
 	}
 
 	// move meld data from gameVM to game
-	this.unloadMelds = function(inMelds, team) {
+	function unloadMelds(inMelds, team) {
 		var updatePlayers = inMelds.length !== team.melds.length;
 
 		// check for changes in melds
@@ -140,7 +140,7 @@ var GameVM = function() {
 					type: inMeld.type,
 					number: inMeld.number,
 					isComplete: inMeld.isComplete,
-					cards: this.unloadCards(inMeld.cards)
+					cards: unloadCards(inMeld.cards)
 				};
 				team.melds.push(outMeld);
 			}
@@ -150,7 +150,7 @@ var GameVM = function() {
 	}
 
 	// score the game
-	this.scoreTheGame = function(game, winningTeam) {
+	function scoreTheGame(game, winningTeam) {
 		var cardScores = [ 20, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 20];
 		
 		for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
@@ -225,8 +225,7 @@ var GameVM = function() {
 	}
 
 	// deal a new hand
-	this.dealNewHand = function(game) {
-		var _this = this;
+	function dealNewHand(game) {
 		var allCards = [];
 
 		// create array of all cards
@@ -245,7 +244,7 @@ var GameVM = function() {
 
 		// load players cards
 		for (var playerIndex = 0; playerIndex < game.numberOfPlayers; playerIndex++) {
-			var player = _this.getPlayer(game, playerIndex);
+			var player = getPlayer(game, playerIndex);
 
 			for (var handIndex = 0; handIndex < 2; handIndex++) {
 				var hand = [];
@@ -275,7 +274,7 @@ var GameVM = function() {
 	}
 
 	// end the hand
-	this.endTheHand = function(game) {
+	function endTheHand(game) {
 		for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
 			var team = games.teams[teamIndex];
 			
@@ -298,12 +297,12 @@ var GameVM = function() {
 					
 		// increment the round and end the game if the final round has been played
 		if (++game.round > 6) {
-			this.endTheGame(game);
+			endTheGame(game);
 			return;
 		}
 		
 		// deal of the new hand
-		this.dealNewHand(game);
+		dealNewHand(game);
 		
 		// set the next starting player
 		if (++game.roundStartingPlayer > 3)
@@ -313,14 +312,14 @@ var GameVM = function() {
 	}
 
 	// end the game
-	this.endTheGame = function(game) {
+	function endTheGame(game) {
 		game.gameComplete = true;
 	}
 
 	// add the stats from the game to each of the players
 	function addStats(game, position, resignedTeam, winningTeam, callback) {
 		// start building the score object
-		var teamGame = this.getTeam(game, position);
+		var teamGame = getTeam(game, position);
 		var status = 'loss';
 		if (gameTeam == resignedTeam)
 			status = 'resigned';
@@ -328,7 +327,7 @@ var GameVM = function() {
 			status = 'win';
 		var score = {
 			gameName: game.name
-			, game.status: status
+			, status: status
 			, roundsPlayed: game.round
 			, teams: []
 		};
@@ -381,7 +380,7 @@ var GameVM = function() {
 	}
 	
 	// map results for a team
-	this.loadResults = function(results) {
+	function loadResults(results) {
 		var resultsVM = [];
 		for (var resultIndex = 0; resultIndex < results.length; resultIndex++) {
 			var result = results[resultIndex];
@@ -402,7 +401,7 @@ var GameVM = function() {
 	}
 	
 	// update players - record scores
-	this.updatePlayers = function(game, resignTeam, winningTeam, callback) {
+	function updatePlayers(game, resignTeam, winningTeam, callback) {
 		// update all the players
 		var numberOfPlayers = game.numberOfPlayers;
 		for (var playerIndex = 0; playerIndex < numberOfPlayers; playerIndex++) {
@@ -416,377 +415,380 @@ var GameVM = function() {
 		}
 	}
 
-	this.getPlayer = function(game, position) {
+	function getPlayer(game, position) {
 		// get the player from the position
 		var noTeams = game.teams.length;
-		var team = this.getTeam(game, position);
+		var team = getTeam(game, position);
 		return team.players[Math.floor(position / noTeams)];
 	}
 
-	this.getTeam = function(game, position) {
+	function getTeam(game, position) {
 		// get the player from the position
 		var noTeams = game.teams.length;
 		return game.teams[position % noTeams];
 	}
-};
+
+	var GameVM = {};
 	
-GameVM.prototype.mapToVM = function(game, callback) {
-	var gameVM = {
-		_id: game._id,
-		name: game.name,
-		password: game.password,
-		startDate: game.startDate,
-		lastPlayedDate: game.lastPlayedDate,
-		round: game.round,
-		roundStartingPlayer: game.roundStartingPlayer,
-		currentPlayer: game.currentPlayer,
-		gameBegun: game.gameBegun,
-		gameComplete: game.gameComplete,
-		turn: game.turn,
-		turnState: game.turnState,
-		drawCards: game.drawCards,
-		teams: [],
-		players: [],
-		drawPiles: [
-			{ cards: this.loadCards(game.drawPiles[0].cards) },
-			{ cards: this.loadCards(game.drawPiles[1].cards) },
-			{ cards: this.loadCards(game.drawPiles[2].cards) },
-			{ cards: this.loadCards(game.drawPiles[3].cards) },
-		],
-		discardPile: {
-			cards: this.loadCards(game.discardPile.cards) 
+	GameVM.mapToVM = function(game, callback) {
+		var gameVM = {
+			_id: game._id,
+			name: game.name,
+			password: game.password,
+			startDate: game.startDate,
+			lastPlayedDate: game.lastPlayedDate,
+			round: game.round,
+			roundStartingPlayer: game.roundStartingPlayer,
+			currentPlayer: game.currentPlayer,
+			gameBegun: game.gameBegun,
+			gameComplete: game.gameComplete,
+			turn: game.turn,
+			turnState: game.turnState,
+			drawCards: game.drawCards,
+			teams: [],
+			players: [],
+			drawPiles: [
+				{ cards: loadCards(game.drawPiles[0].cards) },
+				{ cards: loadCards(game.drawPiles[1].cards) },
+				{ cards: loadCards(game.drawPiles[2].cards) },
+				{ cards: loadCards(game.drawPiles[3].cards) },
+			],
+			discardPile: {
+				cards: loadCards(game.discardPile.cards) 
+			}
+		};
+
+		// build team
+		for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
+			var team = game.teams[teamIndex];
+			var teamVM = {
+				score: team.score,
+				redThrees: team.redThrees,
+				melds: loadMelds(team.melds),
+				counts: countMelds(team),
+				results: loadResults(team.results)
+			};
+			gameVM.teams.push(teamVM);
 		}
+		
+		// now do players
+		var players = 0;
+		for (var personIndex = 0; personIndex < game.numberOfPlayers; personIndex++) {
+			var team = getTeam(game, personIndex);
+			var teamIndex = game.teams.indexOf(team);
+			var player = getPlayer(game, personIndex);
+
+			var player = loadPlayer(player, teamIndex, game.people);
+			gameVM.players.push(player);
+			if (player.personOffset > -1)
+				players++;
+		}
+
+		gameVM.playersFull = players === game.numberOfPlayers;
+		
+		return gameVM;
 	};
 
-	// build team
-	for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
-		var team = game.teams[teamIndex];
-		var teamVM = {
-			score: team.score,
-			redThrees: team.redThrees,
-			melds: this.loadMelds(team.melds),
-			counts: this.countMelds(team),
-			results: this.loadResults(team.results)
-		};
-		gameVM.teams.push(teamVM);
+	GameVM.getAllIncompleteGames = function(personId, callback) {
+		var _this = this;
+		gameIo.getIncompleteGames(function(err, games){
+			if (err)
+				return callback(err);
+
+			var gamesVM = [];
+			var ctr = games.length;
+			for (var gameIndex = 0; gameIndex < games.length; gameIndex++) {
+				var gameVM = _this.mapToVM(games[gameIndex]);
+
+				gameVM.playerAttached = false;
+				for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
+					if (gameVM.players[playerIndex].personOffset !== -1 
+					&& gameVM.players[playerIndex].person.id === personId.toString()) {
+						gameVM.playerAttached = true;
+						break;
+					}
+				}
+				
+				// add game if it is still awaiting players
+				if (!gameVM.playersFull || gameVM.playerAttached)
+					gamesVM.push(gameVM);
+
+				// when all games have been mapped to gameVM return the message to the front end
+				if (--ctr === 0) {
+					callback(null, gamesVM);
+				}
+			}
+		});
+	};
+		
+	GameVM.addPlayer = function(gameId, personId, position, callback) {
+		var _this = this;
+		gameIo.getGameById(gameId, function (err, game){
+			if (err) 
+				return callback(err);
+			
+			Person.findById(personId, function(err, person) {
+				if (err) {
+					console.log('cannot find person with id: ' + personId);
+					console.log(err.stack);
+					return callback(err);
+				}
+				if (!game) {
+					console.log('cannot find person with id: ' + personId);
+					return callback(new Error('cannot find person with id: ' + personId));
+				}
+				
+				// add the player to the game
+				var player = getPlayer(game, position);
+			
+				// add person to the people collection
+				if (player.personOffset === -1) {
+					game.people.push(person);
+					player.personOffset = game.people.length - 1;
+				}
+
+				player.connected = true;
+
+				// if the game has enough players then begin the game
+				if (game.people.length === game.numberOfPlayers && !game.gameBegun) {
+					dealNewHand(game);
+					
+					game.gameBegun = true;
+					game.turn = Math.floor(Math.random() * 4);
+					if (game.turn > 3)
+						game.turn = 0;
+					game.roundStartingPlayer = game.turn;
+					game.turnState = "draw1";
+				}
+
+				// save the game
+				gameIo.save(game, function(err, savedGame){
+					if (err)
+						return callback(err); 
+
+					// recreate the gameVM from the new DB game
+					var gameVM = _this.mapToVM(game);
+					callback(null, gameVM);
+				});
+			});
+		});
 	}
-	
-	// now do players
-	var players = 0;
-	for (var personIndex = 0; personIndex < game.numberOfPlayers; personIndex++) {
-		var team = this.getTeam(game, personIndex);
-		var teamIndex = game.teams.indexOf(team);
-		var player = this.getPlayer(game, personIndex);
 
-		var player = this.loadPlayer(player, teamIndex, game.people);
-		gameVM.players.push(player);
-		if (player.personOffset > -1)
-			players++;
-	}
-
-	gameVM.playersFull = players === game.numberOfPlayers;
-	
-	return gameVM;
-};
-
-GameVM.prototype.getAllIncompleteGames = function(personId, callback) {
-	var _this = this;
-	gameIo.getIncompleteGames(function(err, games){
-		if (err)
-			return callback(err);
-
-		var gamesVM = [];
-		var ctr = games.length;
-		for (var gameIndex = 0; gameIndex < games.length; gameIndex++) {
-			var gameVM = _this.mapToVM(games[gameIndex]);
-
-			gameVM.playerAttached = false;
-			for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
-				if (gameVM.players[playerIndex].personOffset !== -1 
-				&& gameVM.players[playerIndex].person.id === personId.toString()) {
-					gameVM.playerAttached = true;
+	GameVM.removePlayer = function(gameId, personId, callback) {
+		var _this = this;
+		gameIo.getGameById(gameId, function (err, game){
+			if (err) 
+				return callback(err);
+			
+			// find the existing player
+			var player = false;
+			for (var playerIndex = 0; playerIndex < game.numberOfPlayers; playerIndex++) {
+				var gamePlayer = getPlayer(game, playerIndex);
+				
+				if (gamePlayer.personOffset > -1 && game.people[gamePlayer.personOffset]._id.toString() === personId.toString()) {
+					player = gamePlayer;
 					break;
 				}
 			}
 			
-			// add game if it is still awaiting players
-			if (!gameVM.playersFull || gameVM.playerAttached)
-				gamesVM.push(gameVM);
-
-			// when all games have been mapped to gameVM return the message to the front end
-			if (--ctr === 0) {
-				callback(null, gamesVM);
-			}
-		}
-	});
-};
-	
-GameVM.prototype.addPlayer = function(gameId, personId, position, callback) {
-	var _this = this;
-	gameIo.getGameById(gameId, function (err, game){
-		if (err) 
-			return callback(err);
-		
-		Person.findById(personId, function(err, person) {
-			if (err) {
-				console.log('cannot find person with id: ' + personId);
-				console.log(err.stack);
-				return callback(err);
-			}
-			if (!game) {
-				console.log('cannot find person with id: ' + personId);
-				return callback(new Error('cannot find person with id: ' + personId));
+			if (!player) {
+				console.log('player not found in game');
+				console.log(personId);
+				return callback(new Error('player not found in game')); 
 			}
 			
-			// add the player to the game
-			var player = _this.getPlayer(game, position);
+			player.connected = false;
 		
-			// add person to the people collection
-			if (player.personOffset === -1) {
-				game.people.push(person);
-				player.personOffset = game.people.length - 1;
-			}
-
-			player.connected = true;
-
-			// if the game has enough players then begin the game
-			if (game.people.length === game.numberOfPlayers && !game.gameBegun) {
-				_this.dealNewHand(game);
+			// recreate the gameVM from the new DB game
+			var gameVM = _this.mapToVM(game);
+			
+			// save the game
+			gameIo.save(game, function(err, savedGame){
+				if (err)
+					return callback(err); 
 				
-				game.gameBegun = true;
-				game.turn = Math.floor(Math.random() * 4);
-				if (game.turn > 3)
-					game.turn = 0;
-				game.roundStartingPlayer = game.turn;
-				game.turnState = "draw1";
+				callback(null, gameVM);
+			});
+		});
+	}
+
+	// update cards from message from a game
+	GameVM.updateGame = function(
+		gameId, 
+		playerVM, 
+		meldsVM, 
+		redThrees, 
+		action, 
+		control, 
+		callback
+	) {
+		var _this = this;
+		// find game from DB
+		gameIo.getGameById(gameId, function (err, game){
+			if (err) 
+				return callback(err);
+
+			// get the player and team to be updated
+			var player = getPlayer(game, playerVM.position);
+			var team = getTeam(game, playerVM.position);
+			
+			// if the size of the hand or foot has changed then the other players will be notified
+			var updatePlayers = false;
+			if (player.handCards.length !== playerVM.handCards.length
+			|| player.footCards.length !== playerVM.footCards.length)
+				updatePlayers = true;
+				
+			// update the hand and foot
+			player.handCards = unloadCards(playerVM.handCards);
+			player.footCards = unloadCards(playerVM.footCards);
+			
+			// update the melds - again notify players if melds being updated
+			if (unloadMelds(meldsVM, team))
+				updatePlayers = true;
+			
+			if (redThrees !== team.redThrees) {
+				updatePlayers = true;
+				team.redThrees = redThrees;
+			}
+			
+			// handle actions
+			if (action) {
+				updatePlayers = true;
+				var cards = player.handCards.length === 0 ? player.footCards : player.handCards;
+				
+				if (action.action === "drawCard") {
+					// draw a card
+					if (action.pileIndex < 0 || action.pileIndex > 3) {
+						console.log("PileIndex out of range attempting to draw a card");
+						return callback(new Error("PileIndex out of range attempting to draw a card"));
+					}
+
+					// set the new turn state
+					switch (control.turnState) {
+						case 'draw1':
+							control.turnState = 'draw2'
+							break;
+						case 'draw2':
+							control.turnState = 'play'
+							break;
+						case 'draw3':
+							if (--control.drawCards <= 0)
+								control.turnState = 'play'
+							break;
+					}
+					// draw the card
+					cards.push(game.drawPiles[action.pileIndex].cards.pop());
+				} else if (action.action === "discardCard") {
+					// discard the selected card
+					if (action.cardIndex < 0 || action.cardIndex >= cards.length) {
+						console.log("CardIndex out of range attempting to discard");
+						return callback(new Error("CardIndex out of range attempting to discard"));
+					}
+
+					control.turnState = 'end';
+					game.discardPile.cards.push(cards[action.cardIndex]);
+					cards.splice(action.cardIndex, 1);
+				} else if (action.action === "drawSevenCards") {
+					// draw seven cards from the discard pile
+					// the first card is already moved to the player
+					game.discardPile.cards.pop();
+					
+					for (var cardIndex = 0; cardIndex < 6 && game.discardPile.cards.length > 0; cardIndex++) {
+						cards.push(game.discardPile.cards.pop());
+					}
+				}
+			}
+			
+			// update draw cards
+			if (control.drawCards !== game.drawCards) {
+				updatePlayers = true;
+				game.drawCards = control.drawCards;
 			}
 
+			var showResults = false;
+			// update the turn state
+			if (control.turnState !== game.turnState) {
+				updatePlayers = true;
+				game.turnState = control.turnState;
+				// if the hand has ended then perform end of hand routines
+				switch (control.turnState) {
+					case 'endHand':
+						scoreTheGame(game, team);
+						endTheHand(game);
+						showResults = true;
+						break;
+						
+					// if the current player's turn has ended then move on to the next player
+					// endHand also falls through to here
+					case 'end':
+						if (++game.turn > 3)
+							game.turn = 0;
+						game.turnState = 'draw1';
+						break;
+				}
+			}
+			
+			// save the game
+			gameIo.save(game, function(err, savedGame){
+				if (err)
+					return callback(err); 
+
+				// if the other players do not need to be notified then callback with no gameVM
+				if (!updatePlayers)
+					return callback(null, false);
+				
+				// recreate the gameVM from the new DB game
+				var gameVM = _this.mapToVM(game);
+				
+				if (game.gameComplete) {
+					// if the game is complete, update the stats
+					var winningTeam = false;
+					for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
+						var gameTeam = game.teams[teamIndex];
+						if (gameTeam != resignedTeam) {
+							if (!winningTeam)
+								winningTeam = gameTeam;
+							else if (winningTeam.score < gameTeam.score)
+								winningTeam = gameTeam;
+						}
+					}
+
+					updatePlayers(gameVM, false, winningTeam, function(err) {
+						callback(null, gameVM, showResults);
+					});
+					return;
+				}
+
+				callback(null, gameVM, showResults);
+			});
+		});
+	};
+
+	// end the game
+	GameVM.endGame = function(gameId, resignTeam, winningTeam, callback) {
+		var _this = this;
+		// find game from DB
+		gameIo.getGameById(gameId, function (err, game){
+			if (err) 
+				return callback(err);
+
+			scoreTheGame(game, null);
+			endTheGame(game);
+			
 			// save the game
 			gameIo.save(game, function(err, savedGame){
 				if (err)
 					return callback(err); 
 
 				// recreate the gameVM from the new DB game
-				var gameVM = _this.mapToVM(game);
-				callback(null, gameVM);
-			});
-		});
-	});
-}
+				var gameVM = _this.mapToVM(game); 
 
-GameVM.prototype.removePlayer = function(gameId, personId, callback) {
-	var _this = this;
-	gameIo.getGameById(gameId, function (err, game){
-		if (err) 
-			return callback(err);
-		
-		// find the existing player
-		var player = false;
-		for (var playerIndex = 0; playerIndex < game.numberOfPlayers; playerIndex++) {
-			var gamePlayer = _this.getPlayer(game, playerIndex);
-			
-			if (gamePlayer.personOffset > -1 && game.people[gamePlayer.personOffset]._id.toString() === personId.toString()) {
-				player = gamePlayer;
-				break;
-			}
-		}
-		
-		if (!player) {
-			console.log('player not found in game');
-			console.log(personId);
-			return callback(new Error('player not found in game')); 
-		}
-		
-		player.connected = false;
-	
-		// recreate the gameVM from the new DB game
-		var gameVM = _this.mapToVM(game);
-		
-		// save the game
-		gameIo.save(game, function(err, savedGame){
-			if (err)
-				return callback(err); 
-			
-			callback(null, gameVM);
-		});
-	});
-}
-
-// update cards from message from a game
-GameVM.prototype.updateGame = function(
-	gameId, 
-	playerVM, 
-	meldsVM, 
-	redThrees, 
-	action, 
-	control, 
-	callback
-) {
-	var _this = this;
-	// find game from DB
-	gameIo.getGameById(gameId, function (err, game){
-		if (err) 
-			return callback(err);
-
-		// get the player and team to be updated
-		var player = _this.getPlayer(game, playerVM.position);
-		var team = _this.getTeam(game, playerVM.position);
-		
-		// if the size of the hand or foot has changed then the other players will be notified
-		var updatePlayers = false;
-		if (player.handCards.length !== playerVM.handCards.length
-		|| player.footCards.length !== playerVM.footCards.length)
-			updatePlayers = true;
-			
-		// update the hand and foot
-		player.handCards = _this.unloadCards(playerVM.handCards);
-		player.footCards = _this.unloadCards(playerVM.footCards);
-		
-		// update the melds - again notify players if melds being updated
-		if (_this.unloadMelds(meldsVM, team))
-			updatePlayers = true;
-		
-		if (redThrees !== team.redThrees) {
-			updatePlayers = true;
-			team.redThrees = redThrees;
-		}
-		
-		// handle actions
-		if (action) {
-			updatePlayers = true;
-			var cards = player.handCards.length === 0 ? player.footCards : player.handCards;
-			
-			if (action.action === "drawCard") {
-				// draw a card
-				if (action.pileIndex < 0 || action.pileIndex > 3) {
-					console.log("PileIndex out of range attempting to draw a card");
-					return callback(new Error("PileIndex out of range attempting to draw a card"));
-				}
-
-				// set the new turn state
-				switch (control.turnState) {
-					case 'draw1':
-						control.turnState = 'draw2'
-						break;
-					case 'draw2':
-						control.turnState = 'play'
-						break;
-					case 'draw3':
-						if (--control.drawCards <= 0)
-							control.turnState = 'play'
-						break;
-				}
-				// draw the card
-				cards.push(game.drawPiles[action.pileIndex].cards.pop());
-			} else if (action.action === "discardCard") {
-				// discard the selected card
-				if (action.cardIndex < 0 || action.cardIndex >= cards.length) {
-					console.log("CardIndex out of range attempting to discard");
-					return callback(new Error("CardIndex out of range attempting to discard"));
-				}
-
-				control.turnState = 'end';
-				game.discardPile.cards.push(cards[action.cardIndex]);
-				cards.splice(action.cardIndex, 1);
-			} else if (action.action === "drawSevenCards") {
-				// draw seven cards from the discard pile
-				// the first card is already moved to the player
-				game.discardPile.cards.pop();
-				
-				for (var cardIndex = 0; cardIndex < 6 && game.discardPile.cards.length > 0; cardIndex++) {
-					cards.push(game.discardPile.cards.pop());
-				}
-			}
-		}
-		
-		// update draw cards
-		if (control.drawCards !== game.drawCards) {
-			updatePlayers = true;
-			game.drawCards = control.drawCards;
-		}
-
-		var showResults = false;
-		// update the turn state
-		if (control.turnState !== game.turnState) {
-			updatePlayers = true;
-			game.turnState = control.turnState;
-			// if the hand has ended then perform end of hand routines
-			switch (control.turnState) {
-				case 'endHand':
-					_this.scoreTheGame(game, team);
-					_this.endTheHand(game);
-					showResults = true;
-					break;
-					
-				// if the current player's turn has ended then move on to the next player
-				// endHand also falls through to here
-				case 'end':
-					if (++game.turn > 3)
-						game.turn = 0;
-					game.turnState = 'draw1';
-					break;
-			}
-		}
-		
-		// save the game
-		gameIo.save(game, function(err, savedGame){
-			if (err)
-				return callback(err); 
-
-			// if the other players do not need to be notified then callback with no gameVM
-			if (!updatePlayers)
-				return callback(null, false);
-			
-			// recreate the gameVM from the new DB game
-			var gameVM = _this.mapToVM(game);
-			
-			// if the game is complete, update the stats
-			var winningTeam = false;
-			for (var teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
-				var gameTeam = games.teams[teamIndex];
-				if (gameTeam != resignedTeam) {
-					if (!winningTeam)
-						winningTeam = gameTeam;
-					else if (winningTeam.score < gameTeam.score)
-						winningTeam = gameTeam;
-				}
-			}
-			if (game.gameComplete) {
-				_this.updatePlayers(gameVM, false, winningTeam, function(err) {
-					callback(null, gameVM, showResults);
+				updatePlayers(gameVM, resignTeam, winningTeam, function(err) {
+					return callback(err, game);
 				});
-				return;
-			}
-
-			callback(null, gameVM, showResults);
-		});
-	});
-};
-
-// end the game
-GameVM.prototype.endGame = function(gameId, resignTeam, winningTeam, callback) {
-	var _this = this;
-	// find game from DB
-	gameIo.getGameById(gameId, function (err, game){
-		if (err) 
-			return callback(err);
-
-		_this.scoreTheGame(game, null);
-		_this.endTheGame(game);
-		
-		// save the game
-		gameIo.save(game, function(err, savedGame){
-			if (err)
-				return callback(err); 
-
-			// recreate the gameVM from the new DB game
-			var gameVM = _this.mapToVM(game); 
-
-			_this.updatePlayers(gameVM, resignTeam, winningTeam, function(err) {
-				return callback(err, game);
 			});
 		});
-	});
-};
-
-module.exports.GameVM = GameVM;
+	};
+	
+	return GameVM;
+})();

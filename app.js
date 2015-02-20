@@ -21,10 +21,8 @@ require('./models/Hint');
 require('./models/Help');
 
 // define classes
-var PlayGame = require('./classes/playGame');
-var playGame = new PlayGame.PlayGame();
-var GameVM = require('./viewmodels/GameVM');
-var gameMapper = new GameVM.GameVM();
+var gameMapper = require('./viewmodels/GameVM');
+var playGame = require('./classes/playGame')(gameMapper);
 var PersonVM = require('./viewmodels/PersonVM');
 var personMapper = new PersonVM.PersonVM();
 

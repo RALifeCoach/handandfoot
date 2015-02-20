@@ -1,12 +1,14 @@
 'use strict';
+var ConnectedGame = require('./connectedGame');
 
-module.export = function PlayGame() {
+module.exports = function(pMapper) {
+	var mapper = pMapper;
 	var connectedPlayers = [];
 	var connectedGames = [];
 
 	var playGame = {};
 
-	playGame.leaveGame = function(socket, mapper) {
+	playGame.leaveGame = function(socket) {
 		var _this = this;
 		// common routine for leaving the game
 		// check to see if the player is playing a game
@@ -28,24 +30,13 @@ module.export = function PlayGame() {
 				return;
 			
 			// remove player from connected players
-			var playerIndex = _connectedPlayers.indexOf(connectedPlayer);
-			_connectedPlayers.splice(playerIndex, 1);
-			
+			var playerIndex = connectedPlayers.indexOf(connectedPlayer);
+			connectedPlayers.splice(playerIndex, 1);
+
 			// if it's the last player then remove the game
-			if (connectedGame.sockets.length === 1) {
-				var gameIndex = _connectedGames.indexOf(connectedGame);
-				_connectedGames.splice(gameIndex, 1);
-			} else {
-				// remove the socket
-				for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-					if (connectedGame.sockets[socketIndex] === socket.id) {
-						connectedGame.sockets.splice(socketIndex, 1);
-						break;
-					}
-				}
-				
-				// send the message to the remaining players
-				connectedGame.sendMessages(gameVM, socket);
+			if (connectedGame.removePlayer(socket, gameVM)) {
+				var gameIndex = connectedGames.indexOf(connectedGame);
+				connectedGames.splice(gameIndex, 1);
 			}
 		});
 	};
@@ -68,7 +59,6 @@ module.export = function PlayGame() {
 			personName: data.name,
 			socketId: socket.id, 
 			gameId: data.gameId});
-		return true;
 	};
 
 	playGame.findCreateConnectedGame = function(socket, data) {
@@ -85,18 +75,10 @@ module.export = function PlayGame() {
 		if (!connectedGame) {
 			var connectedGame = new ConnectedGame(data.gameId);
 			connectedGames.push(connectedGame);
-		} else {
-			// in case the socket already exists for this position - remove it
-			for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-				if (connectedGame.sockets[socketIndex].position === data.position) {
-					connectedGame.sockets.splice(socketIndex, 1);
-					break;
-				}
-			}
 		}
 		
 		// add the socket to the game - for sending
-		connectedGame.sockets.push({ position: data.position, socket: socket} );
+		connectedGame.addPlayer(data.position, socket);
 		
 		return connectedGame;
 	};
@@ -149,12 +131,7 @@ module.export = function PlayGame() {
 		if (!connectedGame)
 			return;
 
-		// send to each player
-		for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-			var socket = connectedGame.sockets[socketIndex].socket;
-			
-			socket.emit('endHandQuestion', { position: connectedPlayer.position, personName: connectedPlayer.personName });
-		}
+		connectedGame.sendEndHandQuestion(connectedPlayer);
 	};
 
 	// received end hand question - send it to all players
@@ -169,12 +146,7 @@ module.export = function PlayGame() {
 		if (!connectedGame)
 			return;
 
-		// send to each player
-		for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-			var socket = connectedGame.sockets[socketIndex].socket;
-			
-			socket.emit('endHandResponse', data);
-		}
+		connectedGame.sendEndHandResponse(data);
 	};
 
 	// received a request to resign - send it to all players
@@ -189,16 +161,25 @@ module.export = function PlayGame() {
 		if (!connectedGame)
 			return;
 
-		// send to each player
-		for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-			var socket = connectedGame.sockets[socketIndex].socket;
-			
-			socket.emit('resignRequest', { position: connectedPlayer.position, personName: connectedPlayer.personName });
-		}
+		connectedGame.sendResignRequest(connectedPlayer);
+	};
+		
+	playGame.sendResignNoResponse = function(socket) {
+		// find the player, error if not found
+		var connectedPlayer = this.findConnectedPlayer(socket);
+		if (!connectedPlayer)
+			return;
+		
+		// find the game, error if it doesn't exist
+		var connectedGame = this.findConnectedGame(socket, connectedPlayer.gameId);
+		if (!connectedGame)
+			return;
+
+		connectedGame.sendResignNoResponse();
 	};
 
 	// end the game
-	playGame.endTheGame = function(socket, mapper, wasResigned) {
+	playGame.endTheGame = function(socket, wasResigned) {
 		var _this = this;
 		// find the player, error if not found
 		var connectedPlayer = this.findConnectedPlayer(socket);
@@ -232,41 +213,9 @@ module.export = function PlayGame() {
 				return;
 
 			// send the resign response
-			for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-				var socket = connectedGame.sockets[socketIndex].socket;
-				var position = connectedGame.sockets[socketIndex].position;
-
-				var teamGame = _this.getTeam(game, position);
-				var status = 'loss';
-				if (gameTeam == resignedTeam)
-					status = 'resigned';
-				else if (gameTeam == winningTeam)
-					status = 'win';
-				
-				// send the resign response to each player
-				socket.emit('resignResponse', { result: status });
-			}
+			connectedGame.sendResignYesResponse(resignedTeam, winningTeam);
 		});
 	};
-		
-	playGame.sendResignNoResponse = function(socket) {
-		// find the player, error if not found
-		var connectedPlayer = this.findConnectedPlayer(socket);
-		if (!connectedPlayer)
-			return;
-		
-		// find the game, error if it doesn't exist
-		var connectedGame = this.findConnectedGame(socket, connectedPlayer.gameId);
-		if (!connectedGame)
-			return;
-
-		// send the resign response
-		for (var socketIndex = 0; socketIndex < connectedGame.sockets.length; socketIndex++) {
-			var socket = connectedGame.sockets[socketIndex].socket;
-			
-			// send the resign response to each player
-			console.log('send resign response');
-			socket.emit('resignResponse', { result: 'no'} );
-		}
-	};
+	
+	return playGame;
 };
