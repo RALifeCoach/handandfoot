@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use strict';
 
 var ConnectedGame = function(pGameId) {
@@ -98,6 +99,8 @@ ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, showResul
 		socket.socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
 	}
 };
+=======
+>>>>>>> 71f6637e0b0f73d09a53e39d956d371b6594648c
 
 function PlayGame() {
 	this.connectedPlayers = [];
