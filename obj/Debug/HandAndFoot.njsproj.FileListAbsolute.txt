@@ -1,0 +1,2 @@
+C:\Users\Client\Google Drive\Applications\handandfoot\obj\Debug\HandAndFoot.njsprojResolveAssemblyReference.cache
+C:\Users\Client\Google Drive\Applications\handandfoot\bin\Microsoft.NodejsTools.WebRole.dll

@@ -130,7 +130,6 @@ var GameVM = function() {
 		}
 
 		if (updatePlayers) {
-console.log(team.melds);
 			// if change then re-create the melds
 			team.melds = [];
 			
@@ -142,10 +141,8 @@ console.log(team.melds);
 					isComplete: inMeld.isComplete,
 					cards: this.unloadCards(inMeld.cards)
 				};
-console.log(outMeld);
 				team.melds.push(outMeld);
 			}
-console.log(team.melds);
 		}
 		
 		return updatePlayers;
@@ -708,12 +705,8 @@ console.log(control);
 		player.footCards = _this.unloadCards(playerVM.footCards);
 		
 		// update the melds - again notify players if melds being updated
-console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
-console.log(team);
 		if (_this.unloadMelds(meldsVM, team))
 			updatePlayers = true;
-console.log(team);
-console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
 		
 		if (redThrees !== team.redThrees) {
 			updatePlayers = true;
