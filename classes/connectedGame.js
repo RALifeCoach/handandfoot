@@ -13,10 +13,11 @@ module.exports = function (gameId) {
 	connectedGame.sendMessages = function(gameVM, receiveSocket, showResults) {
 		var playersVM = [];
 		for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
-			if (gameVM.players[playerIndex].personOffset === -1)
+			if (!gameVM.players[playerIndex].type)
 				playersVM.push({
 					turn: false, 
 					person: false, 
+					type: false,
 					position: gameVM.players[playerIndex].position
 				});
 			else
@@ -60,8 +61,8 @@ module.exports = function (gameId) {
 		playersVM[gameVM.turn].turn = true;
 		otherPlayers[gameVM.turn].turn = true;
 		
-		for (var pileIndex = 0; pileIndex < 4; pileIndex++) {
-			game.drawPiles[pileIndex].cards = game.drawPiles[pileIndex].cards.length;
+		for (var pileIndex = 0; pileIndex < 3; pileIndex++) {
+			gameVM.drawPiles[pileIndex].cards = gameVM.drawPiles[pileIndex].cards.length;
 		}
 		
 		if (sockets.length > gameVM.numberOfPlayers) {

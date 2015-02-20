@@ -46,7 +46,8 @@ angular.module('handAndFoot')
 		'gamePasswordService',
 		'hintsService',
 		'chatSocket',
-		function($scope, $location, $cookieStore, games, helpFactory, addGameService, sharedProperties, gamePasswordService, hintsService, chatSocket){
+		'playGame',
+		function($scope, $location, $cookieStore, games, helpFactory, addGameService, sharedProperties, gamePasswordService, hintsService, chatSocket, playGame){
 			// if user not set then go to login
 			$scope.person = sharedProperties.getPerson();
 			$scope.games = [];
@@ -112,6 +113,25 @@ angular.module('handAndFoot')
 					sharedProperties.setPosition(position);
 
 					$location.path("/play");
+				}
+			};
+
+			// join a game as Robot
+			$scope.joinAsRobot = function(game, position) {
+				console.log('join game robot ' + position);
+				if (game.password && game.password !== '') {
+					// show the model to get the password
+					var modalOptions = {
+						closeButtonText: 'Cancel',
+						actionButtonText: 'Continue',
+						headerText: 'Enter the game password'
+					};
+
+					gamePasswordService.showModal({}, modalOptions, game.password).then(function (result) {
+						playGame.joinGameAsRobot()
+					});
+				} else {
+					playGame.joinGameAsRobot()
 				}
 			};
 		}

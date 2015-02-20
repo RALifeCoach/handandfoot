@@ -21,6 +21,15 @@ angular.module('handAndFoot')
 					position: this.position});
 			}
 			
+			// join game message
+			playGame.joinGameAsRobot = function() {
+				chatSocket.emit('joinGameAsRobot', {
+					gameId: this.gameId, 
+					personId: this.person._id, 
+					name: this.person.name, 
+					position: this.position});
+			}
+			
 			// leave the game
 			playGame.leaveGame = function() {
 				chatSocket.emit('leaveGame');

@@ -1,49 +1,18 @@
 'use strict';
 
-module.exports = function(pPlayGameBL) {
+module.exports = function(pPlayGameBL, mapper, io) {
 	var playGameBL = pPlayGameBL;
 	var connectedPlayers = [];
 	var connectedGames = [];
 
 	var playGame = {};
 
-	playGame.sendChatMessage = function(socket, data) {
-		console.log('recieved chat');
-
-		var connectedPlayer = playGameBL.findConnectedPlayer(socket);
-		if (!connectedPlayer)
-			return;
-		
-		var connectedGame = playGameBL.findConnectedGame(socket, connectedPlayer.gameId);
-		if (!connectedGame)
-			return;
-
-		connectedGame.sendChatMessage({chatText: connectedPlayer.personName + ": " + data.chat});
-	};
-
-	// message handler for messages from the game
-	playGame.receiveGameMessage = function (socket, data) {
-		console.log('recieved game message');
-
-		var connectedPlayer = playGameBL.findConnectedPlayer(socket);
-		if (!connectedPlayer)
-			return;
-		
-		var connectedGame = playGameBL.findConnectedGame(socket, connectedPlayer.gameId);
-		if (!connectedGame)
-			return;
-
-		connectedGame.sendChatMessage({ chatText: "Game: " + data.message });
-	};
-
 	// message handler for join game message
 	playGame.joinGame = function(socket, data) {
-		console.log('received join');
-
 		playGameBL.newConnectedPlayer(socket, data);
 
 		// add the player to the game and game VM
-		mapper.addPlayer(data.gameId, data.personId, data.position, function(err, gameVM) {
+		mapper.addPlayer(data.gameId, 'person', data.personId, data.position, function(err, gameVM) {
 			if (err) {
 				return; 
 			}
@@ -59,25 +28,65 @@ module.exports = function(pPlayGameBL) {
 		});
 	};
 
+	// message handler for join game message
+	playGame.joinGameAsRobot = function(socket, data) {
+		playGameBL.newConnectedPlayer(data.gameId + 'p' + data.position, data);
+
+		// add the player to the game and game VM
+		mapper.addPlayer(data.gameId, 'robot', data.gameId + 'p' + data.position, data.position, function(err, gameVM) {
+			if (err) {
+				return; 
+			}
+					
+			var connectedGame = playGameBL.findCreateConnectedGame(socket, data);
+			if (!connectedGame)
+				return;
+
+			io.sockets.emit('refreshGames');
+
+			// send the message
+			connectedGame.sendMessages(gameVM, socket);
+		});
+	};
+
+	playGame.sendChatMessage = function(socket, data) {
+		var connectedPlayer = playGameBL.findConnectedPlayer(socket);
+		if (!connectedPlayer)
+			return;
+		
+		var connectedGame = playGameBL.findConnectedGame(socket, connectedPlayer.gameId);
+		if (!connectedGame)
+			return;
+
+		connectedGame.sendChatMessage({chatText: connectedPlayer.personName + ": " + data.chat});
+	};
+
+	// message handler for messages from the game
+	playGame.receiveGameMessage = function (socket, data) {
+		var connectedPlayer = playGameBL.findConnectedPlayer(socket);
+		if (!connectedPlayer)
+			return;
+		
+		var connectedGame = playGameBL.findConnectedGame(socket, connectedPlayer.gameId);
+		if (!connectedGame)
+			return;
+
+		connectedGame.sendChatMessage({ chatText: "Game: " + data.message });
+	};
+
 	// message handler for the leave game message
 	playGame.leaveGame = function(socket) {
-		console.log('recieved leave game');
-
 		// this is moved to a common method because it is also performed in 'disconnect'
 		playGameBL.leaveGame(socket);
 	};
 
 	// message handler for the leave game message
 	playGame.resignRequest = function(socket) {
-		console.log('recieved resign request');
-
 		playGameBL.sendResignRequest(socket);
 	};
 
 	// message handler for the leave game message
 	playGame.resignResponse = function (socket, data) {
-		console.log('recieved resign response');
-
 		// end the game
 		if (data.result === 'yes') {
 			return playGameBL.endTheGame(socket, true);
@@ -88,22 +97,16 @@ module.exports = function(pPlayGameBL) {
 
 	// message handler for the end hand question
 	playGame.endHandQuestion = function(socket) {
-		console.log('recieved end hand question');
-
 		playGameBL.sendEndHandQuestion(socket);
 	};
 
 	// message handler for the end hand question
 	playGame.endHandResponse = function(socket, data) {
-		console.log('recieved end hand response');
-			
 		playGameBL.sendEndHandResponse(socket, data);
 	};
 	
 	// message handler for update cards message
 	playGame.updateGame = function(socket, data) {
-		console.log('recieved update Cards');
-
 		var connectedPlayer = playGameBL.findConnectedPlayer(socket);
 		if (!connectedPlayer)
 			return;
@@ -143,9 +146,7 @@ module.exports = function(pPlayGameBL) {
 	};
 	
 	// message handler for disconnect
-	playGame.disconnect = function(socket) {
-		console.log('recieved disconnect');
-
+	playGame.leaveGame = function(socket) {
 		playGameBL.leaveGame(socket);
 	};	
 	

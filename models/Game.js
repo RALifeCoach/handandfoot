@@ -52,6 +52,8 @@ var GameSchema = new mongoose.Schema({
 			personOffset: Number,
 			position: Number,
 			connected: Boolean,
+			type: String,
+			robotId: String,
 			handCards: [{
 				suit: Number,
 				number: Number

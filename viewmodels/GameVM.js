@@ -15,6 +15,7 @@ module.exports = (function() {
 			position: player.position,
 			connected: player.connected,
 			turn: false,
+			type: player.type,
 			inFoot: player.handCards.length === 0,
 			teamIndex: teamIndex,
 			footCards: loadCards(player.footCards),
@@ -22,12 +23,16 @@ module.exports = (function() {
 		};
 
 		// add person if present
-		if (player.personOffset !== -1) {
+		if (player.type === 'robot')
 			playerVM.person = {
-				id: people[player.personOffset]._id.toString(),
+				id: player.robotId,
+				name: 'Robot' + player.position
+			};
+		else if (player.type === 'person')
+			playerVM.person = {
+				id: people[player.personOffset].id,
 				name: people[player.personOffset].name
 			};
-		}
 		
 		return playerVM;
 	}
@@ -482,7 +487,7 @@ module.exports = (function() {
 
 			var player = loadPlayer(player, teamIndex, game.people);
 			gameVM.players.push(player);
-			if (player.personOffset > -1)
+			if (player.type)
 				players++;
 		}
 
@@ -504,7 +509,7 @@ module.exports = (function() {
 
 				gameVM.playerAttached = false;
 				for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
-					if (gameVM.players[playerIndex].personOffset !== -1 
+					if (gameVM.players[playerIndex].type 
 					&& gameVM.players[playerIndex].person.id === personId.toString()) {
 						gameVM.playerAttached = true;
 						break;
@@ -523,30 +528,66 @@ module.exports = (function() {
 		});
 	};
 		
-	GameVM.addPlayer = function(gameId, personId, position, callback) {
+	GameVM.addPlayer = function(gameId, type, personId, position, callback) {
 		var _this = this;
 		gameIo.getGameById(gameId, function (err, game){
 			if (err) 
 				return callback(err);
 			
-			Person.findById(personId, function(err, person) {
-				if (err) {
-					console.log('cannot find person with id: ' + personId);
-					console.log(err.stack);
-					return callback(err);
-				}
-				if (!game) {
-					console.log('cannot find person with id: ' + personId);
-					return callback(new Error('cannot find person with id: ' + personId));
-				}
+			if (type === 'person') {
+				Person.findById(personId, function(err, person) {
+					if (err) {
+						console.log('cannot find person with id: ' + personId);
+						console.log(err.stack);
+						return callback(err);
+					}
+					if (!person) {
+						console.log('cannot find person with id: ' + personId);
+						return callback(new Error('cannot find person with id: ' + personId));
+					}
+					
+					// add the player to the game
+					var player = getPlayer(game, position);
 				
-				// add the player to the game
+					// add person to the people collection
+					if (!player.type) {
+						game.people.push(person);
+						player.personOffset = game.people.length - 1;
+						player.type = 'person';
+					}
+
+					player.connected = true;
+
+					// if the game has enough players then begin the game
+					if (game.people.length === game.numberOfPlayers && !game.gameBegun) {
+						dealNewHand(game);
+						
+						game.gameBegun = true;
+						game.turn = Math.floor(Math.random() * 4);
+						if (game.turn > 3)
+							game.turn = 0;
+						game.roundStartingPlayer = game.turn;
+						game.turnState = "draw1";
+					}
+
+					// save the game
+					gameIo.save(game, function(err, savedGame){
+						if (err)
+							return callback(err); 
+
+						// recreate the gameVM from the new DB game
+						var gameVM = _this.mapToVM(game);
+						callback(null, gameVM);
+					});
+				});
+			} else {
+				// add the robot to the game
 				var player = getPlayer(game, position);
 			
 				// add person to the people collection
-				if (player.personOffset === -1) {
-					game.people.push(person);
-					player.personOffset = game.people.length - 1;
+				if (!player.type) {
+					player.type = 'robot';
+					player.robotId = personId;
 				}
 
 				player.connected = true;
@@ -572,7 +613,7 @@ module.exports = (function() {
 					var gameVM = _this.mapToVM(game);
 					callback(null, gameVM);
 				});
-			});
+			}
 		});
 	}
 
@@ -587,7 +628,11 @@ module.exports = (function() {
 			for (var playerIndex = 0; playerIndex < game.numberOfPlayers; playerIndex++) {
 				var gamePlayer = getPlayer(game, playerIndex);
 				
-				if (gamePlayer.personOffset > -1 && game.people[gamePlayer.personOffset]._id.toString() === personId.toString()) {
+				if (gamePlayer.type === 'person' && game.people[gamePlayer.personOffset]._id.toString() === personId.toString()) {
+					player = gamePlayer;
+					break;
+				}
+				if (gamePlayer.type === 'robot' && gamePlayer.robotId === personId) {
 					player = gamePlayer;
 					break;
 				}

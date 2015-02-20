@@ -6,9 +6,9 @@ module.exports = function(pMapper) {
 	var connectedPlayers = [];
 	var connectedGames = [];
 
-	var playGame = {};
+	var playGameBL = {};
 
-	playGame.leaveGame = function(socketOrRobotId) {
+	playGameBL.leaveGame = function(socketOrRobotId) {
 		var _this = this;
 		// common routine for leaving the game
 		// check to see if the player is playing a game
@@ -41,7 +41,7 @@ module.exports = function(pMapper) {
 		});
 	};
 
-	function newConnectedPlayer(socketOrRobotId, data) {
+	playGameBL.newConnectedPlayer = function(socketOrRobotId, data) {
 		// check to see if the player is already playing a game
 		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
 			if (connectedPlayers[playerIndex].personId.toString() === data.personId.toString()) {
@@ -57,11 +57,11 @@ module.exports = function(pMapper) {
 			personId: data.personId, 
 			position: data.position, 
 			personName: data.name,
-			socketOrRobotIdId: socketOrRobotId.id, 
+			socketOrRobotId: typeof socketOrRobotId === 'string' ? socketOrRobotId : socketOrRobotId.id, 
 			gameId: data.gameId});
 	};
 
-	function findCreateConnectedGame(socketOrRobotId, data) {
+	playGameBL.findCreateConnectedGame = function(socketOrRobotId, data) {
 		// find the game, create if it doesn't exist
 		var connectedGame = false;
 		for (var gameIndex = 0; gameIndex < connectedGames.length; gameIndex++) {
@@ -86,13 +86,13 @@ module.exports = function(pMapper) {
 	function findConnectedPlayer(socketOrRobotId) {
 		// look for socketOrRobotId or robot
 		var socketId = socketOrRobotId.id;
-		if (typeof socketOrRobotIdOrRobotId === 'String')
+		if (typeof socketOrRobotId === 'string')
 			socketId = socketOrRobotId;
 			
 		// check to see if the player is playing a game
 		var connectedPlayer = false;
 		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
-			if (connectedPlayers[playerIndex].socketOrRobotIdId.toString() === socketId.toString()) {
+			if (connectedPlayers[playerIndex].socketOrRobotId.toString() === socketId.toString()) {
 				connectedPlayer = connectedPlayers[playerIndex];
 				break;
 			}
@@ -124,7 +124,7 @@ module.exports = function(pMapper) {
 	};
 
 	// received end hand question - send it to all players
-	playGame.sendEndHandQuestion = function(socketOrRobotId) {
+	playGameBL.sendEndHandQuestion = function(socketOrRobotId) {
 		// check to see if the player is playing a game
 		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
 		if (!connectedPlayer)
@@ -139,7 +139,7 @@ module.exports = function(pMapper) {
 	};
 
 	// received end hand question - send it to all players
-	playGame.sendEndHandResponse = function(socketOrRobotId, data) {
+	playGameBL.sendEndHandResponse = function(socketOrRobotId, data) {
 		// check to see if the player is playing a game
 		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
 		if (!connectedPlayer)
@@ -154,7 +154,7 @@ module.exports = function(pMapper) {
 	};
 
 	// received a request to resign - send it to all players
-	playGame.sendResignRequest = function(socketOrRobotId) {
+	playGameBL.sendResignRequest = function(socketOrRobotId) {
 		// check to see if the player is playing a game
 		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
 		if (!connectedPlayer)
@@ -168,7 +168,7 @@ module.exports = function(pMapper) {
 		connectedGame.sendResignRequest(connectedPlayer);
 	};
 		
-	playGame.sendResignNoResponse = function(socketOrRobotId) {
+	playGameBL.sendResignNoResponse = function(socketOrRobotId) {
 		// find the player, error if not found
 		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
 		if (!connectedPlayer)
@@ -183,7 +183,7 @@ module.exports = function(pMapper) {
 	};
 
 	// end the game
-	playGame.endTheGame = function(socketOrRobotId, wasResigned) {
+	playGameBL.endTheGame = function(socketOrRobotId, wasResigned) {
 		var _this = this;
 		// find the player, error if not found
 		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
@@ -221,5 +221,5 @@ module.exports = function(pMapper) {
 		});
 	};
 	
-	return playGame;
+	return playGameBL;
 };

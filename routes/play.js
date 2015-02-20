@@ -1,10 +1,24 @@
 'use strict';
 var events = require('events');
-var eventHandler = events.EventEmitter();
+var eventHandler = new events.EventEmitter();
 
-function Play(io, playGame, mapper) {
+function Play(io, playGame) {
 	io.on('connection', function (socket) {
 		console.log('play connection');
+		// message handler for join game message
+		socket.on('joinGame', function (data) {
+			console.log('received join');
+
+			playGame.joinGame(socket.id, data);
+		});
+
+		// message handler for join game message
+		socket.on('joinGameAsRobot', function (data) {
+			console.log('received join as robot');
+
+			playGame.joinGameAsRobot(socket.id, data);
+		});
+
 		// message handler for the chat message
 		socket.on('sendChat', function (data) {
 			console.log('recieved chat');
@@ -17,13 +31,6 @@ function Play(io, playGame, mapper) {
 			console.log('recieved game message');
 
 			playGame.receiveGameMessage(socket.id, data);
-		});
-
-		// message handler for join game message
-		socket.on('joinGame', function (data) {
-			console.log('received join');
-
-			playGame.joinGame(socket.id, data);
 		});
 
 		// message handler for the leave game message
@@ -88,13 +95,6 @@ function Play(io, playGame, mapper) {
 		console.log('recieved game message');
 
 		playGame.receiveGameMessage(robotId, data);
-	});
-
-	// message handler for join game message
-	eventHandler.on('joinGame', function(data) {
-		console.log('received join');
-
-		playGame.joinGame(robotId, data);
 	});
 
 	// message handler for the leave game message

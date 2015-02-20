@@ -74,7 +74,8 @@ module.exports = function(io, mapper) {
 				team.players.push({ 
 					personOffset: -1, 
 					position: personIndex * 2 + teamIndex, 
-					connected: false, 
+					connected: false,
+					type: false,
 					handCards: [], 
 					footCards: []
 				});

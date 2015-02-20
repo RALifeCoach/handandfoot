@@ -25,11 +25,15 @@
 		<div class="row col-xs-12">
 			<div class="col-xs-2" ng-repeat="player in game.players">
 				Pos {{$index + 1}}
-				<span ng-if="player.personOffset > -1">
+				<span ng-if="player.type">
 					- {{player.person.name}}
 				</span>
-				<span ng-if="player.personOffset === -1 || player.person.id === person._id.toString()">
+				<span ng-if="player.type && player.person.id === person._id.toString()">
 					<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, $index, true)"></span>
+				</span>
+				<span ng-if="!player.type">
+					<span class="glyphicon glyphicon-log-in" ng-click="joinGame(game, $index, false)"></span>
+					<span class="glyphicon glyphicon-user" ng-click="joinAsRobot(game, $index)"></span>
 				</span>
 			</div>
 		</div>
