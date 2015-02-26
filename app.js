@@ -23,6 +23,7 @@ require('./models/Person');
 require('./models/Game');
 require('./models/Hint');
 require('./models/Help');
+require('./models/Robot');
 
 // define classes
 var gameMapper = require('./viewmodels/GameVM');

@@ -13,7 +13,7 @@ angular.module('handAndFoot')
 		'ngAudio',
 		function ($rootScope, $scope, $location, player, melds, showModalService, resultsModalService, helpFactory, ngAudio) {
 			// if no game present then go get it
-			if (!player.gameId) {
+			if (!player.getGameId()) {
 				$location.path('/games');
 				return;
 			}

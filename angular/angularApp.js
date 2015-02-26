@@ -142,9 +142,11 @@ angular.module('handAndFoot')
 	.filter('inProgress', function() {
         return function(melds) {
             var result = [];
-            for (var meldIndex = 0; meldIndex < melds.length; meldIndex++)
-				if (!melds[meldIndex].isComplete)
-					result.push(melds[meldIndex]);
+			if (typeof melds !== 'undefined') {
+				for (var meldIndex = 0; meldIndex < melds.length; meldIndex++)
+					if (!melds[meldIndex].isComplete)
+						result.push(melds[meldIndex]);
+			}
 
 			return result;
         };

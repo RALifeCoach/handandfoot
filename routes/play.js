@@ -9,12 +9,11 @@ function Play(io, playGame) {
 		socket.on('joinGame', function (data) {
 			console.log('received join');
 
-			playGame.joinGame(socket.id, data);
+			playGame.joinGame(socket, data);
 		});
 
 		// message handler for join game message
 		socket.on('joinGameAsRobot', function (data) {
-console.log(data);
 			console.log('received join as robot');
 
 			playGame.joinGameAsRobot(data);

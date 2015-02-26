@@ -23,6 +23,8 @@ module.exports = function(pPlayGameBL, mapper, io) {
 
 			connectedGame.addPlayer(socket, data);
 			
+			connectedGame.addRobots(gameVM, data);
+			
 			io.sockets.emit('refreshGames');
 
 			// send the message

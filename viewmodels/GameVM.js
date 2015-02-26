@@ -452,6 +452,7 @@ module.exports = (function() {
 			turn: game.turn,
 			turnState: game.turnState,
 			drawCards: game.drawCards,
+			numberOfPlayers: game.numberOfPlayers,
 			teams: [],
 			players: [],
 			drawPiles: [
@@ -534,6 +535,7 @@ module.exports = (function() {
 			if (err) 
 				return callback(err);
 			
+			// add a person
 			if (type === 'person') {
 				Person.findById(personId, function(err, person) {
 					if (err) {
@@ -550,7 +552,7 @@ module.exports = (function() {
 					var player = getPlayer(game, position);
 				
 					// add person to the people collection
-					if (!player.type === '') {
+					if (player.type === '') {
 						game.people.push(person);
 						player.personOffset = game.people.length - 1;
 						player.type = 'person';
@@ -559,7 +561,12 @@ module.exports = (function() {
 					player.connected = true;
 
 					// if the game has enough players then begin the game
-					if (game.people.length === game.numberOfPlayers && !game.gameBegun) {
+					var playerCount = 0;
+					for (var playerIndex = 0; playerIndex < game.numberOfPlayers; playerIndex++) {
+						if ((getPlayer(game, playerIndex)).type !== '')
+							playerCount++;
+					}
+					if (playerCount === game.numberOfPlayers && !game.gameBegun) {
 						dealNewHand(game);
 						
 						game.gameBegun = true;
@@ -580,7 +587,8 @@ module.exports = (function() {
 						callback(null, gameVM);
 					});
 				});
-			} else {
+			// add a robot
+			} else if (type === 'robot') {
 				// add the robot to the game
 				var player = getPlayer(game, position);
 			

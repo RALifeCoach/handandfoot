@@ -44,7 +44,7 @@ module.exports = function(pMapper) {
 	playGameBL.newConnectedPlayer = function(socket, data) {
 		// check to see if the player is already playing a game
 		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
-			if (connectedPlayers[playerIndex].personId.toString() === data.personId.toString()) {
+			if (connectedPlayers[playerIndex].type === 'person' && connectedPlayers[playerIndex].personId.toString() === data.personId.toString()) {
 				console.log('player already playing');
 				
 				connectedPlayers.splice(playerIndex, 1);

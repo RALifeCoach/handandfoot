@@ -9,6 +9,10 @@ angular.module('handAndFoot')
 			var playGame = { 
 			};
 			
+			playGame.getGameId = function() {
+				return sharedProperties.getGameId();
+			}
+			
 			// join game message
 			playGame.joinGame = function() {
 				var gameId = sharedProperties.getGameId();

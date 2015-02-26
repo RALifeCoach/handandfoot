@@ -2,7 +2,7 @@
 
 var events = require('events');
 var eventHandler = new events.EventEmitter();
-var Robot = require('./robot');
+var RobotPlayer = require('./robotPlayer');
 
 module.exports = function (gameId) {
     var sockets = [];
@@ -134,17 +134,17 @@ console.log(sockets);
 	};
 	
 	// add a player to a game
-	connectedGame.addPlayer = function(gameId, position, socket) {
+	connectedGame.addPlayer = function(socket, data) {
 		// in case the socket already exists for this position - remove it
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-			if (sockets[socketIndex].position === position) {
+			if (sockets[socketIndex].position === data.position) {
 				sockets.splice(socketIndex, 1);
 				break;
 			}
 		}
 		
 		// push new player
-		sockets.push({ position: position, type: 'person', socket: socket} );
+		sockets.push({ position: data.position, type: 'person', socket: socket} );
 	};
 	
 	// add a robot to a game
@@ -158,8 +158,29 @@ console.log(sockets);
 		}
 		
 		// push new robot
-		var robot = new Robot(data.gameId, data.position);
+		var robot = new RobotPlayer(data.gameId, data.position);
 		sockets.push({ position: data.position, type: 'robot', robot: robot} );
+	};
+	
+	// add a robot to a game
+	connectedGame.addRobots = function(gameVM, data) {
+		// add any robots to the game
+		for (var playerIndex = 0; playerIndex < gameVM.numberOfPlayers; playerIndex++) {
+			var playerVM = gameVM.players[playerIndex];
+			if (playerVM.type === 'robot') {
+				// in case the socket already exists for this position - remove it
+				for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
+					if (sockets[socketIndex].position === playerVM.position) {
+						sockets.splice(socketIndex, 1);
+						break;
+					}
+				}
+				
+				// push new robot
+				var robot = new RobotPlayer(data.gameId, playerIndex);
+				sockets.push({ position: playerIndex, type: 'robot', robot: robot} );
+			}
+		}
 	};
 
 	// remove player from connected game
