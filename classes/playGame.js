@@ -40,7 +40,7 @@ module.exports = function(pPlayGameBL, mapper, io) {
 			if (err) {
 				return; 
 			}
-					
+
 			var connectedGame = playGameBL.findCreateConnectedGame(data);
 			if (!connectedGame)
 				return;

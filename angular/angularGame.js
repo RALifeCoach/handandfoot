@@ -119,6 +119,7 @@ angular.module('handAndFoot')
 			// join a game as Robot
 			$scope.joinAsRobot = function(game, position) {
 				console.log('join game robot ' + position);
+				console.log(game._id);
 				if (game.password && game.password !== '') {
 					// show the model to get the password
 					var modalOptions = {
@@ -128,9 +129,13 @@ angular.module('handAndFoot')
 					};
 
 					gamePasswordService.showModal({}, modalOptions, game.password).then(function (result) {
+						sharedProperties.setGameId(game._id);
+						sharedProperties.setPosition(position);
 						playGame.joinGameAsRobot()
 					});
 				} else {
+					sharedProperties.setGameId(game._id);
+					sharedProperties.setPosition(position);
 					playGame.joinGameAsRobot()
 				}
 			};

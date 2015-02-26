@@ -14,6 +14,7 @@ function Play(io, playGame) {
 
 		// message handler for join game message
 		socket.on('joinGameAsRobot', function (data) {
+console.log(data);
 			console.log('received join as robot');
 
 			playGame.joinGameAsRobot(data);

@@ -15,7 +15,7 @@ module.exports = (function() {
 			position: player.position,
 			connected: player.connected,
 			turn: false,
-			type: player.type,
+			type: player.type === '' ? false : player.type,
 			inFoot: player.handCards.length === 0,
 			teamIndex: teamIndex,
 			footCards: loadCards(player.footCards),
@@ -509,7 +509,7 @@ module.exports = (function() {
 
 				gameVM.playerAttached = false;
 				for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
-					if (gameVM.players[playerIndex].type 
+					if (gameVM.players[playerIndex].type !== '' 
 					&& gameVM.players[playerIndex].person.id === personId.toString()) {
 						gameVM.playerAttached = true;
 						break;
@@ -529,7 +529,6 @@ module.exports = (function() {
 	};
 		
 	GameVM.addPlayer = function(gameId, type, personId, position, callback) {
-console.log(gameId, type, personId, position);
 		var _this = this;
 		gameIo.getGameById(gameId, function (err, game){
 			if (err) 
@@ -551,7 +550,7 @@ console.log(gameId, type, personId, position);
 					var player = getPlayer(game, position);
 				
 					// add person to the people collection
-					if (!player.type) {
+					if (!player.type === '') {
 						game.people.push(person);
 						player.personOffset = game.people.length - 1;
 						player.type = 'person';
@@ -586,13 +585,12 @@ console.log(gameId, type, personId, position);
 				var player = getPlayer(game, position);
 			
 				// add person to the people collection
-				if (!player.type) {
+				if (player.type === '') {
 					player.type = 'robot';
 					player.robotId = personId;
 				}
 
 				player.connected = true;
-
 				// if the game has enough players then begin the game
 				if (game.people.length === game.numberOfPlayers && !game.gameBegun) {
 					dealNewHand(game);

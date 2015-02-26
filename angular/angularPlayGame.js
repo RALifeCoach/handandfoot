@@ -7,27 +7,27 @@ angular.module('handAndFoot')
 		'sharedProperties',
 		function($http, $rootScope, chatSocket, sharedProperties){
 			var playGame = { 
-				gameId: sharedProperties.getGameId(),
-				person: sharedProperties.getPerson(),
-				position: sharedProperties.getPosition()
 			};
 			
 			// join game message
 			playGame.joinGame = function() {
+				var gameId = sharedProperties.getGameId();
+				var person = sharedProperties.getPerson();
+				var position = sharedProperties.getPosition();
 				chatSocket.emit('joinGame', {
-					gameId: this.gameId, 
-					personId: this.person._id, 
-					name: this.person.name, 
-					position: this.position});
+					gameId: gameId, 
+					personId: person._id, 
+					name: person.name, 
+					position: position});
 			}
 			
 			// join game message
 			playGame.joinGameAsRobot = function() {
+				var gameId = sharedProperties.getGameId();
+				var position = sharedProperties.getPosition();
 				chatSocket.emit('joinGameAsRobot', {
-					gameId: this.gameId, 
-					personId: this.person._id, 
-					name: this.person.name, 
-					position: this.position});
+					gameId: gameId, 
+					position: position});
 			}
 			
 			// leave the game

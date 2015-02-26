@@ -75,7 +75,7 @@ module.exports = function(io, mapper) {
 					personOffset: -1, 
 					position: personIndex * 2 + teamIndex, 
 					connected: false,
-					type: false,
+					type: '',
 					handCards: [], 
 					footCards: []
 				});

@@ -65,7 +65,7 @@ module.exports = function(pMapper) {
 	playGameBL.newConnectedRobot = function(robotId, data) {
 		// check to see if the player is already playing a game
 		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
-			if (connectedPlayers[playerIndex].personId.toString() === data.personId.toString()) {
+			if (connectedPlayers[playerIndex].robotId === robotId) {
 				console.log('player already playing');
 				
 				connectedPlayers.splice(playerIndex, 1);
@@ -75,9 +75,8 @@ module.exports = function(pMapper) {
 					
 		// add the new player to the list of players
 		connectedPlayers.push({ 
-			personId: data.personId, 
 			position: data.position, 
-			personName: data.name,
+			personName: 'Robot' + data.position,
 			type: 'robot',
 			robotId: robotId, 
 			gameId: data.gameId});
