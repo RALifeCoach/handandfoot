@@ -8,15 +8,15 @@ module.exports = function(pMapper) {
 
 	var playGameBL = {};
 
-	playGameBL.leaveGame = function(socketOrRobotId) {
+	playGameBL.leaveGame = function(receiveId) {
 		var _this = this;
 		// common routine for leaving the game
 		// check to see if the player is playing a game
-		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
+		var connectedPlayer = findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
-		// add the player and socketOrRobotId to the game VM
+		// add the player to the game VM
 		mapper.removePlayer(connectedPlayer.gameId, connectedPlayer.personId, function(err, gameVM) {
 			if (err) {
 				console.log(err);
@@ -34,14 +34,14 @@ module.exports = function(pMapper) {
 			connectedPlayers.splice(playerIndex, 1);
 
 			// if it's the last player then remove the game
-			if (connectedGame.removePlayer(socketOrRobotId, gameVM)) {
+			if (connectedGame.removePlayer(receiveId, gameVM)) {
 				var gameIndex = connectedGames.indexOf(connectedGame);
 				connectedGames.splice(gameIndex, 1);
 			}
 		});
 	};
 
-	playGameBL.newConnectedPlayer = function(socketOrRobotId, data) {
+	playGameBL.newConnectedPlayer = function(socket, data) {
 		// check to see if the player is already playing a game
 		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
 			if (connectedPlayers[playerIndex].personId.toString() === data.personId.toString()) {
@@ -57,11 +57,33 @@ module.exports = function(pMapper) {
 			personId: data.personId, 
 			position: data.position, 
 			personName: data.name,
-			socketOrRobotId: typeof socketOrRobotId === 'string' ? socketOrRobotId : socketOrRobotId.id, 
+			type: 'player',
+			socket: socket, 
 			gameId: data.gameId});
 	};
 
-	playGameBL.findCreateConnectedGame = function(socketOrRobotId, data) {
+	playGameBL.newConnectedRobot = function(robotId, data) {
+		// check to see if the player is already playing a game
+		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
+			if (connectedPlayers[playerIndex].personId.toString() === data.personId.toString()) {
+				console.log('player already playing');
+				
+				connectedPlayers.splice(playerIndex, 1);
+				break;
+			}
+		}
+					
+		// add the new player to the list of players
+		connectedPlayers.push({ 
+			personId: data.personId, 
+			position: data.position, 
+			personName: data.name,
+			type: 'robot',
+			robotId: robotId, 
+			gameId: data.gameId});
+	};
+
+	playGameBL.findCreateConnectedGame = function(data) {
 		// find the game, create if it doesn't exist
 		var connectedGame = false;
 		for (var gameIndex = 0; gameIndex < connectedGames.length; gameIndex++) {
@@ -77,29 +99,27 @@ module.exports = function(pMapper) {
 			connectedGames.push(connectedGame);
 		}
 		
-		// add the socketOrRobotId to the game - for sending
-		connectedGame.addPlayer(data.gameId, data.position, socketOrRobotId);
-		
 		return connectedGame;
 	};
 
-	function findConnectedPlayer(socketOrRobotId) {
-		// look for socketOrRobotId or robot
-		var socketId = socketOrRobotId.id;
-		if (typeof socketOrRobotId === 'string')
-			socketId = socketOrRobotId;
+	function findConnectedPlayer(receiveId) {
+		// look for socket or robot
 			
 		// check to see if the player is playing a game
 		var connectedPlayer = false;
 		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
-			if (connectedPlayers[playerIndex].socketOrRobotId.toString() === socketId.toString()) {
+			var player = connectedPlayers[playerIndex];
+			if (player.type === 'person' && player.socket.id.toString() === receiveId) {
+				connectedPlayer = connectedPlayers[playerIndex];
+				break;
+			}
+			if (player.type === 'robot' && player.robotId === receiveId) {
 				connectedPlayer = connectedPlayers[playerIndex];
 				break;
 			}
 		}
 		if (!connectedPlayer) {
 			console.log('player not playing');
-			//socketOrRobotId.emit('error', { error: 'Player not playing a game' });
 			return false;
 		}
 
@@ -124,9 +144,9 @@ module.exports = function(pMapper) {
 	};
 
 	// received end hand question - send it to all players
-	playGameBL.sendEndHandQuestion = function(socketOrRobotId) {
+	playGameBL.sendEndHandQuestion = function(receiveId) {
 		// check to see if the player is playing a game
-		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
+		var connectedPlayer = findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
@@ -139,9 +159,9 @@ module.exports = function(pMapper) {
 	};
 
 	// received end hand question - send it to all players
-	playGameBL.sendEndHandResponse = function(socketOrRobotId, data) {
+	playGameBL.sendEndHandResponse = function(receiveId, data) {
 		// check to see if the player is playing a game
-		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
+		var connectedPlayer = findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
@@ -154,9 +174,9 @@ module.exports = function(pMapper) {
 	};
 
 	// received a request to resign - send it to all players
-	playGameBL.sendResignRequest = function(socketOrRobotId) {
+	playGameBL.sendResignRequest = function(receiveId) {
 		// check to see if the player is playing a game
-		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
+		var connectedPlayer = findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
@@ -168,9 +188,9 @@ module.exports = function(pMapper) {
 		connectedGame.sendResignRequest(connectedPlayer);
 	};
 		
-	playGameBL.sendResignNoResponse = function(socketOrRobotId) {
+	playGameBL.sendResignNoResponse = function(receiveId) {
 		// find the player, error if not found
-		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
+		var connectedPlayer = findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
@@ -183,10 +203,10 @@ module.exports = function(pMapper) {
 	};
 
 	// end the game
-	playGameBL.endTheGame = function(socketOrRobotId, wasResigned) {
+	playGameBL.endTheGame = function(receiveId, wasResigned) {
 		var _this = this;
 		// find the player, error if not found
-		var connectedPlayer = findConnectedPlayer(socketOrRobotId);
+		var connectedPlayer = findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 

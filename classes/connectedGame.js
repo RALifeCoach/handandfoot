@@ -10,7 +10,7 @@ module.exports = function (gameId) {
 
 	connectedGame.gameId = gameId;
 	
-	connectedGame.sendMessages = function(gameVM, receiveSocket, showResults) {
+	connectedGame.sendMessages = function(gameVM, receiveId, showResults) {
 		var playersVM = [];
 		for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
 			if (!gameVM.players[playerIndex].type)
@@ -69,7 +69,8 @@ module.exports = function (gameId) {
 			console.log('too many sockets', sockets.length);
 			console.log(sockets);
 		}
-		
+
+console.log(sockets);		
 		// send update game with players and teams properly ordered
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
 			var socket = sockets[socketIndex];
@@ -82,7 +83,10 @@ module.exports = function (gameId) {
 					socketPlayerIndex -= playersVM.length;
 				
 				if (playerIndex === 0) {
-					playersVM[socketPlayerIndex].myUpdate = receiveSocket == socket.socket;
+					playersVM[socketPlayerIndex].myUpdate = 
+						socket.type === 'robot' 
+							? (receiveId == socket.robotId) 
+							: (receiveId === socket.socket.id.toString());
 					players.push(playersVM[socketPlayerIndex]);
 				} else {
 					players.push(otherPlayers[socketPlayerIndex]);
@@ -109,7 +113,7 @@ module.exports = function (gameId) {
 			}
 			
 			// send the new data to each player
-			if (socket.socket)
+			if (socket.type === 'person')
 				socket.socket.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
 			else
 				socket.robot.emit('gameUpdate', { game: gameVM, players: players, teams: teams });
@@ -122,7 +126,7 @@ module.exports = function (gameId) {
 			var socket = sockets[socketIndex];
 	
 			// send the new data to each player
-			if (socket.socket)
+			if (socket.type === 'person')
 				socket.socket.emit('chatUpdate', data);
 			else
 				socket.robot.emit('chatUpdate', data);
@@ -140,19 +144,29 @@ module.exports = function (gameId) {
 		}
 		
 		// push new player
-		if (socket === 'robot') {
-			var robot = new Robot(gameId, position);
-			sockets.push({ position: position, robot: robot} );
-		} else {
-			sockets.push({ position: position, socket: socket} );
+		sockets.push({ position: position, type: 'person', socket: socket} );
+	};
+	
+	// add a robot to a game
+	connectedGame.addRobot = function(data) {
+		// in case the socket already exists for this position - remove it
+		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
+			if (sockets[socketIndex].position === data.position) {
+				sockets.splice(socketIndex, 1);
+				break;
+			}
 		}
+		
+		// push new robot
+		var robot = new Robot(data.gameId, data.position);
+		sockets.push({ position: data.position, type: 'robot', robot: robot} );
 	};
 
 	// remove player from connected game
-	connectedGame.removePlayer = function(socket, gameVM) {
+	connectedGame.removePlayer = function(receiveId, gameVM) {
 		// remove the socket
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-			if (sockets[socketIndex] === socket.id) {
+			if (socket[socketIndex].type === 'person' && sockets[socketIndex].socket.id.toString() === receiveId) {
 				sockets.splice(socketIndex, 1);
 				break;
 			}
@@ -163,7 +177,7 @@ module.exports = function (gameId) {
 			return true;
 			
 		// send the message to the remaining players
-		this.sendMessages(gameVM, socket);
+		this.sendMessages(gameVM, receiveId);
 	};
 	
 	// send end hand question
@@ -172,7 +186,7 @@ module.exports = function (gameId) {
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
 			var socket = sockets[socketIndex];
 			
-			if (socket.socket)
+			if (socket.type === 'person')
 				socket.socket.emit('endHandQuestion', { position: connectedPlayer.position, personName: connectedPlayer.personName });
 			else
 				socket.robot.emit('endHandQuestion', { position: connectedPlayer.position, personName: connectedPlayer.personName });
@@ -185,7 +199,7 @@ module.exports = function (gameId) {
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
 			var socket = sockets[socketIndex];
 			
-			if (socket.socket)
+			if (socket.type === 'person')
 				socket.socket.emit('endHandResponse', data);
 			else
 				socket.robot.emit('endHandResponse', data);
@@ -198,7 +212,7 @@ module.exports = function (gameId) {
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
 			var socket = sockets[socketIndex];
 			
-			if (socket.socket)
+			if (socket.type === 'person')
 				socket.socket.emit('resignRequest', { position: connectedPlayer.position, personName: connectedPlayer.personName });
 			else
 				socket.robot.emit('resignRequest', { position: connectedPlayer.position, personName: connectedPlayer.personName });
@@ -211,7 +225,7 @@ module.exports = function (gameId) {
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
 			var socket = sockets[socketIndex];
 			
-			if (socket.socket)
+			if (socket.type === 'person')
 				socket.socket.emit('resignResponse', { result: 'no'});
 			else
 				socket.robot.emit('resignResponse', { result: 'no'});
@@ -232,7 +246,7 @@ module.exports = function (gameId) {
 			else if (gameTeam == winningTeam)
 				status = 'win';
 			
-			if (socket.socket)
+			if (socket.type === 'person')
 				socket.socket.emit('resignResponse', { result: status });
 			else
 				socket.robot.emit('resignResponse', { result: status });

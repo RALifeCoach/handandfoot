@@ -529,6 +529,7 @@ module.exports = (function() {
 	};
 		
 	GameVM.addPlayer = function(gameId, type, personId, position, callback) {
+console.log(gameId, type, personId, position);
 		var _this = this;
 		gameIo.getGameById(gameId, function (err, game){
 			if (err) 

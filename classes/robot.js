@@ -28,4 +28,6 @@ module.exports = function(gameId, position) {
 				ggggg = ooooo;
 		}
 	};
+	
+	return robot;
 };
