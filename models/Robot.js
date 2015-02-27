@@ -12,6 +12,10 @@ var RobotSchema = new mongoose.Schema({
 		suit: Number,
 		number: Number
 	}],
+	round: Number,
+	turn: Boolean,
+	turnState: String,
+	drawCards: Number, // the number of cards to draw after playing red threes
 	melds: [new Schema({
 		type: String,
 		number: Number,
@@ -23,6 +27,7 @@ var RobotSchema = new mongoose.Schema({
 	})],
 	score: Number,
 	otherPlayers: [new Schema({
+		turn: Boolean,
 		teamIndex: Number,
 		position: Number,
 		handCards: Number,
@@ -40,6 +45,12 @@ var RobotSchema = new mongoose.Schema({
 		})],
 		score: Number
 	})],
+	discardPile: {
+		cards: [{
+			suit: Number,
+			number: Number
+		}]
+	}
 });
 
 mongoose.model('Robot', RobotSchema);
