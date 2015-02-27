@@ -55,24 +55,28 @@ console.log(data);
 			newRobot = true;
 			robot = {
 				_id: id
+				, player: {}
+				, control: {}
+				, gameMessages: []
 			};
 		}
 		
 		// load 'my' values
-		robot.position = data.players[0].position;
-		robot.handCards = data.players[0].footCards;
-		robot.footCards = data.players[0].handCards;
+		robot.player.position = data.players[0].position;
+		robot.player.handCards = data.players[0].footCards;
+		robot.player.footCards = data.players[0].handCards;
+		robot.player.inFoot = data.players[0].handCards.length === 0;
 		robot.melds = data.teams[0].melds;
 		robot.score = data.teams[0].score;
-		robot.round = data.game.round;
-		robot.turn = data.players[0].turn;
-		robot.turnState = data.game.turnState;
-		robot.drawCards = data.game.drawCards;
+		robot.redThrees = data.teams[0].redThrees;
+		robot.control.round = data.game.round;
+		robot.control.turn = data.players[0].turn;
+		robot.control.turnState = data.game.turnState;
+		robot.control.drawCards = data.game.drawCards;
 		robot.otherPlayers = [];
 		robot.otherTeams = [];
 		robot.discardPile = data.game.discardPile;
 		robot.drawPiles = data.game.drawPiles;
-		robot.inFoot = data.players[0].handCards.length === 0;
 		
 		var teamCount = data.teams.length;
 		var teamIndex = data.players[0].teamIndex;
@@ -93,6 +97,7 @@ console.log(data);
 			var team = data.teams[teamIndex];
 			robot.otherTeams.push({
 				melds: team.melds,
+				redThrees: team.redThrees,
 				score: team.score
 			});
 		}
@@ -130,24 +135,31 @@ console.log(data);
 	function playTurn(robot) {
 		switch (robot.turnState) {
 			case 'draw1':
+				drawACard(robot);
+				break;
 			case 'draw2':
 			case 'draw3':
-				drawACard(robot);
+				drawFromPile(robot);
+				break;
+			case: 'play'
+				playCards(robot);
 				break;
 		}
 	}
 
 	// draw a card
 	function drawACard(robot) {
-		var cards = robot.inFoot ? robot.footCards : robot.handCards;
+		var cards = robot.player.inFoot ? robot.player.footCards : robot.player.handCards;
 		var drawOptions = canDrawFromPile(robot);
 		if (drawOptions.length > 0) {
-			var blackThrees = coundSameNumber(robot.discardPile, {suit: 0, number: 1})
-				+ coundSameNumber(robot.discardPile, {suit: 3, number: 1});
-			if (robot.inFoot || blackThrees < 3) {
-				
+			var blackThrees = coundSameCard(robot.discardPile, {suit: 0, number: 1}, 7)
+				+ coundSameCard(robot.discardPile, {suit: 3, number: 1}, 7);
+			if (robot.player.inFoot || blackThrees < 3) {
+				return drawFromDiscard(robot);
 			}
 		}
+		
+		drawFromPile(robot);
 	}
 	
 	// check to see if the robot can draw a card
@@ -155,7 +167,7 @@ console.log(data);
 		var options = [];
 		// check to see if the player is allowed to draw from discard pile
 		var discardPile = robot.discardPile;
-		var hand = robot.inFoot ? robot.footCards : robot.handCards;
+		var hand = robot.player.inFoot ? robot.player.footCards : robot.player.handCards;
 		
 		// are there cards on the discard pile?
 		if (discardPile.cards.length === 0)
@@ -196,9 +208,9 @@ console.log(data);
 		&& !containsCard(hand, topCard))
 			cardsInRun = countCardsInRun(cards, topCard);
 			
-		if (!robot.inFoot && !oppenentsInFoot(robot))
+		if (!robot.player.inFoot && !oppenentsInFoot(robot))
 			options.push('run');
-		if (robot.inFoot || oppenentsInFoot(robot) and cardsInRun > 5)
+		if (robot.player.inFoot || oppenentsInFoot(robot) and cardsInRun > 5)
 			options.push('run');
 		
 		// count the number of cards of the same number in your hand
@@ -242,10 +254,15 @@ console.log(data);
 	}
 	
 	// count the number of cards that are the same as the passed card
-	function countSameCard(hand, matchingCard) {
+	function countSameCard(hand, matchingCard, depth) {
 		var count = 0;
-		for (var cardIndex = 0; cardIndex < cards.length; cardIndex++) {
-			if (cards[cardIndex].cardNumber === matchingCard.cardNumber)
+		var maxDepth = 0;
+		if (depth && depth < cards.length)
+			maxDepth = cards.length - depth;
+			
+		for (var cardIndex = cards.length - 1; cardIndex >= maxDepth; cardIndex--) {
+			if (cards[cardIndex].number === matchingCard.number
+			&& cards[cardIndex]suit === matchingCard.suit)
 				count++;
 		}
 		return count;
@@ -271,6 +288,31 @@ console.log(data);
 		
 		return false;
 	}
+	
+	
+	// draw a card from a draw pile
+	function drawFromPile(robot) {
+		sendUpdate(robot, {action: 'drawCard', pileIndex: pileIndex});
+	}
+
+	// send an update to the server
+	function sendUpdate(robot, action) {
+		if (!action)
+			action = false;
+			
+		var data = {
+			player: robot.player,
+			melds: robot.melds,
+			redThrees: robot.redThrees,
+			action: action,
+			control: scope.control
+		};
+		eventHandler.emit('updateGame', data);
+		
+		for (var messageIndex = 0; messageIndex < robot.gameMessages.length; messageIndex++)
+			eventHandler.emit('gameMessage', { message: robot.gameMessages[messageIndex] });
+		robot.gameMessages = [];
+	};
 	
 	// received chat
 	function chatUpdate(data, robot) {

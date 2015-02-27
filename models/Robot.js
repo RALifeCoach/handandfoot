@@ -3,19 +3,25 @@ var Schema = mongoose.Schema;
 
 var RobotSchema = new mongoose.Schema({
 	_id: String,
-	position: Number,
-	handCards: [{
-		suit: Number,
-		number: Number
-	}],
-	footCards: [{
-		suit: Number,
-		number: Number
-	}],
-	round: Number,
-	turn: Boolean,
-	turnState: String,
-	drawCards: Number, // the number of cards to draw after playing red threes
+	player: {
+		position: Number,
+		inFoot: Boolean,
+		handCards: [{
+			suit: Number,
+			number: Number
+		}],
+		footCards: [{
+			suit: Number,
+			number: Number
+		}]
+	},
+	control: {
+		round: Number,
+		turn: Boolean,
+		turnState: String,
+		drawCards: Number, // the number of cards to draw after playing red threes
+	},
+	gameMessages: [],
 	melds: [new Schema({
 		type: String,
 		number: Number,
@@ -26,6 +32,7 @@ var RobotSchema = new mongoose.Schema({
 		}]
 	})],
 	score: Number,
+	redThrees: Number,
 	otherPlayers: [new Schema({
 		turn: Boolean,
 		teamIndex: Number,
@@ -43,6 +50,7 @@ var RobotSchema = new mongoose.Schema({
 				number: Number
 			}]
 		})],
+		redThrees: Number,
 		score: Number
 	})],
 	discardPile: {
