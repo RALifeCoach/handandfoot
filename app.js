@@ -12,6 +12,8 @@ var http = require('http');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var events = require('events');
+var eventHandler = new events.EventEmitter();
 
 // connect to database
 if (process.env.DB_CONNECT)
@@ -27,7 +29,7 @@ require('./models/Robot');
 
 // define classes
 var gameMapper = require('./viewmodels/GameVM');
-var playGameBL = require('./classes/playGameBL')(gameMapper);
+var playGameBL = require('./classes/playGameBL')(gameMapper, eventHandler);
 var playGame = require('./classes/playGame')(playGameBL, gameMapper, io);
 var PersonVM = require('./viewmodels/PersonVM');
 var personMapper = new PersonVM.PersonVM();
@@ -35,7 +37,7 @@ var personMapper = new PersonVM.PersonVM();
 // include routes
 var people = require('./routes/person')(personMapper);
 var games = require('./routes/game')(io, gameMapper);
-var play = require('./routes/play')(io, playGame);
+var play = require('./routes/play')(io, playGame, eventHandler);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

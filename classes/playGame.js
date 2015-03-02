@@ -24,6 +24,7 @@ module.exports = function(pPlayGameBL, mapper, io) {
 			connectedGame.addPlayer(socket, data);
 			
 			connectedGame.addRobots(gameVM, data);
+			playGameBL.newConnectedRobots(gameVM, data);
 			
 			io.sockets.emit('refreshGames');
 

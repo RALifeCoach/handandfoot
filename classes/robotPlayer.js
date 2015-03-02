@@ -2,11 +2,10 @@
 
 var mongoose = require('mongoose');
 var Robot = mongoose.model('Robot');
-var events = require('events');
-var eventHandler = events.EventEmitter();
 
-module.exports = function(gameId, position) {
+module.exports = function(gameId, position, pEventHandler) {
 	var id = gameId + 'p' + position;
+	var eventHandler = pEventHandler;
 	var robotPlayer = {
 	};
 	
@@ -51,6 +50,7 @@ console.log(data);
 		
 		// update robot information - if it doesn't exist then create it
 		if (!robot) {
+console.log('new');
 			robot = new Robot({
 				_id: id
 				, player: {}
@@ -76,12 +76,7 @@ console.log(data);
 		robot.discardPile = {
 			cards: loadCards(data.game.discardPile.cards)
 		};
-		robot.drawPiles = [];
-		for (var pileIndex = 0; pileIndex < data.game.drawPiles.length; pileIndex++) {
-			robot.drawPiles.push({
-				cards: loadCards(data.game.drawPiles[pileIndex].cards)
-			});
-		}
+		robot.drawPiles = data.game.drawPiles;
 		
 		var teamCount = data.teams.length;
 		var teamIndex = data.players[0].teamIndex;
@@ -107,7 +102,7 @@ console.log(data);
 			});
 		}
 		
-		robot.save(robot, function(err) {
+		robot.save(function(err) {
 			if (err) {
 				console.log('error inserting robot');
 				console.log(robot);
@@ -116,7 +111,7 @@ console.log(data);
 			}
 			
 			// if it's the robot's turn then play
-			if (robot.turn && data.game.gameBegun)
+			if (robot.control.turn && data.game.gameBegun)
 				playTurn(robot);
 		});
 	}
@@ -136,7 +131,8 @@ console.log(data);
 	
 	// it's the robot's turn
 	function playTurn(robot) {
-		switch (robot.turnState) {
+		console.log('play turn', robot.control.turnState);
+		switch (robot.control.turnState) {
 			case 'draw1':
 				drawACard(robot);
 				break;
@@ -152,6 +148,7 @@ console.log(data);
 
 	// draw a card
 	function drawACard(robot) {
+		console.log('draw a card');
 		var cards = robot.player.inFoot ? robot.player.footCards : robot.player.handCards;
 		var drawOptions = canDrawFromPile(robot);
 		if (drawOptions.length > 0) {
@@ -309,6 +306,12 @@ console.log(data);
 	
 	// draw a card from a draw pile
 	function drawFromPile(robot) {
+		console.log('drawFromPile');
+		var pileIndex;
+		do {
+			pileIndex = Math.floor(Math.random() * 4);
+		} while (robot.drawPiles[pileIndex].cards === 0);
+	
 		sendUpdate(robot, {action: 'drawCard', pileIndex: pileIndex});
 	}
 
@@ -318,12 +321,14 @@ console.log(data);
 			action = false;
 			
 		var data = {
+			id: robot._id,
 			player: robot.player,
 			melds: robot.melds,
 			redThrees: robot.redThrees,
 			action: action,
-			control: scope.control
+			control: robot.control
 		};
+console.log('emit', data);	
 		eventHandler.emit('updateGame', data);
 		
 		for (var messageIndex = 0; messageIndex < robot.gameMessages.length; messageIndex++)

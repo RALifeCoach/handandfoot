@@ -1,7 +1,8 @@
 'use strict';
 var ConnectedGame = require('./connectedGame');
 
-module.exports = function(pMapper) {
+module.exports = function(pMapper, pEventHandler) {
+	var eventHandler = pEventHandler;
 	var mapper = pMapper;
 	var connectedPlayers = [];
 	var connectedGames = [];
@@ -12,7 +13,7 @@ module.exports = function(pMapper) {
 		var _this = this;
 		// common routine for leaving the game
 		// check to see if the player is playing a game
-		var connectedPlayer = findConnectedPlayer(receiveId);
+		var connectedPlayer = this.findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
@@ -25,7 +26,7 @@ module.exports = function(pMapper) {
 			}
 			
 			// find the game, error if it doesn't exist
-			var connectedGame = findConnectedGame(connectedPlayer.gameId);
+			var connectedGame = this.findConnectedGame(connectedPlayer.gameId);
 			if (!connectedGame)
 				return;
 			
@@ -62,6 +63,34 @@ module.exports = function(pMapper) {
 			gameId: data.gameId});
 	};
 
+	playGameBL.newConnectedRobots = function(gameVM, data) {
+		// add any robots to the game
+		for (var playerIndex = 0; playerIndex < gameVM.numberOfPlayers; playerIndex++) {
+			var playerVM = gameVM.players[playerIndex];
+console.log(playerVM);
+			if (playerVM.type === 'robot') {
+				// check to see if the player is already playing a game
+				for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
+					if (connectedPlayers[playerIndex].type === 'robot' && connectedPlayers[playerIndex].robotId === playerVM.person.id) {
+						console.log('player already playing');
+						
+						connectedPlayers.splice(playerIndex, 1);
+						break;
+					}
+				}
+							
+				// add the new player to the list of players
+				connectedPlayers.push({ 
+					position: playerVM.position, 
+					personName: playerVM.person.name,
+					type: 'robot',
+					robotId: playerVM.person.id, 
+					gameId: data.gameId});
+			}
+		}
+console.log(connectedPlayers);
+	};
+
 	playGameBL.newConnectedRobot = function(robotId, data) {
 		// check to see if the player is already playing a game
 		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
@@ -94,16 +123,16 @@ module.exports = function(pMapper) {
 		
 		// in no connected game found then create one
 		if (!connectedGame) {
-			var connectedGame = new ConnectedGame(data.gameId);
+			var connectedGame = new ConnectedGame(data.gameId, eventHandler);
 			connectedGames.push(connectedGame);
 		}
 		
 		return connectedGame;
 	};
 
-	function findConnectedPlayer(receiveId) {
+	playGameBL.findConnectedPlayer = function(receiveId) {
 		// look for socket or robot
-			
+console.log(connectedPlayers);
 		// check to see if the player is playing a game
 		var connectedPlayer = false;
 		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
@@ -125,7 +154,7 @@ module.exports = function(pMapper) {
 		return connectedPlayer;
 	};
 		
-	function findConnectedGame(gameId) {
+	playGameBL.findConnectedGame = function(gameId) {
 		// find the game, error if it doesn't exist
 		var connectedGame = false;
 		for (var gameIndex = 0; gameIndex < connectedGames.length; gameIndex++) {
@@ -145,12 +174,12 @@ module.exports = function(pMapper) {
 	// received end hand question - send it to all players
 	playGameBL.sendEndHandQuestion = function(receiveId) {
 		// check to see if the player is playing a game
-		var connectedPlayer = findConnectedPlayer(receiveId);
+		var connectedPlayer = this.findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
 		// find the game, error if it doesn't exist
-		var connectedGame = findConnectedGame(connectedPlayer.gameId);
+		var connectedGame = this.findConnectedGame(connectedPlayer.gameId);
 		if (!connectedGame)
 			return;
 
@@ -160,12 +189,12 @@ module.exports = function(pMapper) {
 	// received end hand question - send it to all players
 	playGameBL.sendEndHandResponse = function(receiveId, data) {
 		// check to see if the player is playing a game
-		var connectedPlayer = findConnectedPlayer(receiveId);
+		var connectedPlayer = this.findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
 		// find the game, error if it doesn't exist
-		var connectedGame = findConnectedGame(connectedPlayer.gameId);
+		var connectedGame = this.findConnectedGame(connectedPlayer.gameId);
 		if (!connectedGame)
 			return;
 
@@ -175,12 +204,12 @@ module.exports = function(pMapper) {
 	// received a request to resign - send it to all players
 	playGameBL.sendResignRequest = function(receiveId) {
 		// check to see if the player is playing a game
-		var connectedPlayer = findConnectedPlayer(receiveId);
+		var connectedPlayer = this.findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
 		// find the game, error if it doesn't exist
-		var connectedGame = findConnectedGame(connectedPlayer.gameId);
+		var connectedGame = this.findConnectedGame(connectedPlayer.gameId);
 		if (!connectedGame)
 			return;
 
@@ -189,12 +218,12 @@ module.exports = function(pMapper) {
 		
 	playGameBL.sendResignNoResponse = function(receiveId) {
 		// find the player, error if not found
-		var connectedPlayer = findConnectedPlayer(receiveId);
+		var connectedPlayer = this.findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 		
 		// find the game, error if it doesn't exist
-		var connectedGame = findConnectedGame(connectedPlayer.gameId);
+		var connectedGame = this.findConnectedGame(connectedPlayer.gameId);
 		if (!connectedGame)
 			return;
 
@@ -205,7 +234,7 @@ module.exports = function(pMapper) {
 	playGameBL.endTheGame = function(receiveId, wasResigned) {
 		var _this = this;
 		// find the player, error if not found
-		var connectedPlayer = findConnectedPlayer(receiveId);
+		var connectedPlayer = this.findConnectedPlayer(receiveId);
 		if (!connectedPlayer)
 			return;
 
@@ -231,7 +260,7 @@ module.exports = function(pMapper) {
 				return;
 				
 			// find the game, error if it doesn't exist
-			var connectedGame = findConnectedGame(connectedPlayer.gameId);
+			var connectedGame = this.findConnectedGame(connectedPlayer.gameId);
 			if (!connectedGame)
 				return;
 

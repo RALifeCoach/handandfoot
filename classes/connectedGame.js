@@ -4,7 +4,8 @@ var events = require('events');
 var eventHandler = new events.EventEmitter();
 var RobotPlayer = require('./robotPlayer');
 
-module.exports = function (gameId) {
+module.exports = function (gameId, pEventHandler) {
+	var eventHandler = pEventHandler;
     var sockets = [];
 	var connectedGame = {};
 
@@ -61,7 +62,7 @@ module.exports = function (gameId) {
 		playersVM[gameVM.turn].turn = true;
 		otherPlayers[gameVM.turn].turn = true;
 		
-		for (var pileIndex = 0; pileIndex < 3; pileIndex++) {
+		for (var pileIndex = 0; pileIndex < 4; pileIndex++) {
 			gameVM.drawPiles[pileIndex].cards = gameVM.drawPiles[pileIndex].cards.length;
 		}
 		
@@ -70,7 +71,6 @@ module.exports = function (gameId) {
 			console.log(sockets);
 		}
 
-console.log(sockets);		
 		// send update game with players and teams properly ordered
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
 			var socket = sockets[socketIndex];
@@ -158,7 +158,7 @@ console.log(sockets);
 		}
 		
 		// push new robot
-		var robot = new RobotPlayer(data.gameId, data.position);
+		var robot = new RobotPlayer(data.gameId, data.position, eventHandler);
 		sockets.push({ position: data.position, type: 'robot', robot: robot} );
 	};
 	
@@ -177,7 +177,7 @@ console.log(sockets);
 				}
 				
 				// push new robot
-				var robot = new RobotPlayer(data.gameId, playerIndex);
+				var robot = new RobotPlayer(data.gameId, playerIndex, eventHandler);
 				sockets.push({ position: playerIndex, type: 'robot', robot: robot} );
 			}
 		}

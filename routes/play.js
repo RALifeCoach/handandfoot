@@ -1,8 +1,6 @@
 'use strict';
-var events = require('events');
-var eventHandler = new events.EventEmitter();
 
-function Play(io, playGame) {
+function Play(io, playGame, eventHandler) {
 	io.on('connection', function (socket) {
 		console.log('play connection');
 		// message handler for join game message
@@ -84,66 +82,66 @@ function Play(io, playGame) {
 	});
 
 	// process messages from robot
-	eventHandler.on('sendChat', function(robotId, data) {
+	eventHandler.on('sendChat', function(data) {
 		console.log('recieved chat');
 
-		playGame.sendChatMessage(robotId, data);
+		playGame.sendChatMessage(data.id, data);
 	});
 
 	// message handler for messages from the game
 	eventHandler.on('gameMessage', function(data) {
 		console.log('recieved game message');
 
-		playGame.receiveGameMessage(robotId, data);
+		playGame.receiveGameMessage(data.id, data);
 	});
 
 	// message handler for the leave game message
-	eventHandler.on('leaveGame', function() {
+	eventHandler.on('leaveGame', function(data) {
 		console.log('recieved leave game');
 
-		playGame.leaveGame(robotId);
+		playGame.leaveGame(data.id);
 	});
 
 	// message handler for the leave game message
-	eventHandler.on('resignRequest', function() {
+	eventHandler.on('resignRequest', function(data) {
 		console.log('recieved resign request');
 
-		playGame.sendResignRequest(robotId);
+		playGame.sendResignRequest(data.id);
 	});
 
 	// message handler for the leave game message
 	eventHandler.on('resignResponse', function(data) {
 		console.log('recieved resign response');
 			
-		playGame.sendResignResponse(robotId, data);
+		playGame.sendResignResponse(data.id, data);
 	});
 
 	// message handler for the end hand question
 	eventHandler.on('endHandQuestion', function() {
 		console.log('recieved end hand question');
 
-		playGame.sendEndHandQuestion(robotId);
+		playGame.sendEndHandQuestion(data.id);
 	});
 
 	// message handler for the end hand question
 	eventHandler.on('endHandResponse', function(data) {
 		console.log('recieved end hand response');
 			
-		playGame.sendEndHandResponse(robotId, data);
+		playGame.sendEndHandResponse(data.id, data);
 	});
 	
 	// message handler for update cards message
 	eventHandler.on('updateGame', function(data) {
 		console.log('recieved update Cards');
 
-		playGame.updateGame(robotId, data);
+		playGame.updateGame(data.id, data);
 	});
 	
 	// message handler for disconnect
-	eventHandler.on('disconnect', function() {
+	eventHandler.on('disconnect', function(data) {
 		console.log('recieved disconnect');
 
-		playGame.leaveGame(robotId);
+		playGame.leaveGame(data.id);
 	});	
 };
 
