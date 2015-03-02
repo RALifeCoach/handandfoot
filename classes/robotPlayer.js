@@ -49,22 +49,20 @@ module.exports = function(gameId, position) {
 		console.log('robot game update');
 console.log(data);
 		
-		var newRobot = false;
 		// update robot information - if it doesn't exist then create it
 		if (!robot) {
-			newRobot = true;
-			robot = {
+			robot = new Robot({
 				_id: id
 				, player: {}
 				, control: {}
 				, gameMessages: []
-			};
+			});
 		}
 		
 		// load 'my' values
 		robot.player.position = data.players[0].position;
-		robot.player.handCards = data.players[0].footCards;
-		robot.player.footCards = data.players[0].handCards;
+		robot.player.handCards = loadCards(data.players[0].footCards);
+		robot.player.footCards = loadCards(data.players[0].handCards);
 		robot.player.inFoot = data.players[0].handCards.length === 0;
 		robot.melds = data.teams[0].melds;
 		robot.score = data.teams[0].score;
@@ -75,14 +73,21 @@ console.log(data);
 		robot.control.drawCards = data.game.drawCards;
 		robot.otherPlayers = [];
 		robot.otherTeams = [];
-		robot.discardPile = data.game.discardPile;
-		robot.drawPiles = data.game.drawPiles;
+		robot.discardPile = {
+			cards: loadCards(data.game.discardPile.cards)
+		};
+		robot.drawPiles = [];
+		for (var pileIndex = 0; pileIndex < data.game.drawPiles.length; pileIndex++) {
+			robot.drawPiles.push({
+				cards: loadCards(data.game.drawPiles[pileIndex].cards)
+			});
+		}
 		
 		var teamCount = data.teams.length;
 		var teamIndex = data.players[0].teamIndex;
 		for (var playerIndex = 1; playerIndex < data.players.length; playerIndex++) {
 			var player = data.players[playerIndex];
-			var playerTeamIndex = player.TeamIndex - teamIndex;
+			var playerTeamIndex = player.teamIndex - teamIndex;
 			if (playerTeamIndex < 0)
 				playerTeamIndex += teamCount; 
 			robot.otherPlayers.push({
@@ -102,33 +107,31 @@ console.log(data);
 			});
 		}
 		
-		if (newRobot) {
-			Robot.insert(robotfunction(err) {
-				if (err) {
-					console.log('error inserting robot');
-					console.log(robot);
-					console.log(err.stack);
-					return;
-				}
-				
-				// if it's the robot's turn then play
-				if (robot.turn && data.game.gameBegun)
-					playTurn(robot);
-			});
-		} else {
-			robot.update(function(err) {
-				if (err) {
-					console.log('error updating robot');
-					console.log(robot);
-					console.log(err.stack);
-					return;
-				}
-				
-				// if it's the robot's turn then play
-				if (robot.turn && data.game.gameBegun)
-					playTurn(robot);
+		robot.save(robot, function(err) {
+			if (err) {
+				console.log('error inserting robot');
+				console.log(robot);
+				console.log(err.stack);
+				return;
+			}
+			
+			// if it's the robot's turn then play
+			if (robot.turn && data.game.gameBegun)
+				playTurn(robot);
+		});
+	}
+	
+	// load the cards
+	function loadCards(inCards) {
+		var outCards = [];
+		for (var cardIndex = 0; cardIndex < inCards.length; cardIndex++) {
+			outCards.push({
+				card: inCards[cardIndex].cardNumber
+				, suit: inCards[cardIndex].suitNumber
 			});
 		}
+		
+		return outCards;
 	}
 	
 	// it's the robot's turn
@@ -141,7 +144,7 @@ console.log(data);
 			case 'draw3':
 				drawFromPile(robot);
 				break;
-			case: 'play'
+			case 'play':
 				playCards(robot);
 				break;
 		}
@@ -210,7 +213,7 @@ console.log(data);
 			
 		if (!robot.player.inFoot && !oppenentsInFoot(robot))
 			options.push('run');
-		if (robot.player.inFoot || oppenentsInFoot(robot) and cardsInRun > 5)
+		if ((robot.player.inFoot || oppenentsInFoot(robot)) && cardsInRun > 5)
 			options.push('run');
 		
 		// count the number of cards of the same number in your hand
@@ -262,7 +265,21 @@ console.log(data);
 			
 		for (var cardIndex = cards.length - 1; cardIndex >= maxDepth; cardIndex--) {
 			if (cards[cardIndex].number === matchingCard.number
-			&& cards[cardIndex]suit === matchingCard.suit)
+			&& cards[cardIndex].suit === matchingCard.suit)
+				count++;
+		}
+		return count;
+	}
+	
+	// count the number of cards that are the same as the passed card number
+	function countSameCardNumber(hand, matchingCard, depth) {
+		var count = 0;
+		var maxDepth = 0;
+		if (depth && depth < cards.length)
+			maxDepth = cards.length - depth;
+			
+		for (var cardIndex = cards.length - 1; cardIndex >= maxDepth; cardIndex--) {
+			if (cards[cardIndex].number === matchingCard.number)
 				count++;
 		}
 		return count;
