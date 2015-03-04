@@ -76,10 +76,12 @@ module.exports = function(io, mapper) {
 					position: personIndex * 2 + teamIndex, 
 					connected: false,
 					type: '',
+					teamIndex: teamIndex,
 					handCards: [], 
 					footCards: []
 				});
 			}
+			
 			game.teams.push(team);
 		}
 		

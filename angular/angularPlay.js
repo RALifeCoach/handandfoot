@@ -314,8 +314,12 @@ angular.module('handAndFoot')
 			}
 			
 			// click on one of the pick up piles
-			$scope.clickPile = function(pileIndex) {
+			$scope.clickPile = function(event, pileIndex) {
+				event.preventDefault();
+				event.stopPropagation();
+				console.log('click pile');
 				$scope.message = false;
+
 				if (!$scope.players[0].turn
 				|| $scope.control.callInProgress)
 					return;

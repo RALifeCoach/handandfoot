@@ -14,12 +14,15 @@ module.exports = function (gameId, pEventHandler) {
 	connectedGame.sendMessages = function(gameVM, receiveId, showResults) {
 		var playersVM = [];
 		for (var playerIndex = 0; playerIndex < gameVM.players.length; playerIndex++) {
-			if (!gameVM.players[playerIndex].type)
+			if (gameVM.players[playerIndex].type === '')
 				playersVM.push({
 					turn: false, 
 					person: false, 
 					type: false,
-					position: gameVM.players[playerIndex].position
+					position: gameVM.players[playerIndex].position,
+					teamIndex: gameVM.players[playerIndex].teamIndex,
+					handCards: 0,
+					footCards: 0
 				});
 			else
 				playersVM.push(gameVM.players[playerIndex]);
@@ -43,7 +46,9 @@ module.exports = function (gameId, pEventHandler) {
 					inFoot: false, 
 					position: playerVM.position,
 					myUpdate: false,
-					teamIndex: playerVM.teamIndex
+					teamIndex: playerVM.teamIndex,
+					handCards: 0,
+					footCards: 0
 				});
 			else {
 				otherPlayers.push({
@@ -171,6 +176,7 @@ module.exports = function (gameId, pEventHandler) {
 				// in case the socket already exists for this position - remove it
 				for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
 					if (sockets[socketIndex].position === playerVM.position) {
+						console.log('robot exists at position ' + playerVM.position);
 						sockets.splice(socketIndex, 1);
 						break;
 					}
@@ -178,7 +184,7 @@ module.exports = function (gameId, pEventHandler) {
 				
 				// push new robot
 				var robot = new RobotPlayer(data.gameId, playerIndex, eventHandler);
-				sockets.push({ position: playerIndex, type: 'robot', robot: robot} );
+				sockets.push({ position: playerVM.position, type: 'robot', robot: robot} );
 			}
 		}
 	};
@@ -187,7 +193,7 @@ module.exports = function (gameId, pEventHandler) {
 	connectedGame.removePlayer = function(receiveId, gameVM) {
 		// remove the socket
 		for (var socketIndex = 0; socketIndex < sockets.length; socketIndex++) {
-			if (socket[socketIndex].type === 'person' && sockets[socketIndex].socket.id.toString() === receiveId) {
+			if (sockets[socketIndex].type === 'person' && sockets[socketIndex].socket.id.toString() === receiveId) {
 				sockets.splice(socketIndex, 1);
 				break;
 			}

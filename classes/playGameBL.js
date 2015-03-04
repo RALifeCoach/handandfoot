@@ -26,7 +26,7 @@ module.exports = function(pMapper, pEventHandler) {
 			}
 			
 			// find the game, error if it doesn't exist
-			var connectedGame = this.findConnectedGame(connectedPlayer.gameId);
+			var connectedGame = _this.findConnectedGame(connectedPlayer.gameId);
 			if (!connectedGame)
 				return;
 			
@@ -58,7 +58,7 @@ module.exports = function(pMapper, pEventHandler) {
 			personId: data.personId, 
 			position: data.position, 
 			personName: data.name,
-			type: 'player',
+			type: 'person',
 			socket: socket, 
 			gameId: data.gameId});
 	};
@@ -67,11 +67,11 @@ module.exports = function(pMapper, pEventHandler) {
 		// add any robots to the game
 		for (var playerIndex = 0; playerIndex < gameVM.numberOfPlayers; playerIndex++) {
 			var playerVM = gameVM.players[playerIndex];
-console.log(playerVM);
+
 			if (playerVM.type === 'robot') {
 				// check to see if the player is already playing a game
-				for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {
-					if (connectedPlayers[playerIndex].type === 'robot' && connectedPlayers[playerIndex].robotId === playerVM.person.id) {
+				for (var connectedIndex = 0; connectedIndex < connectedPlayers.length; connectedIndex++) {
+					if (connectedPlayers[connectedIndex].type === 'robot' && connectedPlayers[connectedIndex].robotId === playerVM.person.id) {
 						console.log('player already playing');
 						
 						connectedPlayers.splice(playerIndex, 1);
@@ -88,7 +88,6 @@ console.log(playerVM);
 					gameId: data.gameId});
 			}
 		}
-console.log(connectedPlayers);
 	};
 
 	playGameBL.newConnectedRobot = function(robotId, data) {
@@ -165,6 +164,8 @@ console.log(connectedPlayers);
 		}
 		if (!connectedGame) {
 			console.log('game not found');
+			console.log(gameId);
+			console.log(connectedGames);
 			return false;
 		}
 
@@ -260,7 +261,7 @@ console.log(connectedPlayers);
 				return;
 				
 			// find the game, error if it doesn't exist
-			var connectedGame = this.findConnectedGame(connectedPlayer.gameId);
+			var connectedGame = _this.findConnectedGame(connectedPlayer.gameId);
 			if (!connectedGame)
 				return;
 

@@ -46,11 +46,9 @@ module.exports = function(gameId, position, pEventHandler) {
 	
 	function gameUpdate(data, robot, id) {
 		console.log('robot game update');
-console.log(data);
 		
 		// update robot information - if it doesn't exist then create it
 		if (!robot) {
-console.log('new');
 			robot = new Robot({
 				_id: id
 				, player: {}
@@ -152,10 +150,10 @@ console.log('new');
 		var cards = robot.player.inFoot ? robot.player.footCards : robot.player.handCards;
 		var drawOptions = canDrawFromPile(robot);
 		if (drawOptions.length > 0) {
-			var blackThrees = coundSameCard(robot.discardPile, {suit: 0, number: 1}, 7)
-				+ coundSameCard(robot.discardPile, {suit: 3, number: 1}, 7);
+			var blackThrees = countSameCard(robot.discardPile, {suit: 0, number: 1}, 7)
+				+ countSameCard(robot.discardPile, {suit: 3, number: 1}, 7);
 			if (robot.player.inFoot || blackThrees < 3) {
-				return drawFromDiscard(robot);
+				//return drawFromDiscard(robot);
 			}
 		}
 		
@@ -174,7 +172,7 @@ console.log('new');
 			return options;
 			
 		// cannot draw if the top card is a wild card or black 3
-		var topCard = discardPile.cards[scope.discardPile.cards.length - 1];
+		var topCard = discardPile.cards[robot.discardPile.cards.length - 1];
 		if (isWildCard(topCard))
 			return options;
 		if (isBlackThree(topCard))
@@ -214,7 +212,7 @@ console.log('new');
 			options.push('run');
 		
 		// count the number of cards of the same number in your hand
-		var sameNumber = countSameNumber(hand, topCard);
+		var sameNumber = countSameCard(hand, topCard);
 
 		if (sameNumber === 0)
 			return options;
@@ -257,26 +255,26 @@ console.log('new');
 	function countSameCard(hand, matchingCard, depth) {
 		var count = 0;
 		var maxDepth = 0;
-		if (depth && depth < cards.length)
-			maxDepth = cards.length - depth;
+		if (depth && depth < hand.length)
+			maxDepth = hand.length - depth;
 			
-		for (var cardIndex = cards.length - 1; cardIndex >= maxDepth; cardIndex--) {
-			if (cards[cardIndex].number === matchingCard.number
-			&& cards[cardIndex].suit === matchingCard.suit)
+		for (var cardIndex = hand.length - 1; cardIndex >= maxDepth; cardIndex--) {
+			if (hand[cardIndex].number === matchingCard.number
+			&& hand[cardIndex].suit === matchingCard.suit)
 				count++;
 		}
 		return count;
 	}
 	
 	// count the number of cards that are the same as the passed card number
-	function countSameCardNumber(hand, matchingCard, depth) {
+	function countSameNumber(hand, matchingCard, depth) {
 		var count = 0;
 		var maxDepth = 0;
-		if (depth && depth < cards.length)
-			maxDepth = cards.length - depth;
+		if (depth && depth < hand.length)
+			maxDepth = hand.length - depth;
 			
-		for (var cardIndex = cards.length - 1; cardIndex >= maxDepth; cardIndex--) {
-			if (cards[cardIndex].number === matchingCard.number)
+		for (var cardIndex = hand.length - 1; cardIndex >= maxDepth; cardIndex--) {
+			if (hand[cardIndex].number === matchingCard.number)
 				count++;
 		}
 		return count;
@@ -328,7 +326,7 @@ console.log('new');
 			action: action,
 			control: robot.control
 		};
-console.log('emit', data);	
+
 		eventHandler.emit('updateGame', data);
 		
 		for (var messageIndex = 0; messageIndex < robot.gameMessages.length; messageIndex++)

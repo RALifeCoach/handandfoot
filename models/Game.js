@@ -54,6 +54,7 @@ var GameSchema = new mongoose.Schema({
 			connected: Boolean,
 			type: String,
 			robotId: String,
+			teamIndex: Number,
 			handCards: [{
 				suit: Number,
 				number: Number

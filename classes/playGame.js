@@ -62,7 +62,7 @@ module.exports = function(pPlayGameBL, mapper, io) {
 		if (!connectedPlayer)
 			return;
 		
-		var connectedGame = playGameBL.findConnectedGame(receiveId, connectedPlayer.gameId);
+		var connectedGame = playGameBL.findConnectedGame(connectedPlayer.gameId);
 		if (!connectedGame)
 			return;
 
@@ -75,7 +75,7 @@ module.exports = function(pPlayGameBL, mapper, io) {
 		if (!connectedPlayer)
 			return;
 		
-		var connectedGame = playGameBL.findConnectedGame(receiveId, connectedPlayer.gameId);
+		var connectedGame = playGameBL.findConnectedGame(connectedPlayer.gameId);
 		if (!connectedGame)
 			return;
 
@@ -141,7 +141,7 @@ module.exports = function(pPlayGameBL, mapper, io) {
 						playGameBL.endTheGame(receiveId, false);
 					} else {
 						// find the game, error if it doesn't exist
-						var connectedGame = playGameBL.findConnectedGame(receiveId, connectedPlayer.gameId);
+						var connectedGame = playGameBL.findConnectedGame(connectedPlayer.gameId);
 						if (!connectedGame)
 							return;
 						
