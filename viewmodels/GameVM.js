@@ -793,7 +793,7 @@ module.exports = (function() {
 				
 				// recreate the gameVM from the new DB game
 				var gameVM = _this.mapToVM(game);
-				
+
 				if (game.gameComplete) {
 					// if the game is complete, update the stats
 					var winningTeam = false;

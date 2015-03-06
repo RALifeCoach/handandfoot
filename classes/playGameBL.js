@@ -131,7 +131,7 @@ module.exports = function(pMapper, pEventHandler) {
 
 	playGameBL.findConnectedPlayer = function(receiveId) {
 		// look for socket or robot
-console.log(connectedPlayers);
+
 		// check to see if the player is playing a game
 		var connectedPlayer = false;
 		for (var playerIndex = 0; playerIndex < connectedPlayers.length; playerIndex++) {

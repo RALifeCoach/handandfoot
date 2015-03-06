@@ -7,12 +7,12 @@ var RobotSchema = new mongoose.Schema({
 		position: Number,
 		inFoot: Boolean,
 		handCards: [{
-			suit: Number,
-			number: Number
+			suitNumber: Number,
+			cardNumber: Number
 		}],
 		footCards: [{
-			suit: Number,
-			number: Number
+			suitNumber: Number,
+			cardNumber: Number
 		}]
 	},
 	control: {
@@ -27,8 +27,8 @@ var RobotSchema = new mongoose.Schema({
 		number: Number,
 		isComplete: Boolean,
 		cards: [{
-			suit: Number,
-			number: Number
+			suitNumber: Number,
+			cardNumber: Number
 		}]
 	})],
 	score: Number,
@@ -46,8 +46,8 @@ var RobotSchema = new mongoose.Schema({
 			number: Number,
 			isComplete: Boolean,
 			cards: [{
-				suit: Number,
-				number: Number
+				suitNumber: Number,
+				cardNumber: Number
 			}]
 		})],
 		redThrees: Number,
@@ -55,8 +55,8 @@ var RobotSchema = new mongoose.Schema({
 	})],
 	discardPile: {
 		cards: [{
-			suit: Number,
-			number: Number
+			suitNumber: Number,
+			cardNumber: Number
 		}]
 	}
 });
