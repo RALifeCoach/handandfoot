@@ -5,6 +5,7 @@ var RobotSchema = new mongoose.Schema({
 	_id: String,
 	player: {
 		position: Number,
+		nme: String,
 		inFoot: Boolean,
 		handCards: [{
 			suitNumber: Number,

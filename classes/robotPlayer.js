@@ -93,6 +93,9 @@ console.log(data);
 			action: action,
 			control: robot.control
 		};
+		data.player.person = {
+			name: robot.player.name
+		};
 console.log('send update', action, robot.control);
 		eventHandler.emit('updateGame', data);
 		

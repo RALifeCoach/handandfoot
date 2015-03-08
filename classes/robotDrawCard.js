@@ -6,7 +6,7 @@ module.exports = (function(pEventHandler) {
 
 	// draw a card
 	robotDrawCard.drawACard = function(robot) {
-		console.log('draw a cardNumber');
+		console.log('draw a card');
 		var cards = robot.player.inFoot ? robot.player.footCards : robot.player.handCards;
 		var drawOptions = canDrawFromPile(robot);
 		if (drawOptions.length > 0) {
@@ -50,20 +50,20 @@ module.exports = (function(pEventHandler) {
 		// check for 2 cards lower than the top card
 		if (topCard.cardNumber > 3 // the top card is a 6 or higher
 		&& cards[topCard.cardNumber - 2] && cards[topCard.cardNumber - 1]
-		&& !containsCard(hand, topCard))
+		&& countSameCard(hand, topCard) > 0)
 			cardsInRun = countCardsInRun(cards, topCard);
 		
 		// check for 2 cards higher than the top card
 		else if (topCard.cardNumber < 11 // the top card is a Q or lower
 		&& cards[topCard.cardNumber + 2] && cards[topCard.cardNumber + 1]
-		&& !containsCard(hand, topCard))
+		&& countSameCard(hand, topCard) > 0)
 			cardsInRun = countCardsInRun(cards, topCard);
 		
 		// check for 1 card higher and 1 lower
 		else if (topCard.cardNumber > 2 // the top card is a 5 or higher
 		&& topCard.cardNumber < 12 // the top card is a K or lower
 		&& cards[topCard.cardNumber - 1] && cards[topCard.cardNumber + 1]
-		&& !containsCard(hand, topCard))
+		&& countSameCard(hand, topCard) > 0)
 			cardsInRun = countCardsInRun(cards, topCard);
 			
 		if (!robot.player.inFoot && !oppenentsInFoot(robot))

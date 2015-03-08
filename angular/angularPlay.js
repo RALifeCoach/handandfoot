@@ -55,7 +55,7 @@ angular.module('handAndFoot')
 			// listen for game update message
 			$scope.$on('socket:gameUpdate', function(event, data) {
 				console.log('game update');
-				
+
 				// load player data - do not load card if it isn't your turn
 				var wasTurn = false;
 				if (!$scope.players 

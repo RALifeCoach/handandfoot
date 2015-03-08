@@ -740,7 +740,13 @@ module.exports = (function() {
 					}
 
 					control.turnState = 'end';
-					game.discardPile.cards.push(cards[action.cardIndex]);
+console.log(playerVM);
+					game.discardPile.cards.push({
+						suit: cards[action.cardIndex].suit
+						, number: cards[action.cardIndex].number
+						, playerType: player.type
+						, playerName: playerVM.person.name
+					});
 					cards.splice(action.cardIndex, 1);
 				} else if (action.action === "drawSevenCards") {
 					// draw seven cards from the discard pile
@@ -748,7 +754,11 @@ module.exports = (function() {
 					game.discardPile.cards.pop();
 					
 					for (var cardIndex = 0; cardIndex < 6 && game.discardPile.cards.length > 0; cardIndex++) {
-						cards.push(game.discardPile.cards.pop());
+						var card = game.discardPile.cards.pop();
+						cards.push({
+							suit: card.suit
+							, number: card.number
+						});
 					}
 				}
 			}

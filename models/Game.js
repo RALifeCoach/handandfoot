@@ -80,7 +80,9 @@ var GameSchema = new mongoose.Schema({
 	discardPile: {
 		cards: [{
 			suit: Number,
-			number: Number
+			number: Number,
+			playerType: String,
+			playerName: String
 		}]
 	},
 	numberOfPlayers: Number,

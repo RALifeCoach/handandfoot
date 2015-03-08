@@ -3,6 +3,9 @@
 var mongoose = require('mongoose');
 var Robot = mongoose.model('Robot');
 var robotDrawCard = require('./robotDrawCard');
+var robotAnalizeHand = require('./robotAnalizeHand');
+var robotPlayCards = require('./robotPlayCards');
+var robotDiscardCard = require('./robotDiscardCard');
 
 module.exports = (function(pEventHandler) {
 	var robotMain = {
@@ -37,6 +40,7 @@ module.exports = (function(pEventHandler) {
 		robot.player.handCards = loadCards(data.players[0].handCards);
 		robot.player.footCards = loadCards(data.players[0].footCards);
 		robot.player.inFoot = data.players[0].handCards.length === 0;
+		robot.player.name = data.players[0].person.name;
 		robot.melds = data.teams[0].melds;
 		robot.score = data.teams[0].score;
 		robot.redThrees = data.teams[0].redThrees;
@@ -110,6 +114,16 @@ module.exports = (function(pEventHandler) {
 	robotMain.drawFromPile = function(robot) {
 		console.log('drawFromPile');
 		return robotDrawCard.drawFromPile(robot);
+	}
+	
+	// play cards
+	robotMain.playCards = function(robot) {
+		console.log('drawFromPile');
+		robotAnalizeHand.analizeHand(robot);
+		
+		robotPlayCards.playCards(robot);
+		
+		return robotDiscardCard.discardCard(robot);
 	}
 	
 	return robotMain;
