@@ -19,6 +19,8 @@ angular.module('handAndFoot')
 			}
 
 			var roundPoints = [ 50, 90, 120, 150, 190, 220, 250 ];
+			var suitNames = ['C', 'D', 'H', 'S', 'J'];
+			var cardNames = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 			$scope.game = {};
 			$scope.drawPiles = [ { cards: 0}, {cards: 0}, {cards: 0}, {cards: 0} ];
 			$scope.discardPile = { cards: [] };
@@ -46,6 +48,7 @@ angular.module('handAndFoot')
 			$scope.drawFromDiscard.topCard = false;
 			$scope.message = false;
 			$scope.undo = [];
+			$scope.discardTooltip = '';
 				
 			$scope.chatLine = '';
 			$scope.chatText = '';
@@ -79,6 +82,24 @@ angular.module('handAndFoot')
 					for (var playerIndex = 1; playerIndex < data.players.length; playerIndex++)
 						$scope.players[playerIndex] = data.players[playerIndex];
 				}
+				
+				// build the tooltip for the discard pile
+				$scope.discardTooltip = '';
+				var startIndex = data.game.discardPile.cards.length - 2;
+				var endIndex = startIndex - data.game.numberOfPlayers + 2;
+				while (startIndex > endIndex) {
+					var card = data.game.discardPile.cards[startIndex];
+					if(!card.playerType 
+					|| card.playerType === '')
+						break;
+						
+					if ($scope.discardTooltip !== '')
+						$scope.discardTooltip += ', ';
+					$scope.discardTooltip += card.playerName + ':' + (card.cardNumber === -1 ? 'Joker' : cardNames[card.cardNumber] + suitNames[card.suitNumber]);
+					
+					startIndex--;
+				}
+				
 				$scope.game = data.game;
 				if ($scope.players[0].turn && !wasTurn && $scope.game.gameBegun) {
 					var audio = ngAudio.load("/sounds/LETSGO.mp3");

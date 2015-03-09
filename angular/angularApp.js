@@ -210,6 +210,10 @@ angular.module('handAndFoot')
 							title = scope.card.number + ' of ' + scope.card.suitCard;
 							break;
 					}
+					
+					if (scope.tooltip)
+						title = scope.tooltip;
+					
 					var htmlText = '<div class="' + cardClass + '" ' + highlight + ' title="' + title + '">\n' +
 						'<span class="rank">' + rank + '</span>\n' +
 						'<span class="suit">' + suit + '</span>\n' +
@@ -222,7 +226,8 @@ angular.module('handAndFoot')
 			return {
 				restrict: 'E',
 				scope: {
-					card: '='
+					card: '=',
+					tooltip: '@discardTooltip'
 				},
 				link: linker
 			};

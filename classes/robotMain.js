@@ -6,6 +6,7 @@ var robotDrawCard = require('./robotDrawCard');
 var robotAnalizeHand = require('./robotAnalizeHand');
 var robotPlayCards = require('./robotPlayCards');
 var robotDiscardCard = require('./robotDiscardCard');
+var robotCommon = require('./robotCommon');
 
 module.exports = (function(pEventHandler) {
 	var robotMain = {
@@ -37,8 +38,8 @@ module.exports = (function(pEventHandler) {
 		
 		// load 'my' values
 		robot.player.position = data.players[0].position;
-		robot.player.handCards = loadCards(data.players[0].handCards);
-		robot.player.footCards = loadCards(data.players[0].footCards);
+		robot.player.handCards = robotCommon.copyCards(data.players[0].handCards);
+		robot.player.footCards = robotCommon.copyCards(data.players[0].footCards);
 		robot.player.inFoot = data.players[0].handCards.length === 0;
 		robot.player.name = data.players[0].person.name;
 		robot.melds = data.teams[0].melds;
@@ -51,7 +52,7 @@ module.exports = (function(pEventHandler) {
 		robot.otherPlayers = [];
 		robot.otherTeams = [];
 		robot.discardPile = {
-			cards: loadCards(data.game.discardPile.cards)
+			cards: robotCommon.copyCards(data.game.discardPile.cards)
 		};
 		robot.drawPiles = data.game.drawPiles;
 		
@@ -90,19 +91,6 @@ module.exports = (function(pEventHandler) {
 			callback(null, robot);
 		});
 	};
-	
-	// load the cards
-	function loadCards(inCards) {
-		var outCards = [];
-		for (var cardIndex = 0; cardIndex < inCards.length; cardIndex++) {
-			outCards.push({
-				cardNumber: inCards[cardIndex].cardNumber
-				, suitNumber: inCards[cardIndex].suitNumber
-			});
-		}
-		
-		return outCards;
-	}
 	
 	// draw a card
 	robotMain.drawACard = function(robot) {

@@ -100,6 +100,12 @@ module.exports = (function() {
 				suitCard: suitsCard[card.suit],
 				number: card.number > -1 ? cards[card.number] : -1
 			};
+			// for the discard pile
+			if (card.playerType) {
+				cardVM.playerType = card.playerType;
+				cardVM.playerName = card.playerName;
+			}
+			
 			outPile.push(cardVM);
 		}
 
@@ -740,7 +746,6 @@ module.exports = (function() {
 					}
 
 					control.turnState = 'end';
-console.log(playerVM);
 					game.discardPile.cards.push({
 						suit: cards[action.cardIndex].suit
 						, number: cards[action.cardIndex].number
@@ -759,6 +764,12 @@ console.log(playerVM);
 							suit: card.suit
 							, number: card.number
 						});
+					}
+					
+					// reset card owners so that the player cannot know the lower cards
+					for (var cardIndex = 0; cardIndex < game.discardPile.cards.length; cardIndex++) {
+						game.discardPile.cards[cardIndex].playerType = '';
+						game.discardPile.cards[cardIndex].playerName = '';
 					}
 				}
 			}

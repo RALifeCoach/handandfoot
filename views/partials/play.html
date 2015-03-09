@@ -106,7 +106,7 @@
 								<ul class="deck">
 									<div ng-repeat="card in discardPile.cards | maxDiscard">
 										<li>
-											<playing-card card="card" ng-click="clickDiscardPile($event)"></playing-card>
+											<playing-card card="card" ng-click="clickDiscardPile($event)" discard-tooltip={{discardTooltip}}></playing-card>
 										</li>
 									</div>
 								</ul>

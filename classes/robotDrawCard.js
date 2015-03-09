@@ -1,5 +1,7 @@
 'use strict';
 
+var robotCommon = require('./robotCommon');
+
 module.exports = (function(pEventHandler) {
 	var robotDrawCard = {
 	};
@@ -10,8 +12,8 @@ module.exports = (function(pEventHandler) {
 		var cards = robot.player.inFoot ? robot.player.footCards : robot.player.handCards;
 		var drawOptions = canDrawFromPile(robot);
 		if (drawOptions.length > 0) {
-			var blackThrees = countSameCard(robot.discardPile, {suitNumber: 0, cardNumber: 1}, 7)
-				+ countSameCard(robot.discardPile, {suitNumber: 3, cardNumber: 1}, 7);
+			var blackThrees = robotCommon.countSameCard(robot.discardPile, {suitNumber: 0, cardNumber: 1}, 7)
+				+ robotCommon.countSameCard(robot.discardPile, {suitNumber: 3, cardNumber: 1}, 7);
 			if (robot.player.inFoot || blackThrees < 3) {
 				//return drawFromDiscard(robot);
 			}
@@ -33,9 +35,9 @@ module.exports = (function(pEventHandler) {
 			
 		// cannot draw if the top card is a wild card or black 3
 		var topCard = discardPile.cards[robot.discardPile.cards.length - 1];
-		if (isWildCard(topCard))
+		if (robotCommon.isWildCard(topCard))
 			return options;
-		if (isBlackThree(topCard))
+		if (robotCommon.isBlackThree(topCard))
 			return options;
 
 		// does the card fit for a run
@@ -50,29 +52,29 @@ module.exports = (function(pEventHandler) {
 		// check for 2 cards lower than the top card
 		if (topCard.cardNumber > 3 // the top card is a 6 or higher
 		&& cards[topCard.cardNumber - 2] && cards[topCard.cardNumber - 1]
-		&& countSameCard(hand, topCard) > 0)
-			cardsInRun = countCardsInRun(cards, topCard);
+		&& robotCommon.countSameCard(hand, topCard) > 0)
+			cardsInRun = robotCommon.countCardsInRun(cards, topCard);
 		
 		// check for 2 cards higher than the top card
 		else if (topCard.cardNumber < 11 // the top card is a Q or lower
 		&& cards[topCard.cardNumber + 2] && cards[topCard.cardNumber + 1]
-		&& countSameCard(hand, topCard) > 0)
-			cardsInRun = countCardsInRun(cards, topCard);
+		&& robotCommon.countSameCard(hand, topCard) > 0)
+			cardsInRun = robotCommon.countCardsInRun(cards, topCard);
 		
 		// check for 1 card higher and 1 lower
 		else if (topCard.cardNumber > 2 // the top card is a 5 or higher
 		&& topCard.cardNumber < 12 // the top card is a K or lower
 		&& cards[topCard.cardNumber - 1] && cards[topCard.cardNumber + 1]
-		&& countSameCard(hand, topCard) > 0)
-			cardsInRun = countCardsInRun(cards, topCard);
+		&& robotCommon.countSameCard(hand, topCard) > 0)
+			cardsInRun = robotCommon.countCardsInRun(cards, topCard);
 			
-		if (!robot.player.inFoot && !oppenentsInFoot(robot))
+		if (!robot.player.inFoot && !robotCommon.oppenentsInFoot(robot))
 			options.push('run');
-		if ((robot.player.inFoot || oppenentsInFoot(robot)) && cardsInRun > 5)
+		if ((robot.player.inFoot || robotCommon.oppenentsInFoot(robot)) && cardsInRun > 5)
 			options.push('run');
 		
 		// count the card of cards of the same card in your hand
-		var sameNumber = countSameCard(hand, topCard);
+		var sameNumber = robotCommon.countSameCard(hand, topCard);
 
 		if (sameNumber === 0)
 			return options;
@@ -87,7 +89,7 @@ module.exports = (function(pEventHandler) {
 		var pileLocked = robot.melds.length === 0;
 		if (!pileLocked) {
 			for (var cardIndex = 0; cardIndex < discardPile.cards.length; cardIndex++) {
-				if (isWildCard(discardPile.cards[cardIndex])) {
+				if (robotCommon.isWildCard(discardPile.cards[cardIndex])) {
 					pileLocked = true;
 					break;
 				}
@@ -95,70 +97,10 @@ module.exports = (function(pEventHandler) {
 		}
 			
 		// okay if pile not locked and there is 1 + wild cards
-		if (!pileLocked && countWildCards(hand) > 0)
+		if (!pileLocked && robotCommon.countWildCards(hand) > 0)
 			options.push('dirty');
 		
 		return options;
-	}
-	
-	// check for wild card
-	function isWildCard(card) {
-		return card.suitNumber === 4 || card.cardNumber === 0;
-	}
-	
-	// check for black three
-	function isBlackThree(card) {
-		return (card.suitNumber === 0 || card.suitNumber === 3) && card.cardNumber === 1;
-	}
-	
-	// count the number of cards that are the same as the passed card
-	function countSameCard(hand, matchingCard, depth) {
-		var count = 0;
-		var maxDepth = 0;
-		if (depth && depth < hand.length)
-			maxDepth = hand.length - depth;
-			
-		for (var cardIndex = hand.length - 1; cardIndex >= maxDepth; cardIndex--) {
-			if (hand[cardIndex].cardNumber === matchingCard.cardNumber
-			&& hand[cardIndex].suitNumber === matchingCard.suitNumber)
-				count++;
-		}
-		return count;
-	}
-	
-	// count the number of cards that are the same as the passed card cardNumber
-	function countSameNumber(hand, matchingCard, depth) {
-		var count = 0;
-		var maxDepth = 0;
-		if (depth && depth < hand.length)
-			maxDepth = hand.length - depth;
-			
-		for (var cardIndex = hand.length - 1; cardIndex >= maxDepth; cardIndex--) {
-			if (hand[cardIndex].cardNumber === matchingCard.cardNumber)
-				count++;
-		}
-		return count;
-	}
-			
-	// count the number of wild cards
-	function countWildCards(cards) {
-		var count = 0;
-		for (var cardIndex = 0; cardIndex < cards.length; cardIndex++) {
-			if (isWildCard(cards[cardIndex]))
-				count++;
-		}
-		return count;
-	};
-	
-	// return true if any of the opponents are in their foot
-	function oppenentsInFoot(robot) {
-		for (var playerIndex = 0; playerIndex < robot.otherPlayers.length; playerIndex++) {
-			var player = robot.otherPlayers[playerIndex];
-			if (player.teamIndex !== robot.teamIndex && player.handCards === 0)
-				return true;
-		}
-		
-		return false;
 	}
 	
 	// draw a card from a draw pile
