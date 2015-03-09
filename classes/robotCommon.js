@@ -64,6 +64,16 @@ module.exports = (function(pEventHandler) {
 		return false;
 	}
 	
+	// return true if any of the opponents are on the table
+	robotCommon.opponentsOnTable = function(robot) {
+		for (var teamIndex = 0; teamIndex < robot.otherTeams.length; teamIndex++) {
+			if (robot.otherTeams[teamIndex].melds.length > 0)
+				return true;
+		}
+		
+		return false;
+	}
+	
 	// copy cards into a new array
 	robotCommon.copyCards = function(inCards) {
 		var outCards = [];
