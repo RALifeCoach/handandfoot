@@ -61,6 +61,71 @@ module.exports = (function(pEventHandler) {
 			: robotCommon.copyCards(robot.player.handCards);
 
 		// load incomplete meld data
+		this.loadIncompleteMeldData(robot);
+		
+		// check for possible add ons to runs and remove the cards from further analysis
+		this.runsAddons(robot, hand);
+		
+		// organize the cards
+		this.organizeCards(robot, hand);
+
+		// check for possible new runs
+		var longestRun = this.possibleNewRuns(robot, hand);
+		
+		// clean up melds and runs
+		this.cleanupRunCards(robot, hand, longestRun);
+		
+		// eliminate melds with < 2 cards or cards that take meld length 8 or 9
+		this.cleanupMelds(robot, hand);
+		
+		robot.hand.unusedCards = hand;
+		
+		// score possible playable cards if no melds
+		if (robot.melds.length > 0)
+			return;
+
+		this.scoreRuns(robot);
+
+		// find maximum possible score to go on the table
+		var opponentsOnTable = robotCommon.opponentsOnTable(robot);
+		var minExcludeMeld = 2;
+		var maxExcludeMeld = 9;
+		if (opponentsOnTable) {
+			minExcludeMeld = 4;
+			maxExcludeMeld = 7;
+		}
+		
+		// 1. max wild card run, if possible
+		var score1 = 0;
+		var jokerCount = robot.hand.wildCards.jokers;
+		var twoCount = robot.hand.wildCards.twos;
+		if (jokerCount + twoCount > 2) {
+			if (jokerCount > 7) {
+				score1 += 7 * 50;
+				jokerCount -= 7;
+			} else {
+				score += jokerCount * 50;
+				if (jokerCount + twoCount > 7) {
+					score1 += (7 - jokerCount) * 20;
+					twoCount -= (7 - jokerCount);
+				} else {
+					score1 += twoCount * 20;
+					twoCount = 0;
+				}
+				jokerCount = 0;
+			}
+		}
+		// now add in melds
+		for (var meldIndex = 0; meldIndex < 11; meldIndex++) {
+			var meld = robot.melds[meldIndex];
+			if (meld.cards.length >= 7) {
+			}
+		}
+	};
+
+	// these could be local, but make public for testing
+	robotAnalizeHand.loadIncompleteMeldData = function(robot) {
+		// load incomplete meld data
 		for (var meldIndex = 0; meldIndex < robot.melds.length; meldIndex++) {
 			var meld = robot.melds[meldIndex];
 			if (meld.type === 'Run')
@@ -99,9 +164,10 @@ module.exports = (function(pEventHandler) {
 				}
 			}
 		}
-		
+	};
+	
+	robotAnalizeHand.runAddons = function(robot, hand) {
 		// check for possible add ons to runs and remove the cards from further analysis
-		var usedCards = [];
 		for (var suitIndex = 0; suitIndex < 4; suitIndex++) {
 			var suit = robot.hand.runs[suitIndex];
 			for (var runIndex = 0; runIndex < suit.existing.length; runIndex++) {
@@ -119,6 +185,7 @@ module.exports = (function(pEventHandler) {
 						highest++;
 				}
 				
+				var usedCards = [];
 				for (var cardIndex = 0; hand.length; cardIndex++) {
 					var card = hand[cardIndex];
 					if (robotCommon.isWildCard(card))
@@ -130,28 +197,26 @@ module.exports = (function(pEventHandler) {
 					var cardNumber = card.cardNumber - 2;
 					if (cardNumber >= lowest
 					&& cardNumber < start
-					and !existing.cards[cardNumber]) {
+					&& !existing.cards[cardNumber]) {
 						existing.cards[cardNumber] = [];
 						existing.cards[cardNumber].push(card);
 						usedCards.push(card);
 					}
 					else if (cardNumber >= highest
 					&& cardNumber > start + 7
-					and !existing.cards[cardNumber]) {
+					&& !existing.cards[cardNumber]) {
 						existing.cards[cardNumber] = [];
 						existing.cards[cardNumber].push(card);
 						usedCards.push(card);
 					}
 				}
 				
-				// remove used cards from hand
-				for (var usedIndex = 0; usedIndex < usedCards.length; usedIndex++) {
-					var cardPosition = hand.indexOf(usedCards[usedIndex]);
-					hand.splice(cardPosition, 1);
-				}
+				this.removeUsedCards(hand, usedCards);
 			}
 		}
-		
+	};
+
+	robotAnalizeHand.organizeCards = function(robot, hand) {
 		// organize the cards
 		var usedCards = [];
 		for (var cardIndex = 0; cardIndex < hand.length; cardIndex++) {
@@ -181,13 +246,17 @@ module.exports = (function(pEventHandler) {
 			}
 		}
 
+		this.removeUsedCards(hand, usedCards);
+	};
+
+	robotAnalizeHand.possibleNewRuns = function(robot, hand) {
 		// check for possible new runs
 		var longestRun = 0;
-		var oppenentsInFoot = robotCommon.oppenentsInFoot(robot);
+		var opponentsInFoot = robotCommon.opponentsInFoot(robot);
 		for (var suitIndex = 0; suitIndex < 4; suitIndex++) {
 			var suit = robot.hand.runs[suitIndex];
 			var minRunLength = 3;
-			if (oppenentsInFoot)
+			if (opponentsInFoot)
 				minRunLength = 6;
 			else if (hasExistingRuns)
 				minRunLength = 5;
@@ -216,9 +285,14 @@ module.exports = (function(pEventHandler) {
 			}
 		}
 		
-		var deleteRunIfLessThan = longestRun - 2;
+		return longestRun;
+	};
+
+	robotAnalizeHand.cleanupRunCards = function(robot, hand, longestRun) {
 		// clean up melds and runs
 		// add cards allocated to runs in usedCards
+		var usedCards = [];
+		var deleteRunIfLessThan = longestRun - 2;
 		for (var suitIndex = 0; suitIndex < 4; suitIndex++) {
 			var suit = robot.hand.runs[suitIndex];
 			if (suit.runLength > 0) {
@@ -244,7 +318,12 @@ module.exports = (function(pEventHandler) {
 				}
 			}
 		}
-		
+
+		this.removeUsedCards(hand, usedCards);
+	};
+
+	robotAnalizeHand.cleanupMelds = function(robot, hand) {
+		var usedCards = [];
 		// eliminate melds with < 2 cards or cards that take meld length 8 or 9
 		// add remaining cards to usedCards
 		for (var meldIndex = 0; meldIndex < 11; meldIndex++) {
@@ -255,21 +334,13 @@ module.exports = (function(pEventHandler) {
 			if (meldLength === 8 || meldLength === 9)
 				meld.cards.splice(0, meldLength - 7);
 			for (var cardIndex = 0; cardIndex < meld.cards.length; cardIndex++)
-				usedCards.push(meld.cards[cardIndex];
+				usedCards.push(meld.cards[cardIndex]);
 		}
-		
-		// remove used cards from hand
-		for (var cardIndex = 0; cardIndex < usedCards.length; cardIndex++) {
-			var cardPosition = hand.indexOf(usedCards[cardIndex]);
-			hand.splice(cardPosition, 1);
-		}
-		
-		robot.hand.unusedCards = hand;
-		
-		// score possible playable cards if no melds
-		if (robot.melds.length > 0)
-			return;
-		
+
+		this.removeUsedCards(hand, usedCards);
+	};
+
+	robotAnalizeHand.scoreRuns = function(robot) {
 		for (var suitIndex = 0; suitIndex < 4; suitIndex++) {
 			var suit = robot.hand.runs[suitIndex];
 			if (suit.runLength === 0)
@@ -302,7 +373,7 @@ module.exports = (function(pEventHandler) {
 				suit.playableLength = cardCount;
 				var below8 = 4 - lowestCard;
 				if (below8 > cardCount)
-					below8 = cardCount);
+					below8 = cardCount;
 				var above8 = lowestCard + cardCount - 4;
 				if (above8 < 0)
 					above8 = 0;
@@ -313,41 +384,13 @@ module.exports = (function(pEventHandler) {
 				suit.score += below8 * 5 + above8 * 10;
 			}
 		}
-
-		// find maximum possible score to go on the table
-		var opponentsOnTable = robotCommon.opponentsOnTable(robot);
-		var minExcludeMeld = 2;
-		var maxExcludeMeld = 9;
-		if (oppenentsOnTable) {
-			minExcludeMeld = 4;
-			maxExcludeMeld = 7;
-		}
-		
-		// 1. max wild card run, if possible
-		var score1 = 0;
-		var jokerCount = robot.hand.wildCards.jokers;
-		var twoCount = robot.hand.wildCards.twos;
-		if (jokerCount + twoCount > 2) {
-			if (jokerCount > 7) {
-				score1 += 7 * 50;
-				jokerCount -= 7;
-			} else {
-				score += jokerCount * 50;
-				if (jokerCount + twoCount > 7) {
-					score1 += (7 - jokerCount) * 20;
-					twoCount -= (7 - jokerCount);
-				} else {
-					score1 += twoCount * 20;
-					twoCount = 0;
-				}
-				jokerCount = 0;
-			}
-		}
-		// now add in melds
-		for (var meldIndex = 0; meldIndex < 11; meldIndex++) {
-			var meld = robot.melds[meldIndex];
-			if (meld.cards.length >= 7) {
-			}
+	};
+	
+	robotAnalizeHand.removeUsedCards = function(hand, usedCards) {
+		// remove used cards from hand
+		for (var usedIndex = 0; usedIndex < usedCards.length; usedIndex++) {
+			var cardPosition = hand.indexOf(usedCards[usedIndex]);
+			hand.splice(cardPosition, 1);
 		}
 	};
 	
