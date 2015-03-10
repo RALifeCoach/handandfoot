@@ -10,52 +10,8 @@ module.exports = (function(pEventHandler) {
 	robotAnalizeHand.analizeHand = function(robot) {
 		console.log('analize hand');
 
-		// initialize counters and arrays
-		robot.hand.redThrees = [];
-		robot.hand.blackThrees = []
-		robot.hand.wildCards = { existingLength: 0, twos: 0, jokers: 0, cards: [] };
-		robot.hand.melds = [
-			{ meldCount: 0, wildCardCount: 0, cards: [] } // 4
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // 5
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // 6
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // 7
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // 8
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // 9
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // 10
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // J
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // Q
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // K
-			, { meldCount: 0, wildCardCount: 0, cards: [] } // A
-		];
-		robot.hand.runs = [
-			{ existing: []
-				, runOffset: -1
-				, runLength: 0
-				, playableOffset: -1
-				, playableLength: 0
-				, cards: [false, false, false, false, false, false, false, false, false, false, false] } // clubs
-			, { existing: []
-				, runOffset: -1
-				, runLength: 0
-				, playableOffset: -1
-				, playableLength: 0
-				, cards: [false, false, false, false, false, false, false, false, false, false, false] } // diamonds
-			, { existing: []
-				, runOffset: -1
-				, runLength: 0
-				, playableOffset: -1
-				, playableLength: 0
-				, cards: [false, false, false, false, false, false, false, false, false, false, false] } // hearts
-			, { existing: []
-				, runOffset: -1
-				, runLength: 0
-				, playableOffset: -1
-				, playableLength: 0
-				, cards: [false, false, false, false, false, false, false, false, false, false, false] } // spades
-		];
-		robot.hand.unusedCards = [];
+		this.initializeRobotHand(robot);
 		
-		var hasExistingRuns = false;
 		var hand = robot.player.inFoot 
 			? robotCommon.copyCards(robot.player.footCards)
 			: robotCommon.copyCards(robot.player.handCards);
@@ -124,17 +80,69 @@ module.exports = (function(pEventHandler) {
 	};
 
 	// these could be local, but make public for testing
+	robotAnalizeHand.initializeRobotHand = function(robot) {
+		// initialize counters and arrays
+		robot.hand = {};
+		robot.hand.redThrees = [];
+		robot.hand.blackThrees = []
+		robot.hand.wildCards = { existingLength: 0, twos: 0, jokers: 0, cards: [] };
+		robot.hand.melds = [
+			{ meldCount: 0, wildCardCount: 0, cards: [] } // 4
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // 5
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // 6
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // 7
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // 8
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // 9
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // 10
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // J
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // Q
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // K
+			, { meldCount: 0, wildCardCount: 0, cards: [] } // A
+		];
+		robot.hand.runs = [
+			{ existing: []
+				, runOffset: -1
+				, runLength: 0
+				, playableOffset: -1
+				, playableLength: 0
+				, cards: [false, false, false, false, false, false, false, false, false, false, false] } // clubs
+			, { existing: []
+				, runOffset: -1
+				, runLength: 0
+				, playableOffset: -1
+				, playableLength: 0
+				, cards: [false, false, false, false, false, false, false, false, false, false, false] } // diamonds
+			, { existing: []
+				, runOffset: -1
+				, runLength: 0
+				, playableOffset: -1
+				, playableLength: 0
+				, cards: [false, false, false, false, false, false, false, false, false, false, false] } // hearts
+			, { existing: []
+				, runOffset: -1
+				, runLength: 0
+				, playableOffset: -1
+				, playableLength: 0
+				, cards: [false, false, false, false, false, false, false, false, false, false, false] } // spades
+		];
+		robot.hand.hasExistingRuns = false;
+		robot.hand.unusedCards = [];
+	};
+	
 	robotAnalizeHand.loadIncompleteMeldData = function(robot) {
 		// load incomplete meld data
 		for (var meldIndex = 0; meldIndex < robot.melds.length; meldIndex++) {
 			var meld = robot.melds[meldIndex];
 			if (meld.type === 'Run')
-				hasExistingRuns = true;
+				robot.hand.hasExistingRuns = true;
 			
-			if (!meld.complete) {
+			if (!meld.isComplete) {
 				switch (meld.type) {
 					case 'Wild Card Meld':
 						robot.hand.wildCards.existingLength = meld.cards.length;
+						for (var cardIndex = 0; cardIndex < meld.cards.length; cardIndex++) {
+							var card = meld.cards[cardIndex];
+						}
 						break;
 					case 'Run':
 						var start = 99;
@@ -155,7 +163,7 @@ module.exports = (function(pEventHandler) {
 					case 'Dirty Meld':
 						for (var cardIndex = 0; cardIndex < meld.cards.length; cardIndex++) {
 							var card = meld.cards[cardIndex];
-							if (robotComon.isWildCard(card))
+							if (robotCommon.isWildCard(card))
 								robot.hand.melds[meld.number - 2].wildCardCount++;
 						}
 					case 'Clean Meld':
@@ -172,22 +180,23 @@ module.exports = (function(pEventHandler) {
 			var suit = robot.hand.runs[suitIndex];
 			for (var runIndex = 0; runIndex < suit.existing.length; runIndex++) {
 				var run = suit.existing[runIndex];
-				var lowest = run.start - 7 + run.length;
+				var lowest = run.start + run.length - 7;
 				if (lowest < 0) {
 					lowest = 0;
-					if (lowest === start)
+					if (lowest === run.start)
 						lowest--;
 				}
-				var highest = run.start + 7;
+				var highest = run.start + 6;
 				if (highest > 11) {
 					highest = 11;
-					if (highest === start + 7)
+					if (highest === run.start + 6)
 						highest++;
 				}
 				
 				var usedCards = [];
-				for (var cardIndex = 0; hand.length; cardIndex++) {
+				for (var cardIndex = 0; cardIndex < hand.length; cardIndex++) {
 					var card = hand[cardIndex];
+
 					if (robotCommon.isWildCard(card))
 						continue;
 					if (robotCommon.isRedThree(card))
@@ -195,22 +204,23 @@ module.exports = (function(pEventHandler) {
 					if (robotCommon.isBlackThree(card))
 						continue;
 					var cardNumber = card.cardNumber - 2;
+
 					if (cardNumber >= lowest
-					&& cardNumber < start
-					&& !existing.cards[cardNumber]) {
-						existing.cards[cardNumber] = [];
-						existing.cards[cardNumber].push(card);
+					&& cardNumber < run.start
+					&& !run.cards[cardNumber]) {
+						run.cards[cardNumber] = [];
+						run.cards[cardNumber].push(card);
 						usedCards.push(card);
 					}
-					else if (cardNumber >= highest
-					&& cardNumber > start + 7
-					&& !existing.cards[cardNumber]) {
-						existing.cards[cardNumber] = [];
-						existing.cards[cardNumber].push(card);
+					else if (cardNumber <= highest
+					&& cardNumber >= run.start + run.length
+					&& !run.cards[cardNumber]) {
+						run.cards[cardNumber] = [];
+						run.cards[cardNumber].push(card);
 						usedCards.push(card);
 					}
 				}
-				
+
 				this.removeUsedCards(hand, usedCards);
 			}
 		}
@@ -228,13 +238,11 @@ module.exports = (function(pEventHandler) {
 				robot.hand.blackThrees.push(card);
 				usedCards.push(card);
 			} else if (robotCommon.isWildCard(card)) {
-				robot.hand.wildCards.push(card);
+				robot.hand.wildCards.cards.push(card);
 				usedCards.push(card);
 				if (card.cardNumber === 0) {
-					robot.hand.wildCards.score += 20;
 					robot.hand.wildCards.twos++;
 				} else {
-					robot.hand.wildCards.score += 50;
 					robot.hand.wildCards.jokers++;
 				}
 			} else {

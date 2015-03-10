@@ -10,6 +10,11 @@ module.exports = (function(pEventHandler) {
 	}
 	
 	// check for black three
+	robotCommon.isRedThree = function(card) {
+		return (card.suitNumber === 1 || card.suitNumber === 2) && card.cardNumber === 1;
+	}
+	
+	// check for black three
 	robotCommon.isBlackThree = function(card) {
 		return (card.suitNumber === 0 || card.suitNumber === 3) && card.cardNumber === 1;
 	}
