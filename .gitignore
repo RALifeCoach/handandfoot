@@ -2,3 +2,4 @@
 /test/*
 /dump/*
 /prod/*
+/.ntvs_analysis.dat
