@@ -1,0 +1,31 @@
+<div class="modal-header">
+	<h3>{{modalOptions.headerText}}</h3>
+</div>
+<div class="modal-body">
+    <table class=scores">
+        <thead>
+            <tr>
+                <th>Game</th>
+                <th>Your Score</th>
+                <th>Your Partner</th>
+                <th>Their Score</th>
+                <th>Opp. 1</th>
+                <th>Opp. 2</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<tr ng-repeat="item in modalOptions.results">
+	    		<td>{{item.gameName}}</td>
+		    	<td>{{item.yourScore}}</td>
+			    <td>{{item.yourPartner}}</td>
+    			<td>{{item.theirScore}}</td>
+    			<td>{{item.theirPlayer1}}</td>
+    			<td>{{item.theirPlayer2}}</td>
+	    	</tr>
+        </tbody>
+	</table>
+</div>
+<div class="modal-footer">
+	<button ng-if="modalOptions.closeButtonText !== false" type="button" class="btn" 
+		data-ng-click="modalOptions.close()">{{modalOptions.closeButtonText}}</button>
+</div>

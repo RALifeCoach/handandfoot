@@ -4,6 +4,7 @@ var Game = mongoose.model('Game');
 var Person = mongoose.model('Person');
 var Hint = mongoose.model('Hint');
 var HelpText = mongoose.model('HelpText');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = function(io, mapper) {
 	io.on('connection', function (socket) {
@@ -39,6 +40,72 @@ module.exports = function(io, mapper) {
 			}
 		);
 	});
+
+    router.post('/showScores', function(req, res, next) {
+        var id = new ObjectId(req.body.personId);
+
+        Person.aggregate([
+            { $match: {
+                _id: id
+            }},
+            { $unwind: '$stats' },
+            { $group: {
+                _id: '$stats.gameId', 
+                name: {$first: '$name'},
+                dateEnded: {$first: '$stats.dateEnded'}, 
+                gameName: {$first: '$stats.gameName'},
+                gameId: {$first: '$stats.gameId'},
+                yourTeam: {$first: '$stats.yourTeam'},
+                theirTeam: {$first: '$stats.theirTeam'}
+            }},
+            { $sort: {dateEnded: -1} },
+            { $unwind: '$yourTeam' },
+            { $unwind: '$theirTeam' },
+            { $project: {
+                name: 1, 
+                gameName: 1,
+                gameId: 1,
+                dateEnded: 1,
+                yourScore: {
+                    $cond: {
+                        if: {$eq: ['$yourTeam.score', -99999]},
+                        then: 'Resigned',
+                        else: '$yourTeam.score'
+                    }
+                },
+                yourPartner: '$yourTeam.partner',
+                theirScore: {
+                    $cond: {
+                        if: {$eq: ['$theirTeam.score', -99999]},
+                        then: 'Resigned',
+                        else: '$theirTeam.score'
+                    }
+                },
+                theirPlayer1: '$theirTeam.player1',
+                theirPlayer2: '$theirTeam.player2'
+            }},
+            { $unwind: '$yourPartner' },
+            { $unwind: '$theirPlayer1' },
+            { $unwind: '$theirPlayer2' },
+            { $project: {
+                name: 1, 
+                gameName: 1,
+                gameId: 1,
+                dateEnded: 1,
+                yourScore: 1,
+                yourPartner: '$yourPartner.name',
+                theirScore: 1,
+                theirPlayer1: '$theirPlayer1.name',
+                theirPlayer2: '$theirPlayer2.name'
+            }},
+        ], function(err, result) {
+            if (err) {
+                console.log(err)
+                return;
+            }
+            res.json(result);
+        });
+    });
 	
 	router.get('/getHints', function(req, res, next) {
 		Hint.find(function(err, hints){

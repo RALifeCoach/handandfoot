@@ -6,12 +6,14 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var http = require('http');
+var app = express();
+var server = http.createServer(app);
+
+var port = process.env.PORT || 3010;
 
 // connect to database
-if (process.env.DB_CONNECT)
-	mongoose.connect(process.env.DB_CONNECT);
-else
-	mongoose.connect('mongodb://localhost/handandfoot');
+mongoose.connect('mongodb://localhost/ra_prod_database');
+
 // include models
 require('./models/Person');
 require('./models/Game');
@@ -26,8 +28,6 @@ var gameMapper = new GameVM.GameVM();
 var PersonVM = require('./viewmodels/PersonVM');
 var personMapper = new PersonVM.PersonVM();
 
-var app = express();
-var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 // include routes
@@ -49,15 +49,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 app.use('/angular',  express.static(__dirname + '/angular'));
 app.use('/partials',  express.static(__dirname + '/views/partials'));
-
-if (process.env.PRODUCTION) {
-	app.get('*',function(req,res,next){
-		if(req.headers['x-forwarded-proto']!='https')
-			res.redirect(res.redirect(['https://', req.get('Host'), req.url].join('')));
-		else
-			next() /* Continue to other routes if we're not redirecting */
-	});
-}
 
 app.use('/', people);
 app.use('/games', games);
@@ -93,8 +84,8 @@ app.use(function(err, req, res, next) {
     });
 });
 
-server.listen(process.env.PORT || 3030);
-
-module.exports = app;
-
-console.log('started');
+// Start Server
+server.listen(port, "0.0.0.0");
+server.on('listening', function () {
+    console.log('Express server started on port %s at %s', server.address().port, server.address().address);
+});

@@ -1,0 +1,1 @@
+{"indexes":[{"v":NumberInt(1),"name":"user_1_userSource_1","key":{"user":NumberInt(1),"userSource":NumberInt(1)},"unique":true,"ns":"ra_prod_database.system.users"},{"v":NumberInt(1),"name":"_id_","key":{"_id":NumberInt(1)},"ns":"ra_prod_database.system.users"}]}

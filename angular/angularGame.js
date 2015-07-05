@@ -3,7 +3,8 @@ angular.module('handAndFoot')
 		function($http){
 			var o = {
 				games: [],
-				hints: []
+				hints: [],
+                results: []
 			};
 			
 			// get all games
@@ -27,7 +28,15 @@ angular.module('handAndFoot')
 					o.games.push(data);
 				});
 			};
-			
+
+            // get game scores
+            o.showScores = function(data, callback) {
+				return $http.post('/games/showScores', data).success(function(data){
+                    o.results = data;
+                    return callback();
+				});
+            };
+
 			return o;
 		}
 	]);
@@ -44,7 +53,9 @@ angular.module('handAndFoot')
 		'gamePasswordService',
 		'hintsService',
 		'chatSocket',
-		function($scope, $location, $cookieStore, games, helpFactory, addGameService, sharedProperties, gamePasswordService, hintsService, chatSocket){
+        'scoresModalService',
+		function($scope, $location, $cookieStore, games, helpFactory, 
+        addGameService, sharedProperties, gamePasswordService, hintsService, chatSocket, scoresService){
 			// if user not set then go to login
 			$scope.person = sharedProperties.getPerson();
 			$scope.games = [];
@@ -112,5 +123,19 @@ angular.module('handAndFoot')
 					$location.path("/play");
 				}
 			};
+
+            // show scores
+            $scope.showScores = function() {
+				games.showScores( {personId: $scope.person._id}, function() {
+                    var modalOptions = {
+                        closeButtonText: 'Close',
+                        headerText: 'Results',
+                        showAll: true,
+                        results: games.results
+                    };
+
+                    scoresService.showModal({}, modalOptions);
+                });
+            };
 		}
 	]);
