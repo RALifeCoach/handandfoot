@@ -118,17 +118,17 @@ class Game {
 				for (let cardIndex = 0; cardIndex < 13; cardIndex++) {
 					allCards.push({
             suit: suitIndex,
-            car: cardIndex
+            number: cardIndex
           });
 				}
 			}
 			allCards.push({
         suit: 4,
-        car: -1
+        number: -1
       });
       allCards.push({
         suit: 4,
-        car: -1
+        number: -1
       });
 		}
 
@@ -239,10 +239,7 @@ class Game {
 			player.addPerson(personId);
 
 			// save the game
-			_this.save()
-      .then(() => {
-        return personBL.loadPerson(personId);
-      })
+      personBL.loadPerson(personId)
       .then(person => {
         switch (direction) {
           case 'North':
@@ -258,7 +255,20 @@ class Game {
             gameData.people[3] = person;
             break;
         }
-        resolve(this);
+
+        let playerCtr = 0;
+        gameData.people.forEach(person => {
+          if (person) playerCtr++
+        });
+        if (playerCtr === 4 && !gameData.game.gameBegun) {
+          _this.dealNewHand();
+  				_this.startNewHand();
+        }
+
+        return _this.save();
+      })
+      .then(game => {
+        resolve(game);
       })
       .catch(err => reject(err));
     });
@@ -465,11 +475,14 @@ export function turnOffConnected(personId) {
       }
 
       games.forEach(game => {
-        if (game.nsTeam[0].players[0].person[0].toString() == personId)
+        if (game.nsTeam[0].players[0].person.length > 0
+        && game.nsTeam[0].players[0].person[0].toString() == personId)
           game.nsTeam[0].players[0].connected = false;
-        else if (game.nsTeam[0].players[1].person[0].toString() == personId)
+        else if (game.nsTeam[0].players[1].person.length > 0
+        && game.nsTeam[0].players[1].person[0].toString() == personId)
           game.nsTeam[0].players[1].connected = false;
-        else if (game.ewTeam[0].players[0].person[0].toString() == personId)
+        else if (game.ewTeam[0].players[0].person.length > 0
+        && game.ewTeam[0].players[0].person[0].toString() == personId)
           game.ewTeam[0].players[0].connected = false;
         else
           game.ewTeam[0].players[1].connected = false;

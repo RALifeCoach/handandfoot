@@ -3,16 +3,16 @@ const suitsCard = ['clubs', 'diams', 'hearts', 'spades', 'joker'];
 
 export class CardVM {
   constructor(card) {
-    this.suitNumber = card.suit;
-    this.cardNumber = card.number;
-    this.suitCard = suitsCard[card.suit];
-    this.number = card.number > -1 ? cards[card.number] : -1;
+    this.suit = card.suit;
+    this.number = card.number;
   }
 
   deserialize() {
     return {
-      suit: this.suitNumber,
-      number: this.cardNumber
+      suitNumber: this.suit,
+      cardNumber: this.number,
+      suitCard: suitsCard[this.suit],
+      number: this.number > -1 ? cards[this.number] : -1
     }
   }
 }

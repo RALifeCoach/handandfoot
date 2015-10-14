@@ -7,11 +7,10 @@ class ConnectedGame {
 		var playersVM = [];
 
 		gameVM.players.forEach(player => {
-			console.log(JSON.stringify(player));
 			if (!player)
 				playersVM.push({ turn: false, person: false });
 			else
-				playersVM.push(player);
+				playersVM.push(player.deserialize());
 		});
 		gameVM.players = [];
 

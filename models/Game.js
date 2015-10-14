@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var OptionsSchema = new mongoose.Schema({
 	teams: Number,
-	runScores: [ 
+	runScores: [
 		new mongoose.Schema({
 			score: Number,
 			sevenRule: Boolean

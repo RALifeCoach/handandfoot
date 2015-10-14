@@ -62,22 +62,8 @@ export class Router {
 
 					io.sockets.emit('refreshGames');
 
-					// if the game has 4 players then begin the game
-					if (gameVM.playersFull && !gameVM.gameBegun) {
-						mapper.startNewGame(data.gameId)
-						.then(gameVM => {
-							// send the message
-							connectedGame.sendMessages(gameVM, socket);
-						})
-						.catch(err => {
-							console.log(err.stack);
-							console.log(data.gameId);
-							return;
-						});
-					} else {
-						// send the message
-						connectedGame.sendMessages(gameVM, socket);
-					}
+					// send the message
+					connectedGame.sendMessages(gameVM, socket);
 				})
 				.catch(err => {
 					console.log(err.stack);

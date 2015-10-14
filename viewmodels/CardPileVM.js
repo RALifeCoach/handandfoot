@@ -11,7 +11,7 @@ export class CardPileVM {
   deserialize() {
     let outCards = [];
 
-    this.cards.forEach(card => outCards.push(card.deserialize));
+    this.cards.forEach(card => outCards.push(card.deserialize()));
 
     return outCards;
   }

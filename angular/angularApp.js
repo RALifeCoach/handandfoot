@@ -1,7 +1,7 @@
-angular.module('handAndFoot', ['ui.router', 
-	'ngCookies', 
-	'btford.socket-io', 
-	'ngDraggable', 
+angular.module('handAndFoot', ['ui.router',
+	'ngCookies',
+	'btford.socket-io',
+	'ngDraggable',
 	'ui.bootstrap',
 	'ngAudio',
 	'ngLoadingSpinner']);
@@ -44,44 +44,44 @@ angular.module('handAndFoot')
 			var sharedGameId = false;
 			var sharedPerson = false;
 			var sharedDirection = false;
-			return { 
-				getGameId: function() { 
+			return {
+				getGameId: function() {
 					if (!sharedGameId) {
 						sharedGameId = $cookieStore.get('gameId');
 					}
-					return sharedGameId; 
+					return sharedGameId;
 				},
-				setGameId: function(gameId) { 
-					sharedGameId = gameId; 
+				setGameId: function(gameId) {
+					sharedGameId = gameId;
 					$cookieStore.put('gameId', gameId);
 				},
-				getPerson: function() { 
+				getPerson: function() {
 					if (!sharedPerson) {
 						sharedPerson = $cookieStore.get('person');
 					}
-					return sharedPerson; 
+					return sharedPerson;
 				},
-				setPerson: function(person) { 
-					sharedPerson = person; 
+				setPerson: function(person) {
+					sharedPerson = person;
 					if (person === null)
 						$cookieStore.remove('person');
 					else
 						$cookieStore.put('person', person);
 				},
-				getDirection: function() { 
+				getDirection: function() {
 					if (!sharedDirection) {
 						sharedDirection = $cookieStore.get('direction');
 					}
-					return sharedDirection; 
+					return sharedDirection;
 				},
-				setDirection: function(direction) { 
-					sharedDirection = direction; 
+				setDirection: function(direction) {
+					sharedDirection = direction;
 					$cookieStore.put('direction', direction);
 				}
 			};
 		}
 	]);
-	
+
 // chat socket factory
 angular.module('handAndFoot')
 	.factory('chatSocket', ['socketFactory',
@@ -106,7 +106,7 @@ angular.module('handAndFoot')
 		var service = {
 			user_id: null,
 			getCurrentUser: function() {
-				debugger; // Set the debugger inside 
+				debugger; // Set the debugger inside
 						// this function
 				return service.user_id;
 			}
@@ -211,7 +211,7 @@ angular.module('handAndFoot')
 					$compile(element.contents())(scope);
 				}, true);
 			};
-		
+
 			return {
 				restrict: 'E',
 				scope: {

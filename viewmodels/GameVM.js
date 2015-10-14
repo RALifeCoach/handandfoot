@@ -496,6 +496,7 @@ export class GameVM {
 			.then(game => {
 				// recreate the gameVM from the new DB game
 				let gameVM = _this.mapToVM(game);
+
 				resolve(gameVM);
 			})
 			.catch(err => reject(err));
@@ -538,32 +539,6 @@ export class GameVM {
 		.catch(err => callback(err));
 	}
 
-	startNewGame(gameId) {
-		var _this = this;
-
-		return new Promise((reslove, reject) => {
-			// find game from DB
-			gameUtil.loadGame(gameId)
-			.then(game => {
-				game.dealNewHand();
-				game.startNewHand();
-				return game.save();
-			})
-			.then(game => {
-				// recreate the gameVM from the new DB game
-				var mapper = new GameVM();
-				let gameVM = mapper.mapToVM(game)
-
-				resolve(gameVM);
-			})
-			.catch(err => {
-				console.log(game);
-				console.log(err.stack);
-				reject(err);
-			});
-		});
-	}
-
 	// update cards from message from a game
 	updateGame(gameId, playerVM, pilesVM, meldsVM, action, control, callback) {
 		var _this = this;
@@ -600,8 +575,6 @@ export class GameVM {
 
 			// update the hand and foot
 			player.handCards = playerVM.handCards.deserialize();
-console.log(playerVM.handCards);
-console.log(player.handCards);
 			player.footCards = playerVM.footCards.deserialize();
 
 			// update the melds - again notify players if melds being updated

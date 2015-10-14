@@ -60,13 +60,13 @@
 					</div>
 					<div ng-if="players[0].person" class="playingCards simpleCards" style="float: left;">
 						<ul class="hand" ng-if="!players[0].inFoot">
-							<li ng-repeat="card in players[0].handCards" ng-drop="true" 
+							<li ng-repeat="card in players[0].handCards" ng-drop="true"
 							ng-drop-success="onDropComplete($index, $data, $event)">
 								<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
 							</li>
 						</ul>
 						<ul class="hand" ng-if="players[0].inFoot">
-							<li ng-repeat="card in players[0].footCards" ng-drop="true" 
+							<li ng-repeat="card in players[0].footCards" ng-drop="true"
 							ng-drop-success="onDropComplete($index, $data, $event)">
 								<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
 							</li>
@@ -76,9 +76,9 @@
 				<div class='col-xs-2 col-sm-2 col-md-1'>
 					<div class="panel panel-default">
 						<div class="panel-body">
-							<div ng-if="piles[0].cards.length > 0" class="playingCards simpleCards">
+							<div ng-if="piles[0].cards.cards.length > 0" class="playingCards simpleCards">
 								<ul class="deck">
-									<li ng-repeat="card in [piles[0].cards.length] | maxCards">
+									<li ng-repeat="card in [piles[0].cards.cards.length] | maxCards">
 										<div class="card back" ng-click="clickPile(0)">*</div>
 									</li>
 								</ul>
@@ -89,9 +89,9 @@
 				<div class='col-xs-2 col-sm-2 col-md-1'>
 					<div class="panel panel-default">
 						<div class="panel-body">
-							<div ng-if="piles[1].cards.length > 0" class="playingCards simpleCards">
+							<div ng-if="piles[1].cards.cards.length > 0" class="playingCards simpleCards">
 								<ul class="deck">
-									<li ng-repeat="card in [piles[1].cards.length] | maxCards">
+									<li ng-repeat="card in [piles[1].cards.cards.length] | maxCards">
 										<div class="card back" ng-click="clickPile(1)">*</div>
 									</li>
 								</ul>
@@ -104,13 +104,13 @@
 						<div class="panel-body">
 							<div name='discardPile' id='discardPile' class="playingCards simpleCards">
 								<ul class="deck">
-									<div ng-repeat="card in piles[4].cards | maxDiscard">
+									<div ng-repeat="card in piles[4].cards.cards | maxDiscard">
 										<li>
 											<playing-card card="card" ng-click="clickDiscardPile($event)"></playing-card>
 										</li>
 									</div>
 								</ul>
-								<img src="\images\pick-up-in-progress.png" ng-if="drawFromDiscard.topCard" 
+								<img src="\images\pick-up-in-progress.png" ng-if="drawFromDiscard.topCard"
 									style="position:absolute; top: 0; left: 0; width: 100%; height:100%;">
 							</div>
 						</div>
@@ -119,9 +119,9 @@
 				<div class='col-xs-2 col-sm-2 col-md-1'>
 					<div class="panel panel-default">
 						<div class="panel-body">
-							<div ng-if="piles[2].cards.length > 0" class="playingCards simpleCards">
+							<div ng-if="piles[2].cards.cards.length > 0" class="playingCards simpleCards">
 								<ul class="deck">
-									<li ng-repeat="card in [piles[2].cards.length] | maxCards">
+									<li ng-repeat="card in [piles[2].cards.cards.length] | maxCards">
 										<div class="card back" ng-click="clickPile(2)">*</div>
 									</li>
 								</ul>
@@ -132,9 +132,9 @@
 				<div class='col-xs-2 col-sm-2 col-md-1'>
 					<div class="panel panel-default">
 						<div class="panel-body">
-							<div ng-if="piles[3].cards.length > 0" class="playingCards simpleCards">
+							<div ng-if="piles[3].cards.cards.length > 0" class="playingCards simpleCards">
 								<ul class="deck">
-									<li ng-repeat="card in [piles[3].cards.length] | maxCards">
+									<li ng-repeat="card in [piles[3].cards.cards.length] | maxCards">
 										<div class="card back" ng-click="clickPile(3)">*</div>
 									</li>
 								</ul>
@@ -168,7 +168,7 @@
 				<div class='col-xs-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[0].melds | inProgress">
 					<div class="playingCards simpleCards">
 						<ul class="meld">
-							<li ng-repeat="card in meld.cards" ng-drop="false"> 
+							<li ng-repeat="card in meld.cards" ng-drop="false">
 								<playing-card card="card" ng-click="clickMeld($event, meld)"></playing-card>
 							</li>
 						</ul>
@@ -196,7 +196,7 @@
 				<div class='col-xs-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[1].melds | inProgress">
 					<div class="playingCards simpleCards">
 						<ul class="meld">
-							<li ng-repeat="card in meld.cards" ng-drop="true"> 
+							<li ng-repeat="card in meld.cards" ng-drop="true">
 								<playing-card card="card"></playing-card>
 							</li>
 						</ul>
@@ -236,7 +236,7 @@
 		<div class="panel panel-default">
 			<div class="panel-body" style="height:50px">
 				<div class="input-group">
-					<input type="text" class="form-control input-sm" ng-model="chatLine" 
+					<input type="text" class="form-control input-sm" ng-model="chatLine"
 						placeholder="Type your message here..." ng-enter="sendChat()" />
 					<span class="input-group-btn">
 						<button class="btn btn-warning btn-sm" ng-click="sendChat()">
