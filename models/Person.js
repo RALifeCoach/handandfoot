@@ -6,24 +6,24 @@ var StatsSchema = new mongoose.Schema({
 	dateEnded: { type: Date, default: Date.now },
 	status: String,
 	roundsPlayed: Number,
-	yourTeam: [{
-		partner: [{
+	yourTeam: {
+		partner: {
 			personId: String,
 			name:String
-		}],
+		},
 		score: Number
-	}],
-	theirTeam: [{
-		player1: [{
+	},
+	theirTeam: {
+		player1: {
 			personId: String,
 			name:String
-		}],
-		player2: [{
+		},
+		player2: {
 			personId: String,
 			name:String
-		}],
+		},
 		score: Number
-	}]
+	}
 });
 
 var PersonSchema = new mongoose.Schema({

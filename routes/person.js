@@ -1,66 +1,71 @@
-var express = require('express');
-var mongoose = require('mongoose');
-var Game = mongoose.model('Game');
-var Person = mongoose.model('Person');
+import * as express from 'express';
+import * as PersonVM from '../viewmodels/PersonVM';
+import mongoose from 'mongoose';
 
-module.exports = function(mapper) {
-	var router = express.Router();
+export class Router {
+	constructor () {
+		let mapper = new PersonVM.PersonVM();
+		var Game = mongoose.model('Game');
+		var Person = mongoose.model('Person');
 
-	/* GET home page. */
-	router.get('/', function(req, res) {
-	  res.render('index');
-	});
+		var router = express.Router();
 
-	router.post('/login', function(req, res, next) {
-		var userId = req.body.userId.toLowerCase();
-		var query = Person.findOne( {userId: userId} );
-		query.exec(function (err, person){
-			if (err) { return next(err); }
-			if (!person) {
-				console.log('user not found');
-				console.log(req.body);
-				res.json({error: true });
-				return;
-			}
-
-			if (person.password !== req.body.password) {
-				console.log('password does not match');
-				console.log(req.body);
-				console.log(person);
-				res.json({error: true });
-				return;
-			}
-
-			res.json({error: false, person: mapper.mapToVM(person) });
+		/* GET home page. */
+		router.get('/', (req, res) => {
+		  res.render('index');
 		});
-	});
 
-	router.post('/register', function(req, res, next) {
-		var query = Person.findOne( {userId: req.body.userId} );
+		router.post('/login', (req, res, next) => {
+			var userId = req.body.userId.toLowerCase();
+			var query = Person.findOne( {userId: userId} );
+			query.exec(function (err, person){
+				if (err) { return next(err); }
+				if (!person) {
+					console.log('user not found');
+					console.log(req.body);
+					res.json({error: true });
+					return;
+				}
 
-		if (req.body.password !== req.body.confirmPassword) {
-			res.json( {error: 'password and confirm password do not agree'} );
-			return;
-		}
+				if (person.password !== req.body.password) {
+					console.log('password does not match');
+					console.log(req.body);
+					console.log(person);
+					res.json({error: true });
+					return;
+				}
 
-		if (req.body.password.length < 2) {
-			res.json( {error: 'password must be at least 6 characters long'} );
-			return;
-		}
+				res.json({error: false, person: mapper.mapToVM(person) });
+			});
+		});
 
-		query.exec(function (err, person){
-			if (err) { return next(err); }
-			if (person) { 
-				res.json( {error: 'user id already exists'} );
+		router.post('/register', function(req, res, next) {
+			var query = Person.findOne( {userId: req.body.userId} );
+
+			if (req.body.password !== req.body.confirmPassword) {
+				res.json( {error: 'password and confirm password do not agree'} );
 				return;
 			}
 
-			person = new Person( req.body );
-			person.userId = person.userId.toLowerCase();
-			person.save();
-			res.json( {error: false, person: mapper.mapToVM(person) } );
-		});
-	});
+			if (req.body.password.length < 2) {
+				res.json( {error: 'password must be at least 6 characters long'} );
+				return;
+			}
 
-	return router;
-};
+			query.exec(function (err, person){
+				if (err) { return next(err); }
+				if (person) {
+					res.json( {error: 'user id already exists'} );
+					return;
+				}
+
+				person = new Person( req.body );
+				person.userId = person.userId.toLowerCase();
+				person.save();
+				res.json( {error: false, person: mapper.mapToVM(person) } );
+			});
+		});
+
+		return router;
+	}
+}

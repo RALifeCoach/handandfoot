@@ -1,19 +1,19 @@
 angular.module('handAndFoot')
-	.factory('gameFactory', ['$http', 
+	.factory('gameFactory', ['$http',
 		function($http){
 			var o = {
 				games: [],
 				hints: [],
                 results: []
 			};
-			
+
 			// get all games
 			o.getAll = function(data) {
 				return $http.post('/games/getAll', data).success(function(data){
 					angular.copy(data, o.games);
 				});
 			};
-			
+
 			// get all hints
 			o.getHints = function(callback) {
 				return $http.get('/games/getHints').success(function(data){
@@ -21,7 +21,7 @@ angular.module('handAndFoot')
 					callback();
 				});
 			};
-			
+
 			// create a new game
 			o.create = function(game) {
 				return $http.post('/games', game).success(function(data){
@@ -30,12 +30,12 @@ angular.module('handAndFoot')
 			};
 
             // get game scores
-            o.showScores = function(data, callback) {
+      o.showScores = function(data, callback) {
 				return $http.post('/games/showScores', data).success(function(data){
-                    o.results = data;
-                    return callback();
+          o.results = data;
+          return callback();
 				});
-            };
+      };
 
 			return o;
 		}
@@ -54,7 +54,7 @@ angular.module('handAndFoot')
 		'hintsService',
 		'chatSocket',
         'scoresModalService',
-		function($scope, $location, $cookieStore, games, helpFactory, 
+		function($scope, $location, $cookieStore, games, helpFactory,
         addGameService, sharedProperties, gamePasswordService, hintsService, chatSocket, scoresService){
 			// if user not set then go to login
 			$scope.person = sharedProperties.getPerson();
@@ -70,7 +70,7 @@ angular.module('handAndFoot')
 			// listen for game update message
 			$scope.$on('socket:refreshGames', function(event) {
 				console.log('game update');
-				
+
 				games.getAll( {personId: $scope.person._id} );
 			});
 
@@ -78,7 +78,7 @@ angular.module('handAndFoot')
 				// get all games awaiting players
 				games.getAll( {personId: $scope.person._id} );
 				$scope.games = games.games;
-			});			
+			});
 
 			var stopHints = $cookieStore.get('StopHints');
 			if (!stopHints) {
@@ -91,7 +91,7 @@ angular.module('handAndFoot')
 				console.log('show help');
 				helpFactory.showHelp();
 			};
-			
+
 			// add a new game
 			$scope.addGame = function() {
 				addGameService.showModal(function(game) {
@@ -124,18 +124,18 @@ angular.module('handAndFoot')
 				}
 			};
 
-            // show scores
-            $scope.showScores = function() {
+      // show scores
+      $scope.showScores = function() {
 				games.showScores( {personId: $scope.person._id}, function() {
-                    var modalOptions = {
-                        closeButtonText: 'Close',
-                        headerText: 'Results',
-                        showAll: true,
-                        results: games.results
-                    };
+          var modalOptions = {
+              closeButtonText: 'Close',
+              headerText: 'Results',
+              showAll: true,
+              results: games.results
+          };
 
-                    scoresService.showModal({}, modalOptions);
-                });
-            };
+          scoresService.showModal({}, modalOptions);
+        });
+      };
 		}
 	]);

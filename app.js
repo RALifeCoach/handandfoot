@@ -1,4 +1,4 @@
-var express = require('express');
+import express from 'express';
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -23,17 +23,16 @@ require('./models/Help');
 // define classes
 var PlayGame = require('./classes/playGame');
 var playGame = new PlayGame.PlayGame();
-var GameVM = require('./viewmodels/GameVM');
-var gameMapper = new GameVM.GameVM();
-var PersonVM = require('./viewmodels/PersonVM');
-var personMapper = new PersonVM.PersonVM();
 
 var io = require('socket.io')(server);
 
 // include routes
-var people = require('./routes/person')(personMapper);
-var games = require('./routes/game')(io, gameMapper);
-var play = require('./routes/play')(io, playGame, gameMapper);
+import * as People from './routes/person';
+var people = new People.Router();
+import * as Games from './routes/game';
+var games = new Games.Router(io);
+import * as Play from './routes/play';
+var play = new Play.Router(io, playGame);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

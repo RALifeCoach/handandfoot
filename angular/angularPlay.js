@@ -14,9 +14,9 @@ angular.module('handAndFoot')
 			$scope.game = {};
 			$scope.piles = [ { cards: []}, {cards: []}, {cards: []}, {cards: []}, {cards: []} ];
 			$scope.players = false;
-			$scope.teams = [ 
-				{ basePoints: 0, counts: [], melds: [] }, 
-				{ basePoints: 0, counts: [], melds: [] } 
+			$scope.teams = [
+				{ basePoints: 0, counts: [], melds: [] },
+				{ basePoints: 0, counts: [], melds: [] }
 			];
 			$scope.results = {
 				yourTeam: [],
@@ -37,7 +37,7 @@ angular.module('handAndFoot')
 			$scope.drawFromDiscard.topCard = false;
 			$scope.message = false;
 			$scope.undo = [];
-				
+
 			$scope.chatLine = '';
 			$scope.chatText = '';
 
@@ -47,15 +47,15 @@ angular.module('handAndFoot')
 				return;
 			}
 
-            player.joinGame();
+      player.joinGame();
 
 			// listen for game update message
 			$scope.$on('socket:gameUpdate', function(event, data) {
 				console.log('game update');
-				
+
 				// load player data - do not load card if it isn't your turn
 				var wasTurn = false;
-				if (!$scope.players 
+				if (!$scope.players
 				|| $scope.game.round !== data.game.round
 				|| $scope.game.gameBegun !== data.game.gameBegun) {
 					$scope.players = data.players;
@@ -98,7 +98,7 @@ angular.module('handAndFoot')
 				$scope.control.pointsNeeded = roundPoints[data.game.round];
 
 				$scope.undo = [];
-				
+
 				// reset spinner
 				$rootScope.showSpinner = false;
 				$scope.control.callInProgress = false;
@@ -107,7 +107,7 @@ angular.module('handAndFoot')
 			// listen for game update message
 			$scope.$on('socket:chatUpdate', function(event, data) {
 				console.log('chatUpdate');
-				
+
 				if ($scope.chatText !== '')
 					data.chatText += '\n';
 				$scope.chatText = data.chatText + $scope.chatText;
@@ -116,7 +116,7 @@ angular.module('handAndFoot')
 			// listen for end hand question
 			$scope.$on('socket:endHandQuestion', function(event, data) {
 				console.log('end hand question');
-				
+
 				// show the end hand question modal
 				if (data.direction === $scope.players[0].direction) {
 					var modalOptions = {
@@ -154,9 +154,9 @@ angular.module('handAndFoot')
 			// listen for end hand response
 			$scope.$on('socket:endHandResponse', function(event, data) {
 				console.log('end hand response');
-				
+
 				showModalService.closeModal();
-				
+
 				if (data.result === 'no') {
 					$scope.control.endHand = false;
 					return;
@@ -167,7 +167,7 @@ angular.module('handAndFoot')
 					// discard the selected card and end the turn
 					$scope.players[0].footCards = [];
 					$scope.control.turnState = 'endHand';
-					
+
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
 				}
@@ -176,7 +176,7 @@ angular.module('handAndFoot')
 			// listen for hand results
 			$scope.$on('socket:handResults', function(event, results) {
 				console.log('hand results');
-				
+
 				var modalOptions = {
 					closeButtonText: 'OK',
 					headerText: 'Hand Results',
@@ -190,7 +190,7 @@ angular.module('handAndFoot')
 			// listen for resign request
 			$scope.$on('socket:resignRequest', function(event, data) {
 				console.log('resignRequest');
-				
+
 				// show the resign modal
 				if (data.direction === $scope.players[0].direction) {
 					var modalOptions = {
@@ -228,9 +228,9 @@ angular.module('handAndFoot')
 			// listen for resign response
 			$scope.$on('socket:resignResponse', function(event, data) {
 				console.log('resignResponse');
-				
+
 				showModalService.closeModal();
-				
+
 				if (data.result !== 'no') {
 					if (data.result === 'winner')
 						var modalOptions = {
@@ -285,7 +285,7 @@ angular.module('handAndFoot')
 					$scope.message = "You must play this card.";
 					return;
 				}
-				
+
 				cards[cardIndex].highlight = !cards[cardIndex].highlight;
 				$scope.control.highlightedScore = melds.scoreHighlightedCards(cards);
 			};
@@ -301,7 +301,7 @@ angular.module('handAndFoot')
 				if ($scope.control.turnState !== 'play')
 					player.sendUpdate($scope);
 			}
-			
+
 			// click on one of the pick up piles
 			$scope.clickPile = function(pileIndex) {
 				$scope.message = false;
@@ -321,14 +321,14 @@ angular.module('handAndFoot')
 				player.drawCard($scope, pileIndex);
 				player.clearUndo($scope);
 			};
-			
+
 			// click on the discard pile
 			$scope.clickDiscardPile = function(event) {
 				event.preventDefault();
 				event.stopPropagation();
 
 				console.log('pile discard click');
-				
+
 				$scope.message = false;
 				if (!$scope.players[0].turn
 				|| $scope.control.callInProgress)
@@ -357,25 +357,25 @@ angular.module('handAndFoot')
 							$scope.message = "You must play the card from the discard pile in a meld.";
 							return;
 						}
-							
+
 						// must have one card selected to discard
 						var selectedCards = player.highlightedCards($scope.players[0]);
 						if (selectedCards.length !== 1) {
 							$scope.message = "Select one card to discard.";
 							return;
 						}
-						
+
 						// must be in a valid state to end turn
 						$scope.message = player.canDiscard($scope, selectedCards[0], melds);
 						if ($scope.message)
 							return;
-						
+
 						// send message if the discard will put the player into their foot
 						if (!$scope.players[0].inFoot
 						&& $scope.players[0].handCards.length === 1)
 							player.sendGameMessage($scope, "went into their foot");
-						
-						// check if the hand is over 
+
+						// check if the hand is over
 						// - discarding the last card from the foot
 						// - and there is at least one clean and one dirty
 						// send end hand message
@@ -387,13 +387,13 @@ angular.module('handAndFoot')
 							player.sendEndHandQuestion();
 							return;
 						}
-						
+
 						var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
 						// send message if the discard left the player with no cards
 						if ($scope.players[0].inFoot
 						&& cards.length === 0)
 							player.sendGameMessage($scope, "is playing without cards");
-						
+
 						// discard the selected card and end the turn
 						var cardIndex = cards.indexOf(selectedCards[0]);
 						player.discardCard($scope, cardIndex);
@@ -401,11 +401,11 @@ angular.module('handAndFoot')
 						break;
 				}
 			};
-			
+
 			// click on the meld base to start a new meld
 			$scope.clickMeldBase = function() {
 				console.log('pile meld base');
-					
+
 				player.updateUndo($scope);
 
 				var wasInFoot = $scope.players[0].inFoot;
@@ -420,7 +420,7 @@ angular.module('handAndFoot')
 						$scope.undo.pop();
 					return;
 				}
-				
+
 				// if drawn from pile complete then clear undo
 				if (hasDrawnFromPile && !$scope.drawFromDiscard.topCard)
 					$scope.clearUndo($scope);
@@ -431,9 +431,9 @@ angular.module('handAndFoot')
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
 				}
-				
+
 				// playing without cards
-				if ($scope.players[0].inFoot 
+				if ($scope.players[0].inFoot
 				&& $scope.players[0].footCards.length === 0
 				&& $scope.control.drawCards === 0) {
 					$scope.control.turnState = 'end';
@@ -442,7 +442,7 @@ angular.module('handAndFoot')
 					player.clearUndo($scope);
 				}
 			};
-			
+
 			// click on the meld to add cards
 			$scope.clickMeld = function(event, meld) {
 				event.preventDefault();
@@ -463,7 +463,7 @@ angular.module('handAndFoot')
 						$scope.undo.pop();
 					return;
 				}
-				
+
 				// if drawn from pile complete then clear undo
 				if (hasDrawnFromPile && !$scope.drawFromDiscard.topCard)
 					$scope.clearUndo($scope);
@@ -475,7 +475,7 @@ angular.module('handAndFoot')
 					player.clearUndo($scope);
 					$scope.players[0].inFoot = true;
 				}
-				
+
 				// playing without cards
 				if ($scope.players[0].inFoot && $scope.players[0].footCards.length === 0) {
 					$scope.control.turnState = 'end';
