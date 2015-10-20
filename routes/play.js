@@ -122,7 +122,7 @@ export class Router {
 					return;
 
 				// update the game and, optionally, the game VM
-				mapper.updateGame(connectedPlayer.gameId, data.player, data.piles, data.melds, data.action, data.control, function(err, gameVM, results) {
+				mapper.updateGame(connectedPlayer.gameId, data.player, data.melds, data.action, data.control, function(err, gameVM, results) {
 					if (err) {
 						console.log(err);
 						console.log(data.gameId);

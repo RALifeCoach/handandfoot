@@ -3,8 +3,13 @@ const suitsCard = ['clubs', 'diams', 'hearts', 'spades', 'joker'];
 
 export class CardVM {
   constructor(card) {
-    this.suit = card.suit;
-    this.number = card.number;
+    if (typeof card.cardNumber === 'undefined') {
+      this.suit = card.suit;
+      this.number = card.number;
+    } else {
+      this.suit = card.suitNumber;
+      this.number = card.cardNumber;
+    }
   }
 
   deserialize() {
@@ -13,6 +18,13 @@ export class CardVM {
       cardNumber: this.number,
       suitCard: suitsCard[this.suit],
       number: this.number > -1 ? cards[this.number] : -1
+    }
+  }
+
+  serialize() {
+    return {
+      suit: this.suit,
+      number: this.number,
     }
   }
 }

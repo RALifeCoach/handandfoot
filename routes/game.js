@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as GameVM from '../viewmodels/GameVM';
-import * as gameUtil from '../classes/GameUtil';
+import * as gameUtil from '../classes/game/GameUtil';
 
 import mongoose from 'mongoose';
 const ObjectId = mongoose.Types.ObjectId;

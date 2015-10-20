@@ -15,4 +15,11 @@ export class CardPileVM {
 
     return outCards;
   }
+  serialize() {
+    let outCards = [];
+
+    this.cards.forEach(card => outCards.push(card.serialize()));
+
+    return outCards;
+  }
 }

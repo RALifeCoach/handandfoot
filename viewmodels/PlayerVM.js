@@ -15,7 +15,7 @@ export class PlayerVM {
   loadPlayer(player) {
     this.direction = player.direction;
     this.connected = player.connected;
-    this.turn = false;
+    this.turn = player.turn;
     this.footCards = (new CardPileVM.CardPileVM(player.footCards));
     this.handCards = (new CardPileVM.CardPileVM(player.handCards));
     this.inFoot = player.handCards.length === 0;
@@ -33,6 +33,7 @@ export class PlayerVM {
         id: this.person.id,
         name: this.person.name
       },
+      direction: this.direction,
       connected: this.connected,
       turn: this.turn,
       footCards: this.footCards.deserialize(),

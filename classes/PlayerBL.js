@@ -1,3 +1,4 @@
+import * as PlayerVM from '../viewmodels/PlayerVM';
 export class Player {
   constructor(direction, player) {
     this.player = player;
@@ -32,5 +33,10 @@ export class Player {
 		this.player.connected = true;
     if (this.player.person.length === 0)
 			this.player.person.push(personId);
+  }
+
+  updateHands(playerVM:PlayerVM.PlayerVM) {
+    this.player.handCards = playerVM.handCards.serialize();
+    this.player.footCards = playerVM.footCards.serialize();
   }
 }
