@@ -182,33 +182,36 @@ export class GameVM {
 	}
 
 	// update cards from message from a game
-	updateGame(gameId, playerVM, meldsVM, action, control, callback) {
+	updateGame(gameId, playerVM, meldsVM, action, control) {
 		var _this = this;
-		// find game from DB
-		let playerVMClass = new PlayerVM.PlayerVM();
-		playerVMClass.loadPlayer(playerVM);
-		gameUtil.loadGame(gameId)
-		.then(game => {
-			return game.updateGame(playerVMClass,
-				new MeldsVM.MeldsVM(meldsVM),
-				action,
-				control);
+
+		return new Promise((resolve, reject) => {
+			// find game from DB
+			let playerVMClass = new PlayerVM.PlayerVM();
+			playerVMClass.loadPlayer(playerVM);
+			gameUtil.loadGame(gameId)
+			.then(game => {
+				return game.updateGame(playerVMClass,
+					new MeldsVM.MeldsVM(meldsVM),
+					action,
+					control);
+			})
+			.then((game, results) => {
+				// if the game is complete, update the stats
+				if (game.gameComplete) {
+					_this.updatePlayers(game, false)
+					.then(() => {
+						resolve(game, results);
+					});
+				} else {
+					resolve(game, results);
+				}
+			})
+			.catch(err => {
+				console.log(err.stack);
+				reject(err);
+			});
 		})
-		.then((game, results) => {
-			// if the game is complete, update the stats
-			if (game.gameComplete) {
-				_this.updatePlayers(game, false)
-				.then(() => {
-					callback(null, game, results);
-				});
-			} else {
-				callback(null, game);
-			}
-		})
-		.catch(err => {
-			console.log(err.stack);
-			callback(err);
-		});
 	};
 
 	// end the game

@@ -27,7 +27,7 @@ export class Router {
 			});
 
 			// message handler for messages from the game
-			socket.on('gameMessage', function (data) {
+			socket.on('gameMessage', data => {
 				console.log('recieved game message');
 
 				var connectedPlayer = playGame.findConnectedPlayer(socket);
@@ -47,7 +47,7 @@ export class Router {
 			});
 
 			// message handler for join game message
-			socket.on('joinGame', function (data) {
+			socket.on('joinGame', (data) => {
 				console.log('recieved join');
 
 				if (!playGame.newConnectedPlayer(socket, data))
@@ -55,7 +55,7 @@ export class Router {
 
 				// add the player to the game and game VM
 				mapper.addPlayer(data.gameId, data.personId, data.direction)
-				.then(gameVM => {
+				.then(game => {
 					var connectedGame = playGame.findCreateConnectedGame(socket, data);
 					if (!connectedGame)
 						return;
@@ -63,7 +63,7 @@ export class Router {
 					io.sockets.emit('refreshGames');
 
 					// send the message
-					connectedGame.sendMessages(gameVM, socket);
+					connectedGame.sendMessages(game, socket);
 				})
 				.catch(err => {
 					console.log(err.stack);
@@ -114,7 +114,7 @@ export class Router {
 			});
 
 			// message handler for update cards message
-			socket.on('updateGame', function (data) {
+			socket.on('updateGame', data => {
 				console.log('recieved update Cards');
 
 				var connectedPlayer = playGame.findConnectedPlayer(socket);
@@ -122,28 +122,35 @@ export class Router {
 					return;
 
 				// update the game and, optionally, the game VM
-				mapper.updateGame(connectedPlayer.gameId, data.player, data.melds, data.action, data.control, function(err, gameVM, results) {
-					if (err) {
-						console.log(err);
-						console.log(data.gameId);
+				mapper.updateGame(connectedPlayer.gameId,
+					data.player,
+					data.melds,
+					data.action,
+					data.control)
+				.then((game, results) => {
+					if (!results.updatePlayer) {
 						return;
 					}
 
-					// game view model is only returned if the update affects other player displays
-					if (gameVM) {
-						// the game is over
-						if (gameVM.gameComplete) {
-							playGame.endTheGame(socket, mapper, false);
-						} else {
-							// find the game, error if it doesn't exist
-							var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
-							if (!connectedGame)
-								return;
+					let gameVM = game.deserialize();
 
-							// send the updates to the other players
-							connectedGame.sendMessages(gameVM, socket, results);
-						}
+					// the game is over
+					if (gameVM.gameComplete) {
+						playGame.endTheGame(socket, mapper, false);
+					} else {
+						// find the game, error if it doesn't exist
+						var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
+						if (!connectedGame)
+							return;
+
+						// send the updates to the other players
+						connectedGame.sendMessages(gameVM, socket, results.results);
 					}
+				})
+				.catch(err => {
+					console.log(err);
+					console.log(data.gameId);
+					return;
 				});
 			});
 

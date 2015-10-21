@@ -210,7 +210,7 @@ class Game {
       .then(game => {
         resolve(game, results);
       })
-    })
+    });
   }
 }
 
