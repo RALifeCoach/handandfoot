@@ -83,6 +83,11 @@ export function updateGame(gameData, playerVM, meldsVM, action, control) {
       control.turnState = 'end';
       game.piles[4].cards.push(cards[action.cardIndex]);
       cards.splice(action.cardIndex, 1);
+
+      // if the discard puts the player into their foor then send a message
+      if (!player.inFoot && cards.length === 0) {
+
+      }
     } else if (action.action === "drawSevenCards") {
       // draw seven cards from the discard pile
       // the first card is already moved to the player

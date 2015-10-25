@@ -279,7 +279,7 @@ angular.module('handAndFoot')
 					return;
 				}
 
-				var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
+				var cards = $scope.players[0].cards;
 				if ($scope.drawFromDiscard.topCard
 				&& cards[cardIndex] == $scope.drawFromDiscard.topCard) {
 					$scope.message = "You must play this card.";
@@ -294,7 +294,7 @@ angular.module('handAndFoot')
 			$scope.onDropComplete = function (index, obj, evt) {
 				$scope.message = false;
 				console.log('drop ' + index);
-				var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
+				var cards = $scope.players[0].cards;
 				var startCard = cards.indexOf(obj);
 				cards.move(startCard, index);
 				player.resetHighlight($scope.players[0], $scope);
@@ -345,10 +345,7 @@ angular.module('handAndFoot')
 						// do not draw the 7 cards until the meld (or melds) have been played
 						$scope.drawFromDiscard.topCard = $scope.piles[4].cards[$scope.piles[4].cards.length - 1];
 						$scope.drawFromDiscard.topCard.highlight = true;
-						if ($scope.players[0].inFoot)
-							$scope.players[0].footCards.push($scope.drawFromDiscard.topCard);
-						else
-							$scope.players[0].handCards.push($scope.drawFromDiscard.topCard);
+						$scope.players[0].cards.push($scope.drawFromDiscard.topCard);
 						$scope.control.turnState = 'play';
 						break;
 					case 'play':
@@ -370,17 +367,12 @@ angular.module('handAndFoot')
 						if ($scope.message)
 							return;
 
-						// send message if the discard will put the player into their foot
-						if (!$scope.players[0].inFoot
-						&& $scope.players[0].handCards.length === 1)
-							player.sendGameMessage($scope, "went into their foot");
-
 						// check if the hand is over
 						// - discarding the last card from the foot
 						// - and there is at least one clean and one dirty
 						// send end hand message
 						if ($scope.players[0].inFoot
-						&& $scope.players[0].footCards.length === 1
+						&& $scope.players[0].cards.length === 1
 						&& $scope.teams[0].counts[1].count > 0
 						&& $scope.teams[0].counts[2].count > 0) {
 							$scope.control.endHand = true;
@@ -388,7 +380,7 @@ angular.module('handAndFoot')
 							return;
 						}
 
-						var cards = $scope.players[0].inFoot ? $scope.players[0].footCards : $scope.players[0].handCards;
+						var cards = $scope.players[0].cards;
 						// send message if the discard left the player with no cards
 						if ($scope.players[0].inFoot
 						&& cards.length === 0)

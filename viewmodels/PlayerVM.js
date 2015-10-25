@@ -36,8 +36,9 @@ export class PlayerVM {
       direction: this.direction,
       connected: this.connected,
       turn: this.turn,
-      footCards: this.footCards.deserialize(),
-      handCards: this.handCards.deserialize(),
+      cards: this.inFoot
+        ? this.footCards.deserialize()
+        : this.handCards.deserialize(),
       inFoot: this.inFoot,
       myUpdate: false
     }

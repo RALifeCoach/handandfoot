@@ -35,8 +35,7 @@ class ConnectedGame {
 					direction: playerVM.direction,
 					turn: false,
 					inFoot: playerVM.inFoot,
-					footCards: playerVM.footCards.length,
-					handCards: playerVM.handCards.length,
+					cards: playerVM.inFoot ? playerVM.footCards.length : playerVM.handCards.length,
 					myUpdate: false
 				});
 			}

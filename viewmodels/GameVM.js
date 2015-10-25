@@ -11,33 +11,6 @@ export class GameVM {
 	constructor(game) {
 		this.game = game;
 	}
-
-	// move card data from gameVM to game
-	unloadCards(inPile, outPile) {
-		var inCount = inPile.length;
-		var outCount = outPile.length;
-		var combinedCount = inCount < outCount ? inCount : outCount;
-
-		// update cards for cards in both piles
-		for (var cardIndex = 0; cardIndex < combinedCount; cardIndex++) {
-			outPile[cardIndex].suit = inPile.cards[cardIndex].suitNumber;
-			outPile[cardIndex].number = inPile.cards[cardIndex].cardNumber;
-		}
-
-		// if the in pile has more cards then add to out pile
-		for (var cardIndex = combinedCount; cardIndex < inCount; cardIndex++) {
-			outPile.push({
-				suit: inPile.cards[cardIndex].suitNumber,
-				number: inPile.cards[cardIndex].cardNumber
-			});
-		}
-
-		// if the out pile has more cards then delete them
-		if (outPile.length > combinedCount) {
-			outPile.splice(combinedCount, outCount - combinedCount);
-		}
-	}
-
 	scoreTheGame(game, winningTeam) {
 		return game.score(winningTeam);
 	}
