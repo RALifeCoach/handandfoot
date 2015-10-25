@@ -189,22 +189,24 @@ export class GameVM {
 			// find game from DB
 			let playerVMClass = new PlayerVM.PlayerVM();
 			playerVMClass.loadPlayer(playerVM);
+			let meldsVMClass = new MeldsVM.MeldsVM(meldsVM);
 			gameUtil.loadGame(gameId)
 			.then(game => {
 				return game.updateGame(playerVMClass,
-					new MeldsVM.MeldsVM(meldsVM),
+					meldsVMClass,
 					action,
 					control);
 			})
-			.then((game, results) => {
+			.then(results => {
+				let game = results.game;
 				// if the game is complete, update the stats
 				if (game.gameComplete) {
 					_this.updatePlayers(game, false)
 					.then(() => {
-						resolve(game, results);
+						resolve(results);
 					});
 				} else {
-					resolve(game, results);
+					resolve(results);
 				}
 			})
 			.catch(err => {

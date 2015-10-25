@@ -114,7 +114,7 @@ export class Router {
 			});
 
 			// message handler for update cards message
-			socket.on('updateGame', data => {
+			socket.on('updateGame', (data, callback) => {
 				console.log('recieved update Cards');
 
 				var connectedPlayer = playGame.findConnectedPlayer(socket);
@@ -127,12 +127,15 @@ export class Router {
 					data.melds,
 					data.action,
 					data.control)
-				.then((game, results) => {
-					if (!results.updatePlayer) {
+				.then(results => {
+					if (!results.updatePlayers) {
+						if (callback) {
+							return callback();
+						}
 						return;
 					}
 
-					let gameVM = game.deserialize();
+					let gameVM = results.game.deserialize();
 
 					// the game is over
 					if (gameVM.gameComplete) {
@@ -140,15 +143,19 @@ export class Router {
 					} else {
 						// find the game, error if it doesn't exist
 						var connectedGame = playGame.findConnectedGame(socket, connectedPlayer.gameId);
-						if (!connectedGame)
+						if (!connectedGame) {
+							if (callback) {
+								return callback();
+							}
 							return;
+						}
 
 						// send the updates to the other players
 						connectedGame.sendMessages(gameVM, socket, results.results);
 					}
 				})
 				.catch(err => {
-					console.log(err);
+					console.log(err.stack);
 					console.log(data.gameId);
 					return;
 				});

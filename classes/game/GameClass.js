@@ -61,6 +61,7 @@ class Game {
 
   get id() { return GAME.get(this).game._id }
   get name() { return GAME.get(this).game.name }
+  get gameComplete() { return GAME.get(this).game.gameComplete }
 
   player(direction) {
     switch (direction) {
@@ -199,8 +200,9 @@ class Game {
     action,
     control) {
     let _this = this;
+    let results;
     return new Promise((resolve, reject) => {
-      let results = updateUtil.updateGame(GAME.get(this),
+      results = updateUtil.updateGame(GAME.get(_this),
         playerVM,
         meldsVM,
         action,
@@ -208,8 +210,13 @@ class Game {
 
       _this.save()
       .then(game => {
-        resolve(game, results);
+        results.game = game;
+        resolve(results);
       })
+      .catch(err => {
+        console.log(err.stack);
+        reject(err);
+      });
     });
   }
 }

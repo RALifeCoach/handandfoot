@@ -7,19 +7,16 @@ function clearDB(done) {
     collectionCtr++;
     mongoose.connection.collections[i].remove(function() {
       if (--collectionCtr === 0) {
-        console.log('before end');
         return done();
       }
     });
   }
   if (collectionCtr === 0) {
-    console.log('before end');
     return done();
   }
 }
 
 export function dbBefore(done) {
-  console.log('before start');
   if (mongoose.connection.readyState === 0) {
     mongoose.connect('mongodb://localhost/test', function (err) {
       if (err) {
@@ -33,7 +30,6 @@ export function dbBefore(done) {
 }
 
 export function dbAfter(done) {
-  console.log('after');
   mongoose.disconnect();
   done();
 }
@@ -66,7 +62,6 @@ export function gameAndFourPlayers() {
                 east: personEast,
                 west: personWest
               };
-console.log(results);
               resolve(results);
             })
             .catch(err => {

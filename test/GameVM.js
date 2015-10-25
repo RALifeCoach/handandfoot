@@ -74,17 +74,21 @@ describe('Game VM', done => {
   });
 
   it('should start a new game', done => {
-    let results = TestUtils.gameAndFourPlayers();
-    mapper.addPlayer(results.game.id, results.north.id, 'North')
-    .then(game => {
-      return mapper.addPlayer(results.game.id, results.south.id, 'South');
+    let _results;
+    TestUtils.gameAndFourPlayers()
+    .then(results => {
+      _results = results;
+      return mapper.addPlayer(results.game.id, results.north.id, 'North');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.east.id, 'East');
+      return mapper.addPlayer(_results.game.id, _results.south.id, 'South');
+    })
+    .then(game => {
+      return mapper.addPlayer(_results.game.id, _results.east.id, 'East');
     })
     .then(game => {
       game.player('North').hand.length.should.equal(0);
-      return mapper.addPlayer(results.game.id, results.west.id, 'West');
+      return mapper.addPlayer(_results.game.id, _results.west.id, 'West');
     })
     .then(game => {
       game.person('North').name.should.equal('test north');
@@ -101,17 +105,20 @@ describe('Game VM', done => {
   });
 
   it('should apply non-turn updates to the game and return the updated game', done => {
-    let results = TestUtils.gameAndFourPlayers();
-console.log(results);
-    mapper.addPlayer(results.game.id, results.north.id, 'North')
-    .then(game => {
-      return mapper.addPlayer(results.game.id, results.south.id, 'South');
+    let _results;
+    TestUtils.gameAndFourPlayers()
+    .then(results => {
+      _results = results;
+      return mapper.addPlayer(results.game.id, results.north.id, 'North');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.east.id, 'East');
+      return mapper.addPlayer(_results.game.id, _results.south.id, 'South');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.west.id, 'West');
+      return mapper.addPlayer(_results.game.id, _results.east.id, 'East');
+    })
+    .then(game => {
+      return mapper.addPlayer(_results.game.id, _results.west.id, 'West');
     })
     .then(game => {
       let playerVM = TestUtils.buildPlayer(false);
@@ -136,7 +143,8 @@ console.log(results);
         action,
         control);
     })
-    .then((game, results) => {
+    .then(results => {
+      let game = results.game;
       game.player('North').footCards.length.should.equal(1);
       game.player('North').handCards.length.should.equal(1);
       game.pile('North').cards.length.should.equal(59);
@@ -154,16 +162,20 @@ console.log(results);
   });
 
   it('should apply turn updates and return the updated game', (done) => {
-    let results = TestUtils.gameAndFourPlayers();
-    mapper.addPlayer(results.game.id, results.north.id, 'North')
-    .then(game => {
-      return mapper.addPlayer(results.game.id, results.south.id, 'South');
+    let _results;
+    TestUtils.gameAndFourPlayers()
+    .then(results => {
+      _results = results;
+      return mapper.addPlayer(results.game.id, results.north.id, 'North');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.east.id, 'East');
+      return mapper.addPlayer(_results.game.id, _results.south.id, 'South');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.west.id, 'West');
+      return mapper.addPlayer(_results.game.id, _results.east.id, 'East');
+    })
+    .then(game => {
+      return mapper.addPlayer(_results.game.id, _results.west.id, 'West');
     })
     .then(game => {
       let playerVM = TestUtils.buildPlayer(true);
@@ -186,7 +198,8 @@ console.log(results);
         meldsVM,
         action,
         control)
-      .then((game, results) => {
+      .then(results => {
+        let game = results.game;
         game.player('North').footCards.length.should.equal(1);
         game.player('North').handCards.length.should.equal(1);
         game.pile('North').cards.length.should.equal(59);
@@ -228,16 +241,20 @@ console.log(results);
       callInProgress: false
     };
 
-    let results = TestUtils.gameAndFourPlayers();
-    mapper.addPlayer(results.game.id, results.north.id, 'North')
-    .then(game => {
-      return mapper.addPlayer(results.game.id, results.south.id, 'South');
+    let _results;
+    TestUtils.gameAndFourPlayers()
+    .then(results => {
+      _results = results;
+      return mapper.addPlayer(results.game.id, results.north.id, 'North');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.east.id, 'East');
+      return mapper.addPlayer(_results.game.id, _results.south.id, 'South');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.west.id, 'West');
+      return mapper.addPlayer(_results.game.id, _results.east.id, 'East');
+    })
+    .then(game => {
+      return mapper.addPlayer(_results.game.id, _results.west.id, 'West');
     })
     .then(game => {
       game.player('North').footCards.length.should.equal(11);
@@ -247,7 +264,8 @@ console.log(results);
         action,
         control);
     })
-    .then((game, results) => {
+    .then(results => {
+      let game = results.game;
       game.player('North').footCards.length.should.equal(1);
       game.player('North').handCards.length.should.equal(2);
       game.pile('North').cards.length.should.equal(58);
@@ -263,7 +281,8 @@ console.log(results);
         action,
         control);
     })
-    .then((game, results) => {
+    .then(results => {
+      let game = results.game;
       game.player('North').footCards.length.should.equal(1);
       game.player('North').handCards.length.should.equal(2);
       game.pile('North').cards.length.should.equal(57);
@@ -290,8 +309,8 @@ console.log(results);
         action,
         control);
     })
-    .then((game, results) => {
-      let gameVM = game.deserialize();
+    .then(results => {
+      let gameVM = results.game.deserialize();
       gameVM.turnState.should.equal('play');
       gameVM.drawCards.should.equal(0);
       done();
@@ -324,16 +343,20 @@ console.log(results);
       callInProgress: false
     };
 
-    let results = TestUtils.gameAndFourPlayers();
-    mapper.addPlayer(results.game.id, results.north.id, 'North')
-    .then(game => {
-      return mapper.addPlayer(results.game.id, results.south.id, 'South');
+    let _results;
+    TestUtils.gameAndFourPlayers()
+    .then(results => {
+      _results = results;
+      return mapper.addPlayer(results.game.id, results.north.id, 'North');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.east.id, 'East');
+      return mapper.addPlayer(_results.game.id, _results.south.id, 'South');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.west.id, 'West');
+      return mapper.addPlayer(_results.game.id, _results.east.id, 'East');
+    })
+    .then(game => {
+      return mapper.addPlayer(_results.game.id, _results.west.id, 'West');
     })
     .then(game => {
       return mapper.updateGame(game.id,
@@ -342,7 +365,8 @@ console.log(results);
         action,
         control);
     })
-    .then((game, results) => {
+    .then(results => {
+      let game = results.game;
       game.player('North').footCards.length.should.equal(1);
       game.player('North').handCards.length.should.equal(0);
       game.pile('North').cards.length.should.equal(59);
@@ -382,16 +406,20 @@ console.log(results);
       callInProgress: false
     };
 
-    let results = TestUtils.gameAndFourPlayers();
-    mapper.addPlayer(results.game.id, results.north.id, 'North')
-    .then(game => {
-      return mapper.addPlayer(results.game.id, results.south.id, 'South');
+    let _results;
+    TestUtils.gameAndFourPlayers()
+    .then(results => {
+      _results = results;
+      return mapper.addPlayer(results.game.id, results.north.id, 'North');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.east.id, 'East');
+      return mapper.addPlayer(_results.game.id, _results.south.id, 'South');
     })
     .then(game => {
-      return mapper.addPlayer(results.game.id, results.west.id, 'West');
+      return mapper.addPlayer(_results.game.id, _results.east.id, 'East');
+    })
+    .then(game => {
+      return mapper.addPlayer(_results.game.id, _results.west.id, 'West');
     })
     .then(game => {
       return mapper.updateGame(game.id,
@@ -400,21 +428,24 @@ console.log(results);
         action,
         control);
     })
-    .then((game, results) => {
+    .then(results => {
+      let game = results.game;
       return mapper.updateGame(game.id,
         playerVM,
         meldsVM,
         action,
         control);
     })
-    .then((game, results) => {
+    .then(results => {
+      let game = results.game;
       return mapper.updateGame(game.id,
         playerVM,
         meldsVM,
         action,
         control);
     })
-    .then((game, results) => {
+    .then(results => {
+      let game = results.game;
       game.player('North').handCards.length.should.equal(0);
       game.pile('Discard').cards.length.should.equal(3);
       let action = {
@@ -426,7 +457,8 @@ console.log(results);
         action,
         control);
     })
-    .then((game, results) => {
+    .then(results => {
+      let game = results.game;
       game.pile('Discard').cards.length.should.equal(0);
       game.player('North').handCards.length.should.equal(3);
       done();

@@ -1,3 +1,4 @@
+import * as GamePileVM from '../../viewmodels/GamePileVM';
 import * as CardPileVM from '../../viewmodels/CardPileVM';
 import * as MeldVM from '../../viewmodels/MeldVM';
 import * as PlayerVM from '../../viewmodels/PlayerVM';
@@ -25,11 +26,11 @@ export function deserialize(gameData) {
     },
     players: [],
     piles: [
-      { direction: 'North', cards: new CardPileVM.CardPileVM(game.piles[0].cards) },
-      { direction: 'East', cards: new CardPileVM.CardPileVM(game.piles[1].cards) },
-      { direction: 'South', cards: new CardPileVM.CardPileVM(game.piles[2].cards) },
-      { direction: 'West', cards: new CardPileVM.CardPileVM(game.piles[3].cards) },
-      { direction: 'Discard', cards: new CardPileVM.CardPileVM(game.piles[4].cards) }
+      new GamePileVM.GamePileVM('North', game.piles[0].cards),
+      new GamePileVM.GamePileVM('East', game.piles[1].cards),
+      new GamePileVM.GamePileVM('South', game.piles[2].cards),
+      new GamePileVM.GamePileVM('West', game.piles[3].cards),
+      new GamePileVM.GamePileVM('Discard', game.piles[4].cards)
     ],
     gameBegun: game.gameBegun,
     turn: game.turn,

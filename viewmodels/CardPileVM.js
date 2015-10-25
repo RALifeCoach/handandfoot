@@ -2,23 +2,25 @@ import * as CardVM from './CardVM';
 
 export class CardPileVM {
   constructor(inPile) {
-    this.cards = [];
+    this.cardPile = [];
 
     if (inPile) {
-      inPile.forEach(card => this.cards.push(new CardVM.CardVM(card)));
+      inPile.forEach(card => this.cardPile.push(new CardVM.CardVM(card)));
     }
   }
+  get cards() { return this.cardPile }
+
   deserialize() {
     let outCards = [];
 
-    this.cards.forEach(card => outCards.push(card.deserialize()));
+    this.cardPile.forEach(card => outCards.push(card.deserialize()));
 
     return outCards;
   }
   serialize() {
     let outCards = [];
 
-    this.cards.forEach(card => outCards.push(card.serialize()));
+    this.cardPile.forEach(card => outCards.push(card.serialize()));
 
     return outCards;
   }

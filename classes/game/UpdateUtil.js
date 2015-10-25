@@ -31,7 +31,7 @@ export function updateGame(gameData, playerVM, meldsVM, action, control) {
   // update cards and be done
   if (!playerVM.turn) {
     player.updateHands(playerVM);
-    return { updatePlayers: false };
+    return({ updatePlayers: false });
   }
 
   // if the size of the hand or foot has changed then the other players will be notified
@@ -55,7 +55,7 @@ export function updateGame(gameData, playerVM, meldsVM, action, control) {
       // draw a card
       if (action.pileIndex < 0 || action.pileIndex > 3) {
         console.log("PileIndex out of range attempting to draw a card");
-        return callback(new Error("PileIndex out of range attempting to draw a card"));
+        throw new Error("PileIndex out of range attempting to draw a card");
       }
 
       // set the new turn state
@@ -77,7 +77,7 @@ export function updateGame(gameData, playerVM, meldsVM, action, control) {
       // discard the selected card
       if (action.cardIndex < 0 || action.cardIndex >= cards.length) {
         console.log("CardIndex out of range attempting to discard");
-        return callback(new Error("CardIndex out of range attempting to discard"));
+        throw new Error("CardIndex out of range attempting to discard");
       }
 
       control.turnState = 'end';
@@ -121,5 +121,5 @@ export function updateGame(gameData, playerVM, meldsVM, action, control) {
     }
   }
 
-  return { updatePlayers: updatePlayers, results: results };
+  return({ updatePlayers: updatePlayers, results: results });
 }

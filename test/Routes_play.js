@@ -6,6 +6,7 @@ import * as mockSocket from '../testSupport/mockSocket';
 import * as PlayGame from '../classes/playGame';
 import * as Play from '../routes/play';
 import * as TestUtils from '../testSupport/testUtils';
+import * as GameVM from '../viewmodels/GameVM';
 
 describe("route play", () => {
   let playGame = {},
@@ -21,6 +22,7 @@ describe("route play", () => {
   });
 
   it("should handle socket.on calls", () => {
+    new Play.Router(io, playGame);
     io.call('updateGame').should.be.a.function;
   });
 
@@ -53,27 +55,45 @@ describe("route play", () => {
   });
 
   it("should handle updateGame message", done => {
+    let mapper = new GameVM.GameVM();
+    let _results;
     TestUtils.gameAndFourPlayers()
     .then(results => {
+      _results = results;
+      return mapper.addPlayer(results.game.id, results.north.id, 'North');
+    })
+    .then(game => {
+      return mapper.addPlayer(_results.game.id, _results.south.id, 'South');
+    })
+    .then(game => {
+      return mapper.addPlayer(_results.game.id, _results.east.id, 'East');
+    })
+    .then(game => {
+      return mapper.addPlayer(_results.game.id, _results.west.id, 'West');
+    })
+    .then(game => {
       playGame = {
         newConnectedPlayer: function(socket, data) {
           return true;
         },
-        findCreateConnectedGame(socket, data) {
+        findConnectedPlayer(socket, data) {
           return {
-            sendMessages: function(game, socket) {
-              game.player('North').footCards.length.should.equal(1);
-              game.player('North').handCards.length.should.equal(2);
-              game.pile('North').cards.length.should.equal(58);
-              game.pile('South').cards.length.should.equal(59);
-              game.pile('East').cards.length.should.equal(59);
-              game.pile('West').cards.length.should.equal(59);
-              game.pile('Discard').cards.length.should.equal(0);
-              let gameVM = game.deserialize();
+            gameId: game.id
+          }
+        },
+        findConnectedGame: function(socket, connectedPlayer) {
+          return {
+            sendMessages: function(gameVM, socket) {
+              gameVM.players[0].footCards.cards.length.should.equal(1);
+              gameVM.players[0].handCards.cards.length.should.equal(2);
+              gameVM.piles[0].cards.length.should.equal(58);
+              gameVM.piles[1].cards.length.should.equal(59);
+              gameVM.piles[2].cards.length.should.equal(59);
+              gameVM.piles[3].cards.length.should.equal(59);
+              gameVM.piles[4].cards.length.should.equal(0);
               gameVM.turnState.should.equal('draw2');
               done();
-            },
-            gameId: results.game.id
+            }
           }
         }
       };
@@ -94,14 +114,19 @@ describe("route play", () => {
         gameMessages: [],
         callInProgress: false
       };
-      data = {
+      let data = {
         player: playerVM,
         melds: meldsVM,
         action: action,
         control: control
       };
 
-      io.call('updateGame', data);
+      new Play.Router(io, playGame);
+
+      io.call('updateGame')(data, () => { done() });
     })
+    .catch(err => {
+      console.log(err.stack);
+    });
   });
 });
