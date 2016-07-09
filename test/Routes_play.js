@@ -1,12 +1,12 @@
 var should = require('should');
 import mongoose from 'mongoose';
-require('../models/Game');
-require('../models/Person');
+require('./Game');
+require('./Person');
 import * as mockSocket from '../testSupport/mockSocket';
-import * as PlayGame from '../classes/playGame';
-import * as Play from '../routes/play';
+import * as PlayGame from '../src/classes/PlayGame';
+import * as Play from '../src/routes/play';
 import * as TestUtils from '../testSupport/testUtils';
-import * as GameVM from '../viewmodels/GameVM';
+import * as GameVM from '../src/viewmodels/GameVM';
 
 describe("route play", () => {
   let playGame = {},

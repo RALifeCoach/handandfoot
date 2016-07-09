@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import * as gameUtil from '../classes/game/GameUtil';
+import * as gameUtil from '../src/classes/game/GameUtil';
 
 function clearDB(done) {
   let collectionCtr = 0;

@@ -1,10 +1,10 @@
 var assert = require('assert');
 var should = require('should');
 var mongoose = require('mongoose');
-require('../models/Game');
-require('../models/Person');
-import * as gameUtil from '../classes/game/GameUtil';
-import * as personBL from '../classes/PersonBL';
+require('./Game');
+require('./Person');
+import * as gameUtil from '../src/classes/game/GameUtil';
+import * as personBL from '../src/classes/PersonBL';
 
 var connection = mongoose.connection;
 

@@ -1,11 +1,11 @@
 var assert = require('assert');
 var should = require('should');
 import mongoose from 'mongoose';
-require('../models/Game');
-require('../models/Person');
-import * as gameUtil from '../classes/game/GameUtil';
-import * as personBL from '../classes/PersonBL';
-import * as GameVM from '../viewmodels/GameVM';
+require('./Game');
+require('./Person');
+import * as gameUtil from '../src/classes/game/GameUtil';
+import * as personBL from '../src/classes/PersonBL';
+import * as GameVM from '../src/viewmodels/GameVM';
 import * as TestUtils from '../testSupport/testUtils';
 
 describe('Game VM', done => {

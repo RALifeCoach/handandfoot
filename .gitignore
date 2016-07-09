@@ -1,3 +1,4 @@
-/node_modules/*
-/dump/*
-/prod/*
+/node_modules
+/bower_components
+/build
+/bin
