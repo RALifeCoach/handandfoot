@@ -1,115 +1,153 @@
+import Bunyan from 'bunyan';
+
 export default class ConnectedGame {
     constructor(pGameId) {
         this.gameId = pGameId;
         this.sockets = [];
+        this.logger = Bunyan.createLogger({
+            name: 'Connected Game'
+        });
     }
 
-    sendMessages(gameVM, receiveSocket, results) {
-        var playersVM = [];
+    sendMessages(game, receiveSocket, results) {
+        const gameVM = game.deserialize();
+        const gameObject = {
+            playersVM: [],
+            otherPlayers: [],
+            nsResults: gameVM.results.nsResults,
+            ewResults: gameVM.results.ewResults,
+            teamsVM: [
+                gameVM.nsTeam,
+                gameVM.ewTeam
+            ]
+        };
 
-        console.log('game', gameVM);
         gameVM.players.forEach(player => {
-            if (!player)
-                playersVM.push({turn: false, person: false});
-            else
-                playersVM.push(player.deserialize());
+            if (!player) {
+                gameObject.playersVM.push({
+                    turn: false,
+                    person: false
+                });
+            } else {
+                gameObject.playersVM.push(player.deserialize());
+            }
+        });
+        gameVM.topDiscard = gameVM.piles[4].cardPile.cardPile[0].deserialize();
+        gameVM.piles = gameVM.piles.map(pile => {
+            return pile.cardPile.cardPile.length;
         });
         gameVM.players = [];
-
-        var teamsVM = [gameVM.nsTeam, gameVM.ewTeam];
-        gameVM.nsTeam = false;
-        gameVM.ewTeam = false;
-
-        var nsResults = gameVM.results.nsResults;
-        var ewResults = gameVM.results.ewResults;
+        gameVM.nsTeam = null;
+        gameVM.ewTeam = null;
         gameVM.results = false;
-        var resultsVM = [];
 
         // create player objects used to send basic information (no card details)
-        var otherPlayers = [];
-        playersVM.forEach(playerVM => {
+        gameObject.playersVM.forEach(playerVM => {
             playerVM.myUpdate = false;
             if (!playerVM.person)
-                otherPlayers.push({turn: false, person: false, inFoot: false, myUpdate: false});
+                gameObject.otherPlayers.push({
+                    turn: false,
+                    person: false,
+                    inFoot: false,
+                    myUpdate: false
+                });
             else {
-                otherPlayers.push({
+                gameObject.otherPlayers.push({
                     person: playerVM.person,
                     direction: playerVM.direction,
                     turn: false,
                     inFoot: playerVM.inFoot,
-                    cards: playerVM.inFoot ? playerVM.footCards.length : playerVM.handCards.length,
+                    cards: playerVM.cards.length,
                     myUpdate: false
                 });
             }
         });
 
-        playersVM[gameVM.turn].turn = true;
-        otherPlayers[gameVM.turn].turn = true;
+        gameObject.playersVM[gameVM.turn].turn = true;
+        gameObject.otherPlayers[gameVM.turn].turn = true;
 
         if (this.sockets.length > 4) {
-            console.log('too many sockets', this.sockets.length);
-            console.log(this.sockets);
+            this.logger.warn('too many sockets', this.sockets.length);
+            this.logger.warn(this.sockets);
         }
 
         // send update game with players properly ordered
         this.sockets.forEach(socketVM => {
-            let socket = socketVM.socket;
-            let players = [];
-            let teams = [];
-
-            switch (socketVM.direction) {
-                case 'North':
-                    playersVM[0].myUpdate = receiveSocket == socket;
-                    players.push(playersVM[0]);
-                    players.push(otherPlayers[1]);
-                    players.push(otherPlayers[2]);
-                    players.push(otherPlayers[3]);
-                    teams.push(teamsVM[0]);
-                    teams.push(teamsVM[1]);
-                    resultsVM.push(nsResults);
-                    resultsVM.push(ewResults);
-                    break;
-                case 'East':
-                    playersVM[1].myUpdate = receiveSocket == socket;
-                    players.push(playersVM[1]);
-                    players.push(otherPlayers[2]);
-                    players.push(otherPlayers[3]);
-                    players.push(otherPlayers[0]);
-                    teams.push(teamsVM[1]);
-                    teams.push(teamsVM[0]);
-                    resultsVM.push(ewResults);
-                    resultsVM.push(nsResults);
-                    break;
-                case 'South':
-                    playersVM[2].myUpdate = receiveSocket == socket;
-                    players.push(playersVM[2]);
-                    players.push(otherPlayers[3]);
-                    players.push(otherPlayers[0]);
-                    players.push(otherPlayers[1]);
-                    teams.push(teamsVM[0]);
-                    teams.push(teamsVM[1]);
-                    resultsVM.push(nsResults);
-                    resultsVM.push(ewResults);
-                    break;
-                case 'West':
-                    playersVM[3].myUpdate = receiveSocket == socket;
-                    players.push(playersVM[3]);
-                    players.push(otherPlayers[0]);
-                    players.push(otherPlayers[1]);
-                    players.push(otherPlayers[2]);
-                    teams.push(teamsVM[1]);
-                    teams.push(teamsVM[0]);
-                    resultsVM.push(ewResults);
-                    resultsVM.push(nsResults);
-                    break;
-            }
-
-            // if the hand ended, send the results
-            if (results)
-                socket.emit('handResults', resultsVM);
-
-            // send the new data to each player
-            socket.emit('gameUpdate', {game: gameVM, players: players, teams: teams, results: resultsVM});
+            ConnectedGame.sendMessageSocket(socketVM, receiveSocket, gameVM, gameObject, results);
         });
+    }
+
+    static sendMessageSocket(socketVM, receiveSocket, gameVM, gameObject, results) {
+        const socket = socketVM.socket;
+        const players = [];
+        const teams = [];
+        const resultsVM = [];
+
+        switch (socketVM.direction) {
+            case 'North':
+                gameObject.playersVM[0].myUpdate = receiveSocket === socket;
+                players.push(gameObject.playersVM[0]);
+                players.push(gameObject.otherPlayers[1]);
+                players.push(gameObject.otherPlayers[2]);
+                players.push(gameObject.otherPlayers[3]);
+                teams.push(gameObject.teamsVM[0]);
+                teams.push(gameObject.teamsVM[1]);
+                resultsVM.push(gameObject.nsResults);
+                resultsVM.push(gameObject.ewResults);
+                break;
+            case 'East':
+                gameObject.playersVM[1].myUpdate = receiveSocket === socket;
+                players.push(gameObject.playersVM[1]);
+                players.push(gameObject.otherPlayers[2]);
+                players.push(gameObject.otherPlayers[3]);
+                players.push(gameObject.otherPlayers[0]);
+                teams.push(gameObject.teamsVM[1]);
+                teams.push(gameObject.teamsVM[0]);
+                resultsVM.push(gameObject.ewResults);
+                resultsVM.push(gameObject.nsResults);
+                break;
+            case 'South':
+                gameObject.playersVM[2].myUpdate = receiveSocket === socket;
+                players.push(gameObject.playersVM[2]);
+                players.push(gameObject.otherPlayers[3]);
+                players.push(gameObject.otherPlayers[0]);
+                players.push(gameObject.otherPlayers[1]);
+                teams.push(gameObject.teamsVM[0]);
+                teams.push(gameObject.teamsVM[1]);
+                resultsVM.push(gameObject.nsResults);
+                resultsVM.push(gameObject.ewResults);
+                break;
+            case 'West':
+                gameObject.playersVM[3].myUpdate = receiveSocket === socket;
+                players.push(gameObject.playersVM[3]);
+                players.push(gameObject.otherPlayers[0]);
+                players.push(gameObject.otherPlayers[1]);
+                players.push(gameObject.otherPlayers[2]);
+                teams.push(gameObject.teamsVM[1]);
+                teams.push(gameObject.teamsVM[0]);
+                resultsVM.push(gameObject.ewResults);
+                resultsVM.push(gameObject.nsResults);
+                break;
+            default:
+                throw new Error('unknown direction');
+        }
+
+        // if the hand ended, send the results
+        if (results) {
+            socket.emit('handResults', resultsVM);
+        }
+
+        try {
+            // send the new data to each player
+            socket.emit('gameUpdate', {
+                game: gameVM,
+                players: players,
+                teams: teams,
+                results: resultsVM
+            });
+        } catch (err) {
+            this.logger.fatal(err.stack);
+            throw err;
+        }
     }
 }

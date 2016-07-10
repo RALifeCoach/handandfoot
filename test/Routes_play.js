@@ -4,7 +4,7 @@ require('./Game');
 require('./Person');
 import * as mockSocket from '../testSupport/mockSocket';
 import * as PlayGame from '../src/classes/PlayGame';
-import * as Play from '../src/routes/play';
+import * as Play from '../src/routes/Play';
 import * as TestUtils from '../testSupport/testUtils';
 import * as GameVM from '../src/viewmodels/GameVM';
 

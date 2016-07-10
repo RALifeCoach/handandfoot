@@ -1,243 +1,253 @@
 <span us-spinner="{radius:30, width:8, length: 16}"></span>
 <div ng-if="message" class="alert alert-warning alert-dismissible" role="alert">
-	<button type="button" class="close" data-dismiss="alert">
-		<span aria-hidden="true">&times;</span>
-		<span class="sr-only">Close</span>
-	</button>
-	<strong>Error!</strong> {{message}}
+    <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+        <span class="sr-only">Close</span>
+    </button>
+    <strong>Error!</strong> {{message}}
 </div>
 <div class='row'>
-	<div class='col-xs-12 col-sm-12 col-md-10'>
-		<div class='panel panel-default'>
-			<div class="panel-body">
-				<div class='col-xs-3'  ng-class="{'waiting': !players[0].turn, 'playing': players[0].turn}">
-					<span class="directions badge" title="Round {{game.round + 1}}">{{game.round + 1}}</span>
-					<span class="player-name">{{players[0].person.name}}</span>
-					<span ng-if="game.gameBegun && players[0].inFoot" class="directions icon-foot"></span>
-					<span ng-if="game.gameBegun && !players[0].inFoot" class="directions icon-hand"></span>
-					<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw1'" class="directions icon-upload"></span>
-					<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw2'" class="directions icon-upload"></span>
-					<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw3'" class="directions icon-upload"></span>
-					<span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'" class="directions icon-play"></span>
-					<span class="badge directions">{{players[0].cards.length}}</span>
-				</div>
-				<div class='col-xs-3' ng-class="{'waiting': !players[1].turn, 'playing': players[1].turn}">
-					<span ng-show="players[1].person" class="player-name">{{players[1].person.name}}</span>
-					<span ng-show="!players[1].person" class="player-name">Waiting</span>
-					<span ng-if="game.gameBegun && !players[1].inFoot" class="icon-hand directions"></span>
-					<span ng-if="game.gameBegun && players[1].inFoot" class="icon-foot directions"></span>
-					<span class="badge directions">{{players[1].cards}}</span>
-				</div>
-				<div class='col-xs-3' ng-class="{'waiting': !players[2].turn, 'playing': players[2].turn}">
-					<span ng-show="players[2].person" class="player-name">{{players[2].person.name}}</span>
-					<span ng-show="!players[2].person" class="player-name">Waiting</span>
-					<span ng-if="game.gameBegun && !players[2].inFoot" class="icon-hand directions"></span>
-					<span ng-if="game.gameBegun && players[2].inFoot" class="icon-foot directions"></span>
-					<span class="badge directions">{{players[2].cards}}</span>
-				</div>
-				<div class='col-xs-3' ng-class="{'waiting': !players[3].turn, 'playing': players[3].turn}">
-					<span ng-show="players[3].person" class="player-name">{{players[3].person.name}}</span>
-					<span ng-show="!players[3].person" class="player-name">Waiting</span>
-					<span ng-if="game.gameBegun && !players[3].inFoot" class="icon-hand directions"></span>
-					<span ng-if="game.gameBegun && players[3].inFoot" class="icon-foot directions"></span>
-					<span class="badge directions">{{players[3].cards}}</span>
-				</div>
-			</div>
-		</div>
-		<div class='panel panel-default'>
-			<div class="panel-body">
-				<div class='col-xs-12 col-md-7'>
-					<div class="btn-group-vertical btn-group-xs btn-group-sm" role='group' style="float: left;">
-						<button type="button" class="btn btn-default" title='Sort by number' ng-click="sortByNumber()">
-							<span class="buttons">A-3</span>
-						</button>
-						<button type="button" class="btn btn-default" title='Sort by suit' ng-click="sortBySuit()">
-							<span class="suit buttons">&clubs;</span>-<span class="suit buttons">&spades;</span>
-						</button>
-						<button type="button" class="btn btn-default" title='Highlighed Score'">
-							<span class="buttons">{{control.highlightedScore}}</span>
-						</button>
-					</div>
-					<div ng-if="players[0].person" class="playingCards simpleCards" style="float: left;">
-						<ul class="hand">
-							<li ng-repeat="card in players[0].cards" ng-drop="true"
-							ng-drop-success="onDropComplete($index, $data, $event)">
-								<playing-card card="card" highlight="true" drag-drop="true" ng-click="clickCard($event, $index)"></playing-card>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div class='col-xs-2 col-sm-2 col-md-1'>
-					<div class="panel panel-default">
-						<div class="panel-body">
-							<div ng-if="piles[0].cards.cards.length > 0" class="playingCards simpleCards">
-								<ul class="deck">
-									<li ng-repeat="card in [piles[0].cards.cards.length] | maxCards">
-										<div class="card back" ng-click="clickPile(0)">*</div>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class='col-xs-2 col-sm-2 col-md-1'>
-					<div class="panel panel-default">
-						<div class="panel-body">
-							<div ng-if="piles[1].cards.cards.length > 0" class="playingCards simpleCards">
-								<ul class="deck">
-									<li ng-repeat="card in [piles[1].cards.cards.length] | maxCards">
-										<div class="card back" ng-click="clickPile(1)">*</div>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class='col-xs-2 col-sm-2 col-md-1'>
-					<div class="panel panel-default" ng-click="clickDiscardPile($event)">
-						<div class="panel-body">
-							<div name='discardPile' id='discardPile' class="playingCards simpleCards">
-								<ul class="deck">
-									<div ng-repeat="card in piles[4].cards.cards | maxDiscard">
-										<li>
-											<playing-card card="card" ng-click="clickDiscardPile($event)"></playing-card>
-										</li>
-									</div>
-								</ul>
-								<img src="\images\pick-up-in-progress.png" ng-if="drawFromDiscard.topCard"
-									style="position:absolute; top: 0; left: 0; width: 100%; height:100%;">
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class='col-xs-2 col-sm-2 col-md-1'>
-					<div class="panel panel-default">
-						<div class="panel-body">
-							<div ng-if="piles[2].cards.cards.length > 0" class="playingCards simpleCards">
-								<ul class="deck">
-									<li ng-repeat="card in [piles[2].cards.cards.length] | maxCards">
-										<div class="card back" ng-click="clickPile(2)">*</div>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class='col-xs-2 col-sm-2 col-md-1'>
-					<div class="panel panel-default">
-						<div class="panel-body">
-							<div ng-if="piles[3].cards.cards.length > 0" class="playingCards simpleCards">
-								<ul class="deck">
-									<li ng-repeat="card in [piles[3].cards.cards.length] | maxCards">
-										<div class="card back" ng-click="clickPile(3)">*</div>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="panel panel-default">
-			<div class="panel-body" ng-click="clickMeldBase()">
-				<div class='col-xs-4 col-sm-2 col-md-2'>
-					Score: {{teams[0].score}}
-					<div ng-if="!control.hasMelds">
-						Points Needed: {{control.pointsNeeded}}<br />
-						Points So Far: {{control.pointsSoFar}}
-					</div>
-					<div ng-if="control.hasMelds">
-						Base Points: {{teams[0].basePoints}}
-					</div>
-					<ul class="nav nav-pills nav-stacked">
-						<li ng-repeat="count in teams[0].counts">
-							<div>
+    <div class='col-xs-12 col-sm-12 col-md-10'>
+        <div class='panel panel-default'>
+            <div class="panel-body">
+                <div class='col-xs-3' ng-class="{'waiting': !players[0].turn, 'playing': players[0].turn}">
+                    <span class="directions badge" title="Round {{game.round + 1}}">{{game.round + 1}}</span>
+                    <span class="player-name">{{players[0].person.name}}</span>
+                    <span ng-if="game.gameBegun && players[0].inFoot" class="directions icon-foot"></span>
+                    <span ng-if="game.gameBegun && !players[0].inFoot" class="directions icon-hand"></span>
+                    <span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw1'"
+                          class="directions icon-upload"></span>
+                    <span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw2'"
+                          class="directions icon-upload"></span>
+                    <span ng-if="game.gameBegun && players[0].turn && control.turnState === 'draw3'"
+                          class="directions icon-upload"></span>
+                    <span ng-if="game.gameBegun && players[0].turn && control.turnState === 'play'"
+                          class="directions icon-play"></span>
+                    <span class="badge directions">{{players[0].cards.length}}</span>
+                </div>
+                <div class='col-xs-3' ng-class="{'waiting': !players[1].turn, 'playing': players[1].turn}">
+                    <span ng-show="players[1].person" class="player-name">{{players[1].person.name}}</span>
+                    <span ng-show="!players[1].person" class="player-name">Waiting</span>
+                    <span ng-if="game.gameBegun && !players[1].inFoot" class="icon-hand directions"></span>
+                    <span ng-if="game.gameBegun && players[1].inFoot" class="icon-foot directions"></span>
+                    <span class="badge directions">{{players[1].cards}}</span>
+                </div>
+                <div class='col-xs-3' ng-class="{'waiting': !players[2].turn, 'playing': players[2].turn}">
+                    <span ng-show="players[2].person" class="player-name">{{players[2].person.name}}</span>
+                    <span ng-show="!players[2].person" class="player-name">Waiting</span>
+                    <span ng-if="game.gameBegun && !players[2].inFoot" class="icon-hand directions"></span>
+                    <span ng-if="game.gameBegun && players[2].inFoot" class="icon-foot directions"></span>
+                    <span class="badge directions">{{players[2].cards}}</span>
+                </div>
+                <div class='col-xs-3' ng-class="{'waiting': !players[3].turn, 'playing': players[3].turn}">
+                    <span ng-show="players[3].person" class="player-name">{{players[3].person.name}}</span>
+                    <span ng-show="!players[3].person" class="player-name">Waiting</span>
+                    <span ng-if="game.gameBegun && !players[3].inFoot" class="icon-hand directions"></span>
+                    <span ng-if="game.gameBegun && players[3].inFoot" class="icon-foot directions"></span>
+                    <span class="badge directions">{{players[3].cards}}</span>
+                </div>
+            </div>
+        </div>
+        <div class='panel panel-default'>
+            <div class="panel-body">
+                <div class='col-xs-12 col-md-7'>
+                    <div class="btn-group-vertical btn-group-xs btn-group-sm" role='group' style="float: left;">
+                        <button type="button" class="btn btn-default" title='Sort by number' ng-click="sortByNumber()">
+                            <span class="buttons">A-3</span>
+                        </button>
+                        <button type="button" class="btn btn-default" title='Sort by suit' ng-click="sortBySuit()">
+                            <span class="suit buttons">&clubs;</span>-<span class="suit buttons">&spades;</span>
+                        </button>
+                        <button type="button" class="btn btn-default" title='Highlighed Score'
+                        ">
+                        <span class="buttons">{{control.highlightedScore}}</span>
+                        </button>
+                    </div>
+                    <div ng-if="players[0].person" class="playingCards simpleCards" style="float: left;">
+                        <ul class="hand">
+                            <li ng-repeat="card in players[0].cards" ng-drop="true"
+                                ng-drop-success="onDropComplete($index, $data, $event)">
+                                <playing-card card="card" highlight="true" drag-drop="true"
+                                              ng-click="clickCard($event, $index)"></playing-card>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class='col-xs-2 col-sm-2 col-md-1'>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div ng-if="piles[0] > 0" class="playingCards simpleCards">
+                                <ul class="deck">
+                                    <li ng-repeat="card in [piles[0]] | maxCards">
+                                        <div class="card back" ng-click="clickPile(0)">*</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <span class="badge directions" style="margin-top: 20px;">{{piles[0]}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-xs-2 col-sm-2 col-md-1'>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div ng-if="piles[1] > 0" class="playingCards simpleCards">
+                                <ul class="deck">
+                                    <li ng-repeat="card in [piles[1]] | maxCards">
+                                        <div class="card back" ng-click="clickPile(1)">*</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <span class="badge directions" style="margin-top: 20px;">{{piles[1]}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-xs-2 col-sm-2 col-md-1'>
+                    <div class="panel panel-default" ng-click="clickDiscardPile($event)">
+                        <div class="panel-body">
+                            <div name='discardPile' id='discardPile' class="playingCards simpleCards">
+                                <ul class="deck">
+                                    <li>
+                                        <playing-card card="topDiscard" ng-click="clickDiscardPile($event)"></playing-card>
+                                    </li>
+                                </ul>
+                                <img src="\images\pick-up-in-progress.png" ng-if="drawFromDiscard.topCard"
+                                     style="position:absolute; top: 0; left: 0; width: 100%; height:100%;">
+                            </div>
+                            <span class="badge directions" style="margin-top: 20px;">{{piles[4]}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-xs-2 col-sm-2 col-md-1'>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div ng-if="piles[2] > 0" class="playingCards simpleCards">
+                                <ul class="deck">
+                                    <li ng-repeat="card in [piles[2]] | maxCards">
+                                        <div class="card back" ng-click="clickPile(2)">*</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <span class="badge directions" style="margin-top: 20px;">{{piles[2]}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-xs-2 col-sm-2 col-md-1'>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div ng-if="piles[3] > 0" class="playingCards simpleCards">
+                                <ul class="deck">
+                                    <li ng-repeat="card in [piles[3]] | maxCards">
+                                        <div class="card back" ng-click="clickPile(3)">*</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <span class="badge directions" style="margin-top: 20px;">{{piles[3]}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body" ng-click="clickMeldBase()">
+                <div class='col-xs-4 col-sm-2 col-md-2'>
+                    Score: {{teams[0].score}}
+                    <div ng-if="!control.hasMelds">
+                        Points Needed: {{control.pointsNeeded}}<br/>
+                        Points So Far: {{control.pointsSoFar}}
+                    </div>
+                    <div ng-if="control.hasMelds">
+                        Base Points: {{teams[0].basePoints}}
+                    </div>
+                    <ul class="nav nav-pills nav-stacked">
+                        <li ng-repeat="count in teams[0].counts">
+                            <div>
 								<span class="badge pull-right" popover-template="/partials/showMelds.html"
-								popover="{{count.melds}}" popover-trigger="mouseenter">{{count.count}}</span>
-								{{count.type}}
-							</div>
-						</li>
-					</ul>
-				</div>
-				<div class='col-xs-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[0].melds | inProgress">
-					<div class="playingCards simpleCards">
-						<ul class="meld">
-							<li ng-repeat="card in meld.cards" ng-drop="false">
-								<playing-card card="card" ng-click="clickMeld($event, meld)"></playing-card>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="panel panel-default">
-			<div class="panel-body">
-				<div class='col-xs-3 col-sm-2 col-md-2'>
-					Score: {{teams[1].score}}
-					<div>
-						Base Points: {{teams[1].basePoints}}
-					</div>
-					<ul class="nav nav-pills nav-stacked">
-						<li ng-repeat="count in teams[1].counts">
-							<div>
+                                      popover="{{count.melds}}" popover-trigger="mouseenter">{{count.count}}</span>
+                                {{count.type}}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class='col-xs-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[0].melds | inProgress">
+                    <div class="playingCards simpleCards">
+                        <ul class="meld">
+                            <li ng-repeat="card in meld.cards" ng-drop="false">
+                                <playing-card card="card" ng-click="clickMeld($event, meld)"></playing-card>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class='col-xs-3 col-sm-2 col-md-2'>
+                    Score: {{teams[1].score}}
+                    <div>
+                        Base Points: {{teams[1].basePoints}}
+                    </div>
+                    <ul class="nav nav-pills nav-stacked">
+                        <li ng-repeat="count in teams[1].counts">
+                            <div>
 								<span class="badge pull-right" popover-template="/partials/showMelds.html"
-								popover="{{count.melds}}" popover-trigger="mouseenter">{{count.count}}</span>
-								{{count.type}}
-							</div>
-						</li>
-					</ul>
-				</div>
-				<div class='col-xs-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[1].melds | inProgress">
-					<div class="playingCards simpleCards">
-						<ul class="meld">
-							<li ng-repeat="card in meld.cards" ng-drop="true">
-								<playing-card card="card"></playing-card>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class='col-xs-12 col-md-2'>
-		<div class="panel panel-default">
-			<div class="panel-body">
-				<div class="btn-group" role="group">
-					<button type="button" class="btn btn-default" ng-click="resignGame()">
-						<span class="icon-resign" title="Resign" style="font-size: 36px"></span>
-					</button>
-					<button type="button" class="btn btn-default" ng-click="applyUndo()" ng-if="undo.length > 0">
-						<span class="icon-undo" title="Undo" style="font-size: 36px"></span>
-					</button>
-					<button type="button" class="btn btn-default" ng-click="resetCards()" ng-if="undo.length === 0 || !players[0].turn">
-						<span class="icon-loop" title="Reset" style="font-size: 36px"></span>
-					</button>
-					<button type="button" class="btn btn-default" ng-click="showHelp()">
-						<span class="glyphicon glyphicon-question-sign" title="Rules" style="font-size: 36px"></span>
-					</button>
-					<button type="button" class="btn btn-default" ng-click="showResults()">
-						<span class="glyphicon glyphicon-list" title="Results" style="font-size: 36px"></span>
-					</button>
-				</div>
-			</div>
-		</div>
-		<div class="panel panel-default">
-			<div class="panel-body" style="height:400px">
+                                      popover="{{count.melds}}" popover-trigger="mouseenter">{{count.count}}</span>
+                                {{count.type}}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class='col-xs-1' ng-click="clickMeldBase()" ng-repeat="meld in teams[1].melds | inProgress">
+                    <div class="playingCards simpleCards">
+                        <ul class="meld">
+                            <li ng-repeat="card in meld.cards" ng-drop="true">
+                                <playing-card card="card"></playing-card>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class='col-xs-12 col-md-2'>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default" ng-click="resignGame()">
+                        <span class="icon-resign" title="Resign" style="font-size: 36px"></span>
+                    </button>
+                    <button type="button" class="btn btn-default" ng-click="applyUndo()" ng-if="undo.length > 0">
+                        <span class="icon-undo" title="Undo" style="font-size: 36px"></span>
+                    </button>
+                    <button type="button" class="btn btn-default" ng-click="resetCards()"
+                            ng-if="undo.length === 0 || !players[0].turn">
+                        <span class="icon-loop" title="Reset" style="font-size: 36px"></span>
+                    </button>
+                    <button type="button" class="btn btn-default" ng-click="showHelp()">
+                        <span class="glyphicon glyphicon-question-sign" title="Rules" style="font-size: 36px"></span>
+                    </button>
+                    <button type="button" class="btn btn-default" ng-click="showResults()">
+                        <span class="glyphicon glyphicon-list" title="Results" style="font-size: 36px"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body" style="height:400px">
 				<textarea style='width: 100%; height: 100%'
-					ng-disable='true' ng-model='chatText'></textarea>
-			</div>
-		</div>
-		<div class="panel panel-default">
-			<div class="panel-body" style="height:50px">
-				<div class="input-group">
-					<input type="text" class="form-control input-sm" ng-model="chatLine"
-						placeholder="Type your message here..." ng-enter="sendChat()" />
+                          ng-disable='true' ng-model='chatText'></textarea>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body" style="height:50px">
+                <div class="input-group">
+                    <input type="text" class="form-control input-sm" ng-model="chatLine"
+                           placeholder="Type your message here..." ng-enter="sendChat()"/>
 					<span class="input-group-btn">
 						<button class="btn btn-warning btn-sm" ng-click="sendChat()">
 							Send</button>
 					</span>
-				</div>
-			</div>
-		</div>
-	</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

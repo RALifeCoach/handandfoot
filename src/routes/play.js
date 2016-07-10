@@ -1,4 +1,4 @@
-import * as GameVM from '../viewmodels/GameVM';
+import GameVM from '../viewmodels/GameVM';
 import SendChat from './socket/SendChat';
 import GameMessage from './socket/GameMessage';
 import JoinGame from './socket/JoinGame';
@@ -10,9 +10,9 @@ import EndHandResponse from './socket/EndHandResponse';
 import UpdateGame from './socket/UpdateGame';
 import Disconnect from './socket/Disconnect';
 
-export class Router {
+export default class Play {
     constructor(io, playGame) {
-        const mapper = new GameVM.GameVM();
+        const mapper = new GameVM();
         this.handlers = [];
         io.on('connection', (socket => {
             // message handler for the chat message

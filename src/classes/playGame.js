@@ -1,6 +1,6 @@
 import ConnectedGame from './ConnectedGame';
 
-export class PlayGame {
+export default class PlayGame {
     constructor() {
         this.connectedPlayers = [];
         this.connectedGames = [];

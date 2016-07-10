@@ -22,17 +22,16 @@ require('./models/Help');
 
 // define classes
 var PlayGame = require('./classes/PlayGame');
-var playGame = new PlayGame.PlayGame();
+var playGame = new PlayGame();
 
 var io = require('socket.io')(server);
 
 // include routes
-import people from './routes/person';
-// var People = require('./routes/person');
-// var people = new People.Router();
-var Games = require('./routes/game');
+import People from './routes/People';
+var people = new People();
+var Games = require('./routes/Games');
 var games = new Games.Router(io);
-var Play = require('./routes/play');
+var Play = require('./routes/Play');
 var play = new Play.Router(io, playGame);
 
 // view engine setup
@@ -54,7 +53,7 @@ app.use('/games', games);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    next();
+    next(new Error('404 for ' + req.path));
 });
 
 // error handlers

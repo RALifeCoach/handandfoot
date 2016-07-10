@@ -1,11 +1,11 @@
-import * as PlayerVM from './PlayerVM';
-import * as MeldsVM from './MeldsVM';
-import * as gameUtil from '../classes/game/GameUtil';
-import bunyan from 'bunyan';
+import PlayerVM from './PlayerVM';
+import MeldsVM from './MeldsVM';
+import * as GameUtil from '../classes/game/GameUtil';
+import Bunyan from 'bunyan';
 
-export class GameVM {
+export default class GameVM {
     constructor(game) {
-        this.logger = bunyan.createLogger({name: 'GameVM'});
+        this.logger = Bunyan.createLogger({name: 'GameVM'});
         this.game = game;
     }
 
@@ -20,11 +20,11 @@ export class GameVM {
         const person = game.person(direction);
         person.stats.push(results.stat);
 
-        return new Promise((resolve, reject) => {
+        return new Promise(((resolve, reject) => {
             person.save()
-                .then(() => resolve(_this))
+                .then(() => resolve(this))
                 .catch(err => reject(err));
-        });
+        }).bind(this));
     }
 
     // update players - record scores
@@ -63,9 +63,9 @@ export class GameVM {
         });
     }
 
-    getAllIncompleteGames(personId) {
+    static getAllIncompleteGames(personId) {
         return new Promise((resolve, reject) => {
-            gameUtil.findIncompleteGames()
+            GameUtil.findIncompleteGames()
                 .then(games => {
                     var gamesVM = [];
                     var ctr = games.length;
@@ -99,7 +99,7 @@ export class GameVM {
 
     addPlayer(gameId, personId, direction) {
         return new Promise((resolve, reject) => {
-            gameUtil.loadGame(gameId)
+            GameUtil.loadGame(gameId)
                 .then(game => {
                     return game.addPlayer(personId, direction);
                 })
@@ -113,7 +113,7 @@ export class GameVM {
     // no promise required as it does not return a message
     removePlayer(gameId, personId) {
         return new Promise((resolve) => {
-            gameUtil.loadGame(gameId)
+            GameUtil.loadGame(gameId)
                 .then(game => {
                     // create the existing player
                     var player = GameVM.getPlayer(game);
@@ -152,6 +152,7 @@ export class GameVM {
         }
         return player;
     }
+
     // update cards from message from a game
     updateGame(gameId, playerVM, meldsVM, action, control) {
         var _this = this;
@@ -161,7 +162,7 @@ export class GameVM {
             const playerVMClass = new PlayerVM.PlayerVM();
             playerVMClass.loadPlayer(playerVM);
             const meldsVMClass = new MeldsVM.MeldsVM(meldsVM);
-            gameUtil.loadGame(gameId)
+            GameUtil.loadGame(gameId)
                 .then(game => {
                     return game.updateGame(playerVMClass,
                         meldsVMClass,
@@ -190,7 +191,7 @@ export class GameVM {
     // end the game
     endGame(gameId, personId, callback) {
         // find game from DB
-        gameUtil.loadGame(gameId)
+        GameUtil.loadGame(gameId)
             .then((game => {
                 GameVM.scoreTheGame(game, null);
                 this.endTheGame(game);

@@ -1,11 +1,12 @@
-var PersonVM = function() {
-};
+export default class PersonVM {
+    constructor () {
 
-PersonVM.prototype.mapToVM = function(person) {
-	return {
-		_id: person._id,
-		name: person.name,
-	};
-};
+    }
 
-module.exports.PersonVM = PersonVM;
+    static mapToVM(person) {
+        return {
+            _id: person._id,
+            name: [erson.name]
+        };
+    }
+}

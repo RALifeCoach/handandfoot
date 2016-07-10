@@ -1,27 +1,29 @@
-import * as CardVM from './CardVM';
+import CardVM from './CardVM';
 
-export class CardPileVM {
-  constructor(inPile) {
-    this.cardPile = [];
+export default class CardPileVM {
+    constructor(inPile) {
+        this.cardPile = [];
 
-    if (inPile) {
-      inPile.forEach(card => this.cardPile.push(new CardVM.CardVM(card)));
+        if (inPile) {
+            this.cardPile = inPile.map(card => {
+                new CardVM(card);
+            });
+        }
     }
-  }
-  get cards() { return this.cardPile }
 
-  deserialize() {
-    let outCards = [];
+    get cards() {
+        return this.cardPile
+    }
 
-    this.cardPile.forEach(card => outCards.push(card.deserialize()));
+    deserialize() {
+        return this.cardPile.map(card => {
+            return card.deserialize();
+        });
+    }
 
-    return outCards;
-  }
-  serialize() {
-    let outCards = [];
-
-    this.cardPile.forEach(card => outCards.push(card.serialize()));
-
-    return outCards;
-  }
+    serialize() {
+        return this.cardPile.map(card => {
+            return card.serialize();
+        });
+    }
 }

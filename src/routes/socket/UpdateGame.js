@@ -2,13 +2,13 @@ import BaseSocketGame from './BaseSocketGame';
 
 export default class UpdateGame extends BaseSocketGame {
     constructor (socket, playGame, mapper) {
-        super(socket, playGame, 'endHandResponse', mapper);
+        super(socket, playGame, 'updateGame', mapper);
     }
 
     onSocketMessage(data) {
         super.onSocketMessage();
 
-        this.connectedPlayer = playGame.findConnectedPlayer(socket);
+        this.connectedPlayer = this.playGame.findConnectedPlayer(this.socket);
         if (!this.connectedPlayer)
             return;
 
@@ -16,9 +16,9 @@ export default class UpdateGame extends BaseSocketGame {
         this.mapper.updateGame(this.connectedPlayer.gameId, data.player, data.melds, data.action, data.control)
             .then(this.onUpdateGameResults.bind(this))
             .catch(err => {
-                this.logger.log('Update Game');
-                this.logger.log(err.stack);
-                this.logger.log(data.gameId);
+                this.logger.fatal('Update Game');
+                this.logger.fatal(err.stack);
+                this.logger.fatal(data.gameId);
                 throw err;
             });
     }
@@ -35,10 +35,10 @@ export default class UpdateGame extends BaseSocketGame {
 
         // the game is over
         if (gameVM.gameComplete) {
-            playGame.endTheGame(this.socket, this.mapper, false);
+            this.playGame.endTheGame(this.socket, this.mapper, false);
         } else {
             // find the game, error if it doesn't exist
-            const connectedGame = playGame.findConnectedGame(this.socket, this.connectedPlayer.gameId);
+            const connectedGame = this.playGame.findConnectedGame(this.socket, this.connectedPlayer.gameId);
             if (!connectedGame) {
                 if (callback) {
                     return callback();

@@ -12,16 +12,16 @@ export default class BaseSocket {
     }
 
     sendMessage (connection, messageName, body) {
-        this.logger.log('send ' + messageName);
+        this.logger.info('send ' + messageName);
         connection.socket.emit(messageName, body);
     }
 
     emitMessage (messageName, body) {
-        this.logger.log('emit ' + messageName);
+        this.logger.info('emit ' + messageName);
         this.socket.server.sockets.emit(messageName, body);
     }
 
     onSocketMessage () {
-        this.logger.log('received ' + this.messageName);
+        this.logger.info('received ' + this.messageName);
     }
 }

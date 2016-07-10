@@ -1,10 +1,10 @@
-import * as CardPileVM from './CardPileVM';
+import CardPileVM from './CardPileVM';
 
-export class MeldVM {
-  constructor(meld) {
-    this.type = meld.type;
-    this.number = meld.number;
-    this.isComplete = meld.isComplete;
-    this.cards = new CardPileVM.CardPileVM(meld.cards);
-  }
+export default class MeldVM {
+    constructor(meld) {
+        this.type = meld.type;
+        this.number = meld.number;
+        this.isComplete = meld.isComplete;
+        this.cards = new CardPileVM(meld.cards);
+    }
 }

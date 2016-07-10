@@ -45,17 +45,11 @@ angular.module('handAndFoot')
             // reset any highlighted flags
             var cardIndex;
             playGame.resetHighlight = function (player, scope) {
-                for (cardIndex = 0; cardIndex < player.handCards.length; cardIndex++) {
+                for (cardIndex = 0; cardIndex < player.cards.length; cardIndex++) {
                     // do not reset if it is drawn from the discard pile
                     if (!scope.drawFromDiscard.topCard
-                        || player.handCards[cardIndex] !== $scope.drawFromDiscard.topCard)
-                        player.handCards[cardIndex].highlight = false;
-                }
-                for (cardIndex = 0; cardIndex < player.footCards.length; cardIndex++) {
-                    // do not reset if it is drawn from the discard pile
-                    if (!scope.drawFromDiscard.topCard
-                        || player.footCards[cardIndex] !== $scope.drawFromDiscard.topCard)
-                        player.footCards[cardIndex].highlight = false;
+                        || player.cards[cardIndex] !== $scope.drawFromDiscard.topCard)
+                        player.cards[cardIndex].highlight = false;
                 }
                 scope.control.highlightedScore = 0;
             };
@@ -63,15 +57,9 @@ angular.module('handAndFoot')
             // return any highlighted cards
             playGame.highlightedCards = function (player) {
                 var cards = [];
-                if (!player.inFoot) {
-                    for (cardIndex = 0; cardIndex < player.handCards.length; cardIndex++)
-                        if (player.handCards[cardIndex].highlight)
-                            cards.push(player.handCards[cardIndex]);
-                } else {
-                    for (cardIndex = 0; cardIndex < player.footCards.length; cardIndex++)
-                        if (player.footCards[cardIndex].highlight)
-                            cards.push(player.footCards[cardIndex]);
-                }
+                for (cardIndex = 0; cardIndex < player.cards.length; cardIndex++)
+                    if (player.cards[cardIndex].highlight)
+                        cards.push(player.cards[cardIndex]);
                 return cards;
             };
 

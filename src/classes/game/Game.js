@@ -1,26 +1,30 @@
 import mongoose from 'mongoose';
-import * as teamBL from '../TeamBL';
-import * as playerBL from '../PlayerBL';
-import * as personBL from '../PersonBL';
-import * as handUtil from './HandUtil';
-import * as playerUtil from './PlayerUtil';
-import * as scoreUtil from './ScoreUtil';
-import * as updateUtil from './UpdateUtil';
-import * as serializeUtil from './SerializeUtil';
+import TeamBL from '../TeamBL';
+import PlayerBL from '../PlayerBL';
+import PersonBL from '../PersonBL';
+import HandUtil from './HandUtil';
+import PlayerUtil from './PlayerUtil';
+import ScoreUtil from './ScoreUtil';
+import UpdateUtil from './UpdateUtil';
+import SerializeUtil from './SerializeUtil';
+import Bunyan from 'bunyan';
 
 const GAME = new WeakMap();
 
 class Game {
     constructor(game) {
-        let gameData = {
+        this.logger = Bunyan.createLogger({
+            name: 'Game'
+        });
+        const gameData = {
             game: game,
-            nsTeam: new teamBL.Team(game.nsTeam[0]),
-            ewTeam: new teamBL.Team(game.ewTeam[0]),
+            nsTeam: new TeamBL(game.nsTeam[0]),
+            ewTeam: new TeamBL(game.ewTeam[0]),
             players: [
-                new playerBL.Player('North', game.nsTeam[0].players[0]),
-                new playerBL.Player('East', game.ewTeam[0].players[0]),
-                new playerBL.Player('South', game.nsTeam[0].players[1]),
-                new playerBL.Player('West', game.ewTeam[0].players[1])
+                new PlayerBL('North', game.nsTeam[0].players[0]),
+                new PlayerBL('East', game.ewTeam[0].players[0]),
+                new PlayerBL('South', game.nsTeam[0].players[1]),
+                new PlayerBL('West', game.ewTeam[0].players[1])
             ],
             people: [false, false, false, false],
             personCtr: 0
@@ -30,7 +34,7 @@ class Game {
         gameData.players.forEach((player, index) => {
             if (player.personId) {
                 gameData.personCtr++;
-                personBL.loadPerson(player.personId)
+                PersonBL.loadPerson(player.personId)
                     .then(person => {
                         gameData.people[index] = person;
                         gameData.personCtr--;
@@ -40,9 +44,9 @@ class Game {
     }
 
     finishLoading() {
-        let _resolve = false;
-        let gameData = GAME.get(this);
-        let loadingCheck = function () {
+        let _resolve = null;
+        const gameData = GAME.get(this);
+        const loadingCheck = function () {
             if (gameData.personCtr > 0) {
                 return setTimeout(loadingCheck, 100);
             }
@@ -50,7 +54,7 @@ class Game {
             _resolve();
         };
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             _resolve = resolve;
             setTimeout(loadingCheck, 0);
         });
@@ -78,8 +82,9 @@ class Game {
                 return GAME.get(this).players[1];
             case 'West':
                 return GAME.get(this).players[3];
+            default:
+                return null;
         }
-        return null;
     }
 
     person(direction) {
@@ -92,24 +97,33 @@ class Game {
                 return GAME.get(this).people[1];
             case 'West':
                 return GAME.get(this).people[3];
+            default:
+                return null;
         }
-        return null;
     }
 
     pile(direction) {
+        var pileNo;
         switch (direction) {
             case 'North':
-                return GAME.get(this).game.piles[0];
+                pileNo = 0;
+                break;
             case 'South':
-                return GAME.get(this).game.piles[2];
+                pileNo = 2;
+                break;
             case 'East':
-                return GAME.get(this).game.piles[1];
+                pileNo = 1;
+                break;
             case 'West':
-                return GAME.get(this).game.piles[3];
+                pileNo = 3;
+                break;
             case 'Discard':
-                return GAME.get(this).game.piles[4];
+                pileNo = 4;
+                break;
+            default:
+                return null;
         }
-        return null;
+        return GAME.get(this).game.piles[pileNo];
     }
 
     team(direction) {
@@ -120,30 +134,30 @@ class Game {
             case 'East':
             case 'West':
                 return GAME.get(this).ewTeam;
+            default:
+                return null;
         }
-        return null;
     }
 
     // save this game to the DB
     save() {
-        let DbGame = mongoose.model('Game');
-        let game = GAME.get(this).game;
+        const DbGame = mongoose.model('Game');
+        const game = GAME.get(this).game;
         return new Promise((resolve, reject) => {
             DbGame.findById(game.id, (err, checkGame) => {
                 if (err) {
-                    console.log('Error getting check game');
-                    console.log(err.stack);
+                    this.logger.fatal('Error getting check game');
+                    this.logger.fatal(err.stack);
                     return reject(err);
                 }
                 if (checkGame && checkGame.__v !== game.__v) {
-                    console.log('Game has been updated in DB since this row was retrieved');
-                    let err = new Error('Concurrency confict');
-                    return reject(err);
+                    this.logger.warn('Game has been updated in DB since this row was retrieved');
+                    return reject(new Error('Concurrency confict'));
                 }
                 game.save((err, savedGame) => {
                     if (err) {
-                        console.log('error saving game');
-                        console.log(err.stack);
+                        this.logger.fatal('error saving game');
+                        this.logger.fatal(err.stack);
                         return reject(err);
                     }
 
@@ -156,16 +170,16 @@ class Game {
 
     // the following methods use the hand utilities
     dealNewHand() {
-        handUtil.dealNewHand(GAME.get(this));
+        HandUtil.dealNewHand(GAME.get(this));
     }
 
     startNewHand() {
-        handUtil.startNewHand(GAME.get(this));
+        HandUtil.startNewHand(GAME.get(this));
     }
 
     // end the hand
     endTheHand() {
-        handUtil.endTheHand(GAME.get(this));
+        HandUtil.endTheHand(GAME.get(this));
 
         // increment the round and end the game if the final round has been played
         if (game.round > 6) {
@@ -175,18 +189,18 @@ class Game {
 
     // the follwing methods use the player utilites
     addPlayer(personId, direction) {
-        let _this = this;
-        return new Promise((resolve, reject) => {
-            playerUtil.addPlayer(GAME.get(this), personId, direction)
+        return new Promise(((resolve, reject) => {
+            PlayerUtil.addPlayer(GAME.get(this), personId, direction)
                 .then(() => {
-                    return _this.save()
+                    return this.save()
                 })
                 .then(game => resolve(game))
                 .catch(err => {
-                    console.log(err.stack);
+                    this.logger.fatal('add player');
+                    this.logger.fatal(err.stack);
                     reject(err)
                 });
-        });
+        }).bind(this));
     }
 
     // end the game
@@ -197,18 +211,18 @@ class Game {
     // the following methods use the score utilities
     // build the stats
     buildStats(direction, youResigned, theyResigned) {
-        return scoreUtil.buildStats(GAME.get(this), direction, youResigned, theyResigned)
+        return ScoreUtil.buildStats(GAME.get(this), direction, youResigned, theyResigned)
     }
 
     // score the game
     score(winningTeam) {
-        return scoreUtil.score(GAME.get(this), winningTeam);
+        return ScoreUtil.score(GAME.get(this), winningTeam);
     }
 
     // the following methods use the serialize utilites
     // deserialize into GameVM
     deserialize() {
-        return serializeUtil.deserialize(GAME.get(this));
+        return SerializeUtil.deserialize(GAME.get(this));
     }
 
     // the following methods use the update utilities
@@ -216,25 +230,25 @@ class Game {
                meldsVM,
                action,
                control) {
-        let _this = this;
         let results;
-        return new Promise((resolve, reject) => {
-            results = updateUtil.updateGame(GAME.get(_this),
+        return new Promise(((resolve, reject) => {
+            results = UpdateUtil.updateGame(GAME.get(_this),
                 playerVM,
                 meldsVM,
                 action,
                 control);
 
-            _this.save()
+            this.save()
                 .then(game => {
                     results.game = game;
                     resolve(results);
                 })
                 .catch(err => {
-                    console.log(err.stack);
+                    this.logger.fatal('save game');
+                    this.logger.fatal(err.stack);
                     reject(err);
                 });
-        });
+        }).bind(this));
     }
 }
 

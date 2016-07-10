@@ -1,4 +1,4 @@
-export class Player {
+export default class PlayerBL {
     constructor(direction, player) {
         this.player = player;
         this.player.direction = direction;

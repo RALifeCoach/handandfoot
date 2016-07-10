@@ -1,22 +1,26 @@
-import * as CardPileVM from './CardPileVM';
+import CardPileVM from './CardPileVM';
 
-export class GamePileVM {
-  constructor(direction, inPile) {
-    this.direction = direction;
-    this.cardPile = new CardPileVM.CardPileVM(inPile);
-  }
-  get cards() { return this.cardPile.cards }
+export default class GamePileVM {
+    constructor(direction, inPile) {
+        this.direction = direction;
+        this.cardPile = new CardPileVM(inPile);
+    }
 
-  deserialize() {
-    return {
-      direction: direction,
-      cards: cardPile.deserialize()
+    get cards() {
+        return this.cardPile.cards
     }
-  }
-  serialize() {
-    return {
-      direction: direction,
-      cards: cardPile.serialize()
+
+    deserialize() {
+        return {
+            direction: direction,
+            cards: this.cardPile.deserialize()
+        }
     }
-  }
+
+    serialize() {
+        return {
+            direction: direction,
+            cards: this.cardPile.serialize()
+        }
+    }
 }

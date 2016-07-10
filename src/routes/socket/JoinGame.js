@@ -8,16 +8,17 @@ export default class JoinGame extends BaseSocketGame {
     onSocketMessage(data) {
         super.onSocketMessage();
 
-        if (!playGame.newConnectedPlayer(this.socket, data))
+        if (!this.playGame.newConnectedPlayer(this.socket, data))
             return;
 
         // add the player to the game and game VM
         this.mapper
             .addPlayer(data.gameId, data.personId, data.direction)
             .then(game => {
-                var connectedGame = playGame.findCreateConnectedGame(this.socket, data);
-                if (!connectedGame)
+                var connectedGame = this.playGame.findCreateConnectedGame(this.socket, data);
+                if (!connectedGame) {
                     return;
+                }
 
                 this.emitMessage('refreshGames');
 
@@ -25,9 +26,9 @@ export default class JoinGame extends BaseSocketGame {
                 connectedGame.sendMessages(game, this.socket);
             })
             .catch(err => {
-                this.logger.log('mapper add player');
-                this.logger.log(err.stack);
-                this.logger.log(data.gameId);
+                this.logger.fatal('mapper add player');
+                this.logger.fatal(err.stack);
+                this.logger.fatal(data.gameId);
                 throw err;
             });
     }
