@@ -1,11 +1,8 @@
-import Bunyan from 'bunyan';
+import Base from '../classes/Base';
 
-export default class BaseRouter {
+export default class BasePostRouter extends Base {
     constructor(router, messageName) {
-        this.logger = Bunyan.createLogger({
-            name: 'Router ' + messageName
-        });
-
+        super();
         router.post('/' + messageName, this.route.bind(this));
         this.messageName = messageName;
     }

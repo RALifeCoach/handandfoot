@@ -8,6 +8,11 @@
             <set />
           </value>
         </entry>
+        <entry key="/fragment.js">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/.babelrc">
           <value>
             <set />
@@ -48,12 +53,52 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/build/classes/ConnectedGame.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/build/classes/PlayerBL.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/build/classes/game/Game.js">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/build/classes/game/GameClass.js">
           <value>
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/build/classes/game/SerializeUtil.js">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/build/routes/socket/JoinGame.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/build/routes/socket/UpdateGame.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/build/viewmodels/GameVM.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/build/viewmodels/MeldsVM.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/build/viewmodels/PlayerVM.js">
           <value>
             <set />
           </value>
@@ -74,6 +119,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/src/app.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/classes/Base.js">
           <value>
             <set />
           </value>
@@ -143,7 +193,17 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/classes/game/xxx.json">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/src/classes/playGame.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/routes/BaseGetRouter.js">
           <value>
             <set />
           </value>
@@ -194,6 +254,21 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/src/routes/gamesRoutes/ShowScores.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/routes/peopleRoutes/Login.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/routes/peopleRoutes/Register.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/routes/peopleRoutes/Root.js">
           <value>
             <set />
           </value>
@@ -329,6 +404,331 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/views/partials/play.html">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/components/tournament/tournament-ui/src/main/content/apps/pgatour-tournament/components/fullSchedule/scheduleRows.jsp">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/components/tournament/tournament-ui/src/main/content/apps/pgatour-tournament/components/fullSchedule/xxx.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/core/common/src/main/java/com/omnigon/pgatour/common/services/tournament/domain/Tournament.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/shot-tracker/pgatour.shot-tracker-abstract-renderer.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/shot-tracker/pgatour.shot-tracker-shot-renderer.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/shot-tracker/pgatour.shot-tracker.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/data/multicourse/leaderboard-v2.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/data/multicourse/leaderboard-v2mini.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/data/round-switcher/leaderboard-v2.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/data/round-switcher/setup.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/data/round-switcher/xxx.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/data/webcom/featured_group.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/data/webcom/leaderboard-v2.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/data/webcom/leaderboard-v2mini.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/data/webcom/leaderboard_v2.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/parts/lb-config.html">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/parts/lb-drawer.html">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/parts/xxx.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/data-loader.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/drawer.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/leaderboard-model.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/player-row.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/tabs/abstract-scorecards-tab.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/tabs/shottracker-tab.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/tabs/stracka-tab.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/workflows.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/xxx.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/src/yyy.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/page.tournament/tournament-leaderboard-new-2/tournament-leaderboard-new.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/shot-tracker-tab.html">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/shot-tracker-tab.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/shot-tracker-tab.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/theme-canada-shot-tracker-tab.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/theme-championstour-shot-tracker-tab.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/theme-china-shot-tracker-tab.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/theme-latinoamerica-shot-tracker-tab.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/theme-president-shot-tracker-tab.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/theme-webtour-shot-tracker-tab.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/player-drawer/shot-tracker-tab/theme-wgc-shot-tracker-tab.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/projected-standings/data/money-playoff.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/projected-standings/pgatour.projected-standings.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/projected-standings/projected-standings-comparator.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/projected-standings/projected-standings-template.html">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/projected-standings/projected-standings.html">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/stracka-modal/pgatour.stracka-modal.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/stracka-modal/theme-canada-stracka-modal.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/stracka-modal/theme-championstour-stracka-modal.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/stracka-modal/theme-china-stracka-modal.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/stracka-modal/theme-latinoamerica-stracka-modal.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/stracka-modal/theme-president-stracka-modal.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/stracka-modal/theme-webtour-stracka-modal.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/modules/stracka-modal/theme-wgc-stracka-modal.less">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/shot-tracker/pgatour-shot-tracker-shot-renderer-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/shot-tracker/pgatour-shot-tracker-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/tournament-leaderboard-new-2/src/data-loader-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/tournament-leaderboard-new-2/src/drawer-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/tournament-leaderboard-new-2/src/leaderboard-model-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/tournament-leaderboard-new-2/src/player-row-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/tournament-leaderboard-new-2/src/tabs/abstract-scorecards-tab-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/tournament-leaderboard-new-2/src/tabs/shottracker-tab-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/tournament-leaderboard-new-2/src/tabs/stracka-tab-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/page-tournament/tournament-leaderboard-new-2/src/workflows-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/projected-standings/pgatour-projected-standings-comparator-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/projected-standings/pgatour-projected-standings-test.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../pgatour-cq-v2/front-end/tests/full/modules/stracka-modal/pgatour-stracka-modal-test.js">
           <value>
             <set />
           </value>

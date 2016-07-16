@@ -1,19 +1,20 @@
-import BaseSocketGame from './BaseSocketGame';
+import BaseSocket from './BaseSocket';
+import GameVM from '../../viewmodels/GameVM';
 
-export default class JoinGame extends BaseSocketGame {
-    constructor (socket, playGame, mapper) {
-        super(socket, playGame, 'joinGame', mapper);
+export default class JoinGame extends BaseSocket {
+    constructor (socket, playGame) {
+        super(socket, playGame, 'joinGame');
     }
 
     onSocketMessage(data) {
         super.onSocketMessage();
 
-        if (!this.playGame.newConnectedPlayer(this.socket, data))
+        if (!this.playGame.newConnectedPlayer(this.socket, data)) {
             return;
+        }
 
         // add the player to the game and game VM
-        this.mapper
-            .addPlayer(data.gameId, data.personId, data.direction)
+        GameVM.addPlayer(data.gameId, data.personId, data.direction)
             .then(game => {
                 var connectedGame = this.playGame.findCreateConnectedGame(this.socket, data);
                 if (!connectedGame) {

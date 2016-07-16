@@ -90,7 +90,7 @@ angular.module('handAndFoot')
                 }
 
                 // count the number of cards of the same number in your hand
-                var hand = scope.players[0].inFoot ? scope.players[0].footCards : scope.players[0].handCards;
+                var hand = scope.players[0].cards;
                 var sameNumber = this.countSameNumber(hand, topCard);
 
                 // okay if there are 2 or more

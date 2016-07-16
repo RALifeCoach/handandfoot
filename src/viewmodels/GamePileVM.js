@@ -14,13 +14,13 @@ export default class GamePileVM {
         return {
             direction: direction,
             cards: this.cardPile.deserialize()
-        }
+        };
     }
 
     serialize() {
         return {
             direction: direction,
             cards: this.cardPile.serialize()
-        }
+        };
     }
 }

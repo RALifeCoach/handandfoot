@@ -7,25 +7,22 @@ import PlayerUtil from './PlayerUtil';
 import ScoreUtil from './ScoreUtil';
 import UpdateUtil from './UpdateUtil';
 import SerializeUtil from './SerializeUtil';
-import Bunyan from 'bunyan';
+import Base from '../Base';
 
 const GAME = new WeakMap();
 
-class Game {
+class Game extends Base {
     constructor(game) {
-        this.logger = Bunyan.createLogger({
-            name: 'Game'
-        });
+        super();
+        const player1 = new PlayerBL('North', game.turn === 0, game.nsTeam[0].players[0]);
+        const player2 = new PlayerBL('East', game.turn === 1, game.ewTeam[0].players[0]);
+        const player3 = new PlayerBL('South', game.turn === 2, game.nsTeam[0].players[1]);
+        const player4 = new PlayerBL('West', game.turn === 3, game.ewTeam[0].players[1]);
         const gameData = {
             game: game,
             nsTeam: new TeamBL(game.nsTeam[0]),
             ewTeam: new TeamBL(game.ewTeam[0]),
-            players: [
-                new PlayerBL('North', game.nsTeam[0].players[0]),
-                new PlayerBL('East', game.ewTeam[0].players[0]),
-                new PlayerBL('South', game.nsTeam[0].players[1]),
-                new PlayerBL('West', game.ewTeam[0].players[1])
-            ],
+            players: [player1, player2, player3, player4],
             people: [false, false, false, false],
             personCtr: 0
         };
@@ -162,7 +159,7 @@ class Game {
                     }
 
                     GAME.get(this).game = savedGame;
-                    return resolve(this);
+                    resolve(this);
                 });
             });
         });
@@ -232,7 +229,7 @@ class Game {
                control) {
         let results;
         return new Promise(((resolve, reject) => {
-            results = UpdateUtil.updateGame(GAME.get(_this),
+            results = UpdateUtil.updateGame(GAME.get(this),
                 playerVM,
                 meldsVM,
                 action,

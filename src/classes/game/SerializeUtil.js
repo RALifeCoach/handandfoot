@@ -47,11 +47,9 @@ export default class SerializeUtil {
 
     // move melds from game to gameVM
     static loadMelds(inMelds) {
-        const outMelds = [];
-
-        inMelds.forEach(meld => outMelds.push(new MeldVM.MeldVM(meld)));
-
-        return outMelds;
+        return inMelds.map(meld => {
+            return new MeldVM(meld).deserialize();
+        });
     }
 
     // count meld types
@@ -88,6 +86,8 @@ export default class SerializeUtil {
                     case "Wild Card Meld":
                         counts[4].count++;
                         break;
+                    default:
+                        throw new Error('unknown meld type ' + meld.type);
                 }
             }
         });
@@ -136,7 +136,7 @@ export default class SerializeUtil {
         if (!gameData.people[0]) {
             gameVM.players.push(false);
         } else {
-            playerVM = new PlayerVM.PlayerVM(gameData.people[0]);
+            playerVM = new PlayerVM(gameData.people[0]);
             playerVM.loadPlayer(gameData.players[0]);
             gameVM.players.push(playerVM);
         }
@@ -144,7 +144,7 @@ export default class SerializeUtil {
         if (!gameData.people[1]) {
             gameVM.players.push(false);
         } else {
-            playerVM = new PlayerVM.PlayerVM(gameData.people[1]);
+            playerVM = new PlayerVM(gameData.people[1]);
             playerVM.loadPlayer(gameData.players[1]);
             gameVM.players.push(playerVM);
         }
@@ -152,7 +152,7 @@ export default class SerializeUtil {
         if (!gameData.people[2]) {
             gameVM.players.push(false);
         } else {
-            playerVM = new PlayerVM.PlayerVM(gameData.people[2]);
+            playerVM = new PlayerVM(gameData.people[2]);
             playerVM.loadPlayer(gameData.players[2]);
             gameVM.players.push(playerVM);
         }
@@ -160,7 +160,7 @@ export default class SerializeUtil {
         if (!gameData.people[3]) {
             gameVM.players.push(false);
         } else {
-            playerVM = new PlayerVM.PlayerVM(gameData.people[3]);
+            playerVM = new PlayerVM(gameData.people[3]);
             playerVM.loadPlayer(gameData.players[3]);
             gameVM.players.push(playerVM);
         }

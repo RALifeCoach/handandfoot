@@ -2,9 +2,9 @@ export default class UpdateUtil {
     static updateGame(gameData, playerVM, meldsVM, action, control) {
         const game = gameData.game;
         // get the player and team to be updated
-        var player = false;
-        var team = false;
-        var position = -1;
+        var player;
+        var team;
+        var position;
         switch (playerVM.direction) {
             case 'North':
                 player = gameData.players[0];
@@ -26,6 +26,8 @@ export default class UpdateUtil {
                 team = gameData.ewTeam;
                 position = 3;
                 break;
+            default:
+                throw new Error('unknown direction ' + playerVM.direction);
         }
 
         // if this is coming from someone other than the current player then

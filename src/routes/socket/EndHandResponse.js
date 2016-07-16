@@ -1,8 +1,8 @@
-import BaseSocketGame from './BaseSocketGame';
+import BaseSocket from './BaseSocket';
 
-export default class EndHandResponse extends BaseSocketGame {
-    constructor (socket, playGame, mapper) {
-        super(socket, playGame, 'endHandResponse', mapper);
+export default class EndHandResponse extends BaseSocket {
+    constructor (socket, playGame) {
+        super(socket, playGame, 'endHandResponse');
     }
 
     onSocketMessage(data) {

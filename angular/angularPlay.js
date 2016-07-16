@@ -403,8 +403,9 @@ angular.module('handAndFoot')
 
                 var wasInFoot = $scope.players[0].inFoot;
                 var hasDrawnFromPile = false;
-                if ($scope.drawFromDiscard.topCard)
+                if ($scope.drawFromDiscard.topCard) {
                     hasDrawnFromPile = true;
+                }
                 $scope.message = melds.clickMeld(false, $scope);
                 if ($scope.message) {
                     if ($scope.message === 'ignore')
@@ -419,7 +420,7 @@ angular.module('handAndFoot')
                     $scope.clearUndo($scope);
 
                 // player has moved into their foot
-                if (!wasInFoot && $scope.players[0].handCards.length === 0) {
+                if (!wasInFoot && $scope.players[0].cards.length === 0 && !hasDrawnFromPile) {
                     player.sendGameMessage($scope, "went into their foot and is still playing");
                     player.sendUpdate($scope);
                     player.clearUndo($scope);
@@ -446,8 +447,9 @@ angular.module('handAndFoot')
                 player.updateUndo($scope);
 
                 var hasDrawnFromPile = false;
-                if ($scope.drawFromDiscard.topCard)
+                if ($scope.drawFromDiscard.topCard) {
                     hasDrawnFromPile = true;
+                }
                 $scope.message = melds.clickMeld(meld, $scope);
                 if ($scope.message) {
                     if ($scope.message === 'ignore')
@@ -462,7 +464,7 @@ angular.module('handAndFoot')
                     $scope.clearUndo($scope);
 
                 // player has moved into their foot
-                if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0) {
+                if (!$scope.players[0].inFoot && $scope.players[0].cards.length === 0 && !hasDrawnFromPile) {
                     player.sendGameMessage($scope, "went into their foot and is still playing");
                     player.sendUpdate($scope);
                     player.clearUndo($scope);

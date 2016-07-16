@@ -17,8 +17,13 @@ export default class PlayerVM {
         this.direction = player.direction;
         this.connected = player.connected;
         this.turn = player.turn;
-        this.footCards = player.inFoot ? new CardPileVM(player.cards) : null;
-        this.handCards = player.inFoot ? null : new CardPileVM(player.cards);
+        if (player.cards) {
+            this.footCards = player.inFoot ? new CardPileVM(player.cards) : null;
+            this.handCards = player.inFoot ? null : new CardPileVM(player.cards);
+        } else {
+            this.footCards = new CardPileVM(player.footCards);
+            this.handCards = new CardPileVM(player.handCards);
+        }
         this.inFoot = player.inFoot;
     }
 

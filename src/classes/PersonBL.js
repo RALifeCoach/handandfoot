@@ -1,7 +1,9 @@
+import Base from './Base';
 import mongoose from 'mongoose';
 
-export default class PersonBL {
+export default class PersonBL extends Base {
     constructor() {
+        super();
         const DbPerson = mongoose.model('Person');
 
         if (arguments.length === 1) { // create from existing data
@@ -26,7 +28,7 @@ export default class PersonBL {
         return new Promise((resolve, reject) => {
             this.person.save((err, savedPerson) => {
                 if (err) {
-                    console.log(err.stack);
+                    this.logger.warn(err.stack);
                     reject(err);
                 }
 
@@ -54,40 +56,19 @@ export default class PersonBL {
         return new Promise((resolve, reject) => {
             DbPerson.findById(personId, (err, person) => {
                 if (err) {
-                    console.log(err.stack);
+                    this.logger.warn(err.stack);
                     return reject(err);
                 }
 
                 if (!person) {
                     const except = new Error('Person not found by id');
-                    console.log(personId);
-                    console.log(except.stack);
+                    this.logger.warn(personId);
+                    this.logger.warn(except.stack);
                     return reject(except);
                 }
 
-                resolve(new Person(person));
+                resolve(person);
             });
         });
     }
-}
-
-export function signin(userId, password) {
-    const DbPerson = mongoose.model('Person');
-
-    return new Promise((resolve, reject) => {
-        DbPerson.findOne({userId: userId, password: password}, (err, person) => {
-            if (err) {
-                console.log(err.stack);
-                return reject(err);
-            }
-
-            if (!person) {
-                const except = new Error('Person not found by user id and password');
-                console.log(except.stack);
-                return reject(except);
-            }
-
-            resolve(new Person(person));
-        });
-    });
 }

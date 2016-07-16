@@ -13,6 +13,7 @@ var port = process.env.PORT || 3010;
 
 // connect to database
 mongoose.connect('mongodb://localhost/ra_prod_database');
+mongoose.Promise = require('bluebird').Promise;
 
 // include models
 require('./models/Person');
@@ -21,7 +22,7 @@ require('./models/Hint');
 require('./models/Help');
 
 // define classes
-var PlayGame = require('./classes/PlayGame');
+import PlayGame from './classes/PlayGame';
 var playGame = new PlayGame();
 
 var io = require('socket.io')(server);
@@ -29,16 +30,15 @@ var io = require('socket.io')(server);
 // include routes
 import People from './routes/People';
 var people = new People();
-var Games = require('./routes/Games');
-var games = new Games.Router(io);
-var Play = require('./routes/Play');
-var play = new Play.Router(io, playGame);
+import Games from './routes/Games';
+var games = new Games(io);
+import Play from './routes/Play';
+var play = new Play(io, playGame);
 
 // view engine setup
 app.set('views', '/git/handandfoot/views');
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -56,8 +56,6 @@ app.use(function(req, res, next) {
     next(new Error('404 for ' + req.path));
 });
 
-// error handlers
-
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
@@ -71,7 +69,6 @@ if (app.get('env') === 'development') {
 }
 
 // production error handler
-// no stacktraces leaked to user
 app.use(function(err, req, res) {
     res.status(err.status || 500);
     res.render('error', {

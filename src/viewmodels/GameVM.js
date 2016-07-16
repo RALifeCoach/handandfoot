@@ -1,34 +1,29 @@
 import PlayerVM from './PlayerVM';
 import MeldsVM from './MeldsVM';
-import * as GameUtil from '../classes/game/GameUtil';
-import Bunyan from 'bunyan';
+import GameUtil from '../classes/game/GameUtil';
+import Base from '../classes/Base';
 
-export default class GameVM {
-    constructor(game) {
-        this.logger = Bunyan.createLogger({name: 'GameVM'});
-        this.game = game;
-    }
-
+export default class GameVM extends Base {
     static scoreTheGame(game, winningTeam) {
         return game.score(winningTeam);
     }
 
-    addStats(game, direction, youResigned, theyResigned) {
+    static addStats(game, direction, youResigned, theyResigned) {
         const results = game.buildStats(direction, youResigned, theyResigned);
         // update the person document
 
         const person = game.person(direction);
         person.stats.push(results.stat);
 
-        return new Promise(((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             person.save()
                 .then(() => resolve(this))
                 .catch(err => reject(err));
-        }).bind(this));
+        });
     }
 
     // update players - record scores
-    updatePlayers(game, personId) {
+    static updatePlayers(game, personId) {
         var nsResigned = false;
         var ewResigned = false;
         if (personId) {
@@ -42,22 +37,22 @@ export default class GameVM {
         return new Promise((resolve, reject) => {
             let results;
             results = game.buildStats('North', nsResigned, ewResigned);
-            this.person('North').addStats(results.stat)
+            game.person('North').addStats(results.stat)
                 .then(() => {
                     results = game.buildStats('South', nsResigned, ewResigned);
-                    return this.person('South').addStats(results.stat);
+                    return game.person('South').addStats(results.stat);
                 })
                 .then(() => {
                     results = game.buildStats('East', ewResigned, nsResigned);
-                    return this.person('East').addStats(results.stat);
+                    return game.person('East').addStats(results.stat);
                 })
                 .then(() => {
                     results = game.buildStats('West', ewResigned, nsResigned);
-                    return this.person('West').addStats(results.stat);
+                    return game.person('West').addStats(results.stat);
                 })
                 .then(() => resolve())
                 .catch(err => {
-                    this.logger.log(err.stack);
+                    GameVM.loggerWarn(err.stack);
                     reject(err);
                 });
         });
@@ -97,7 +92,7 @@ export default class GameVM {
         });
     }
 
-    addPlayer(gameId, personId, direction) {
+    static addPlayer(gameId, personId, direction) {
         return new Promise((resolve, reject) => {
             GameUtil.loadGame(gameId)
                 .then(game => {
@@ -111,7 +106,7 @@ export default class GameVM {
     }
 
     // no promise required as it does not return a message
-    removePlayer(gameId, personId) {
+    static removePlayer(gameId, personId) {
         return new Promise((resolve) => {
             GameUtil.loadGame(gameId)
                 .then(game => {
@@ -119,10 +114,10 @@ export default class GameVM {
                     var player = GameVM.getPlayer(game);
 
                     if (!player) {
-                        this.logger.log('player not found in game');
-                        this.logger.log(personId);
-                        this.logger.log(game.nsTeam[0].players);
-                        this.logger.log(game.ewTeam[0].players);
+                        GameVM.loggerWarn(this, 'player not found in game');
+                        GameVM.loggerWarn(this, personId);
+                        GameVM.loggerWarn(this, game.nsTeam[0].players);
+                        GameVM.loggerWarn(this, game.ewTeam[0].players);
                     }
 
                     player.connected = false;
@@ -133,9 +128,9 @@ export default class GameVM {
                 .then(game => {
                     resolve(game.deserialize());
                 })
-                .catch((err => {
-                    this.logger.log(err.stack);
-                }).bind(this));
+                .catch(err => {
+                    GameVM.loggerWarn(this, err.stack);
+                });
         });
     }
 
@@ -154,14 +149,12 @@ export default class GameVM {
     }
 
     // update cards from message from a game
-    updateGame(gameId, playerVM, meldsVM, action, control) {
-        var _this = this;
-
-        return new Promise((resolve, reject) => {
+    static updateGame(gameId, playerVM, meldsVM, action, control) {
+        return new Promise(((resolve, reject) => {
             // find game from DB
-            const playerVMClass = new PlayerVM.PlayerVM();
+            const playerVMClass = new PlayerVM();
             playerVMClass.loadPlayer(playerVM);
-            const meldsVMClass = new MeldsVM.MeldsVM(meldsVM);
+            const meldsVMClass = new MeldsVM(meldsVM);
             GameUtil.loadGame(gameId)
                 .then(game => {
                     return game.updateGame(playerVMClass,
@@ -173,7 +166,7 @@ export default class GameVM {
                     const game = results.game;
                     // if the game is complete, update the stats
                     if (game.gameComplete) {
-                        _this.updatePlayers(game, false)
+                        GameVM.updatePlayers(game, false)
                             .then(() => {
                                 resolve(results);
                             });
@@ -182,32 +175,32 @@ export default class GameVM {
                     }
                 })
                 .catch(err => {
-                    this.logger.log(err.stack);
+                    GameVM.loggerWarn(this, err.stack);
                     reject(err);
                 });
-        })
+        }));
     };
 
     // end the game
-    endGame(gameId, personId, callback) {
+    static endGame(gameId, personId, callback) {
         // find game from DB
         GameUtil.loadGame(gameId)
-            .then((game => {
+            .then(game => {
                 GameVM.scoreTheGame(game, null);
                 this.endTheGame(game);
 
                 // save the game
-                game.save(((err) => {
+                game.save(err => {
                     if (err) {
-                        this.logger.log('error saving game');
-                        this.logger.log(err.stack);
-                        this.logger.log(game);
+                        GameVM.loggerWarn(this, 'error saving game');
+                        GameVM.loggerWarn(this, err.stack);
+                        GameVM.loggerWarn(this, game);
                         return callback(err);
                     }
 
-                    this.updatePlayers(game, personId)
-                }).bind(this));
-            }).bind(this))
+                    GameVM.updatePlayers(game, personId)
+                });
+            })
             .catch(err => callback(err));
     };
 }

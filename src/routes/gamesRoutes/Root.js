@@ -1,5 +1,4 @@
-import BaseRouter from '../BaseRouter';
-import SerializeUtil from '../../classes/game/SerializeUtil';
+import BaseRouter from '../BasePostRouter';
 import GameUtil from '../../classes/game/GameUtil';
 
 export default class Root extends BaseRouter {
@@ -16,7 +15,7 @@ export default class Root extends BaseRouter {
                 return game.save();
             })
             .then(game => {
-                res.json(SerializeUtil.deserialize(game));
+                res.json(game.deserialize());
 
                 // broadcast to all players
                 this.io.sockets.emit('refreshGames');

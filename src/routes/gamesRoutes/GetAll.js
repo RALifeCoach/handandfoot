@@ -1,6 +1,6 @@
-import BaseRouter from '../BaseRouter';
+import BaseRouter from '../BasePostRouter';
 import GameVM from '../../viewmodels/GameVM';
-import * as GameUtil from '../../classes/game/GameUtil';
+import GameUtil from '../../classes/game/GameUtil';
 
 export default class GetAll extends BaseRouter {
     constructor(router) {

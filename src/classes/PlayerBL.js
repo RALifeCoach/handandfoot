@@ -1,6 +1,7 @@
 export default class PlayerBL {
-    constructor(direction, player) {
+    constructor(direction, turn, player) {
         this.player = player;
+        this.player.turn = turn;
         this.player.direction = direction;
     }
 
@@ -26,12 +27,20 @@ export default class PlayerBL {
         return this.player.connected
     }
 
+    get direction() {
+        return this.player.direction
+    }
+
     get handCards() {
         return this.player.handCards
     }
 
     get footCards() {
         return this.player.footCards
+    }
+
+    get turn() {
+        return this.player.turn
     }
 
     set connected(value) {
@@ -45,7 +54,11 @@ export default class PlayerBL {
     }
 
     updateHands(playerVM) {
-        this.player.handCards = playerVM.handCards.serialize();
-        this.player.footCards = playerVM.footCards.serialize();
+        if (playerVM.footCards) {
+            this.player.footCards = playerVM.footCards.serialize();
+        }
+        if (playerVM.handCards) {
+            this.player.handCards = playerVM.handCards.serialize();
+        }
     }
 }

@@ -1,4 +1,4 @@
-import BaseRouter from '../BaseRouter';
+import BaseRouter from '../BasePostRouter';
 import mongoose from 'mongoose';
 const ObjectId = mongoose.Types.ObjectId;
 

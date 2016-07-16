@@ -1,9 +1,9 @@
-import BaseRouter from '../BaseRouter';
+import BaseGetRouter from '../BaseGetRouter';
 import mongoose from 'mongoose';
 
-export default class GetHelp extends BaseRouter {
+export default class GetHelp extends BaseGetRouter {
     constructor(router) {
-        super(router, 'getHints');
+        super(router, 'getHelp');
         this.HelpText = mongoose.model('HelpText');
     }
     

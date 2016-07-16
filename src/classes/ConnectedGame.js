@@ -1,12 +1,10 @@
-import Bunyan from 'bunyan';
+import Base from './Base';
 
-export default class ConnectedGame {
+export default class ConnectedGame extends Base {
     constructor(pGameId) {
+        super();
         this.gameId = pGameId;
         this.sockets = [];
-        this.logger = Bunyan.createLogger({
-            name: 'Connected Game'
-        });
     }
 
     sendMessages(game, receiveSocket, results) {
@@ -32,7 +30,12 @@ export default class ConnectedGame {
                 gameObject.playersVM.push(player.deserialize());
             }
         });
-        gameVM.topDiscard = gameVM.piles[4].cardPile.cardPile[0].deserialize();
+        if (gameVM.piles[4].cardPile.cardPile.length) {
+            const discardPile = gameVM.piles[4].cardPile.cardPile;
+            gameVM.topDiscard = discardPile[discardPile.length - 1].deserialize();
+        } else {
+            gameVM.topDiscard = false;
+        }
         gameVM.piles = gameVM.piles.map(pile => {
             return pile.cardPile.cardPile.length;
         });

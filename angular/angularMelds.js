@@ -439,7 +439,7 @@ angular.module('handAndFoot')
                 });
 
                 // remove the played cards from the hand
-                var cards = scope.players[0].inFoot ? scope.players[0].footCards : scope.players[0].handCards;
+                var cards = scope.players[0].cards;
                 for (var cardIndex = 0; cardIndex < cardArrays.selectedCards.length; cardIndex++) {
                     var index = cards.indexOf(cardArrays.selectedCards[cardIndex]);
                     cards.splice(index, 1);
@@ -472,8 +472,8 @@ angular.module('handAndFoot')
                     scope.control.hasMelds = true;
                 }
                 // set inFoot
-                scope.players[0].inFoot = scope.players[0].handCards.length === 0;
-            }
+                scope.players[0].inFoot = !scope.players[0].inFoot && scope.players[0].cards.length === 0;
+            };
 
             // check if the meld score is high enough
             o.layDownScoreMet = function (scope) {
@@ -551,7 +551,7 @@ angular.module('handAndFoot')
             // sort the hand by number
             o.sortByNumber = function (player) {
                 // highlight all the cards in the hand or foot so that card arrays will arrange all the cards
-                var cards = player.inFoot ? player.footCards : player.handCards;
+                var cards = player.cards;
                 for (var cardIndex = 0; cardIndex < cards.length; cardIndex++)
                     cards[cardIndex].highlight = true;
 
@@ -590,16 +590,13 @@ angular.module('handAndFoot')
                     }
                 }
 
-                if (player.inFoot)
-                    player.footCards = sortedCards;
-                else
-                    player.handCards = sortedCards;
-            }
+                player.cards = sortedCards;
+            };
 
             // sort the hand by suit
             o.sortBySuit = function (player) {
                 // highlight all the cards in the hand or foot so that card arrays will arrange all the cards
-                var cards = player.inFoot ? player.footCards : player.handCards;
+                var cards = player.cards;
                 for (var cardIndex = 0; cardIndex < cards.length; cardIndex++)
                     cards[cardIndex].highlight = true;
 
@@ -678,11 +675,8 @@ angular.module('handAndFoot')
                     }
                 }
 
-                if (player.inFoot)
-                    player.footCards = sortedCards;
-                else
-                    player.handCards = sortedCards;
-            }
+                player.cards = sortedCards;
+            };
 
             return o;
         }

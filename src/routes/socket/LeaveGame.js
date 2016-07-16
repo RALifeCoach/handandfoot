@@ -1,14 +1,14 @@
-import BaseSocketGame from './BaseSocketGame';
+import BaseSocket from './BaseSocket';
 
-export default class LeaveGame extends BaseSocketGame {
-    constructor (socket, playGame, mapper) {
-        super(socket, playGame, 'leaveGame', mapper);
+export default class LeaveGame extends BaseSocket {
+    constructor (socket, playGame) {
+        super(socket, playGame, 'leaveGame');
     }
 
-    onSocketMessage(data) {
+    onSocketMessage() {
         super.onSocketMessage();
 
         // this is moved to a common method because it is also performed in 'disconnect'
-        playGame.leaveGame(this.socket, this.mapper);
+        this.playGame.leaveGame(this.socket);
     }
 }

@@ -1,20 +1,18 @@
 import express from 'express';
-import Bunyan from 'bunyan';
+import Base from '../classes/Base';
 import GetAll from './gamesRoutes/GetAll';
 import ShowScores from './gamesRoutes/ShowScores';
 import GetHints from './gamesRoutes/GetHints';
 import GetHelp from './gamesRoutes/GetHelp';
 import Root from './gamesRoutes/Root';
 
-export default class Games {
+export default class Games extends Base {
     constructor(io) {
-        this.logger = Bunyan.createLogger({
-            name: 'Games Router'
-        });
+        super();
         this.routes = [];
-        io.on('connection', function () {
+        io.on('connection', (() => {
             this.logger.info('game connection');
-        });
+        }).bind(this));
 
         var router = express.Router();
 

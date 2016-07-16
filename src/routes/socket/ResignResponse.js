@@ -1,8 +1,8 @@
-import BaseSocketGame from './BaseSocketGame';
+import BaseSocket from './BaseSocket';
 
-export default class ResignResponse extends BaseSocketGame {
+export default class ResignResponse extends BaseSocket {
     constructor (socket, playGame, mapper) {
-        super(socket, playGame, 'resignResponse', mapper);
+        super(socket, playGame, 'resignResponse');
     }
 
     onSocketMessage(data) {
@@ -10,9 +10,9 @@ export default class ResignResponse extends BaseSocketGame {
 
         // end the game
         if (data.result === 'yes') {
-            return this.playGame.endTheGame(this.socket, this.mapper, true);
+            return this.playGame.endTheGame(this.socket, true);
         }
 
-        this.playGame.sendResignNoResponse(socket);
+        this.playGame.sendResignNoResponse(this.socket);
     }
 }

@@ -6,7 +6,7 @@ export default class CardPileVM {
 
         if (inPile) {
             this.cardPile = inPile.map(card => {
-                new CardVM(card);
+                return new CardVM(card);
             });
         }
     }

@@ -1,8 +1,9 @@
-import BaseSocketGame from './BaseSocketGame';
+import BaseSocket from './BaseSocket';
+import GameVM from '../../viewmodels/GameVM';
 
-export default class UpdateGame extends BaseSocketGame {
-    constructor (socket, playGame, mapper) {
-        super(socket, playGame, 'updateGame', mapper);
+export default class UpdateGame extends BaseSocket {
+    constructor (socket, playGame) {
+        super(socket, playGame, 'updateGame');
     }
 
     onSocketMessage(data) {
@@ -13,7 +14,7 @@ export default class UpdateGame extends BaseSocketGame {
             return;
 
         // update the game and, optionally, the game VM
-        this.mapper.updateGame(this.connectedPlayer.gameId, data.player, data.melds, data.action, data.control)
+        GameVM.updateGame(this.connectedPlayer.gameId, data.player, data.melds, data.action, data.control)
             .then(this.onUpdateGameResults.bind(this))
             .catch(err => {
                 this.logger.fatal('Update Game');
@@ -25,17 +26,12 @@ export default class UpdateGame extends BaseSocketGame {
 
     onUpdateGameResults(results) {
         if (!results.updatePlayers) {
-            if (callback) {
-                return callback();
-            }
             return;
         }
 
-        const gameVM = results.game.deserialize();
-
         // the game is over
-        if (gameVM.gameComplete) {
-            this.playGame.endTheGame(this.socket, this.mapper, false);
+        if (results.game.gameComplete) {
+            this.playGame.endTheGame(this.socket, false);
         } else {
             // find the game, error if it doesn't exist
             const connectedGame = this.playGame.findConnectedGame(this.socket, this.connectedPlayer.gameId);
@@ -47,7 +43,7 @@ export default class UpdateGame extends BaseSocketGame {
             }
 
             // send the updates to the other players
-            connectedGame.sendMessages(gameVM, this.socket, results.results);
+            connectedGame.sendMessages(results.game, this.socket, results.results);
         }
     }
 }
