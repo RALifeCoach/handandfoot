@@ -1,13 +1,10 @@
-import Bunyan from 'bunyan';
+import Base from '../../classes/Base';
 
-export default class BaseSocket {
+export default class BaseSocket extends Base {
     constructor (socket, playGame, messageName) {
         this.playGame = playGame;
         this.messageName = messageName;
         this.socket = socket;
-        this.logger = Bunyan.createLogger({
-            name: 'SocketMessage ' + messageName
-        });
         socket.on(messageName, this.onSocketMessage.bind(this));
     }
 

@@ -36,10 +36,7 @@ export default class UpdateGame extends BaseSocket {
             // find the game, error if it doesn't exist
             const connectedGame = this.playGame.findConnectedGame(this.socket, this.connectedPlayer.gameId);
             if (!connectedGame) {
-                if (callback) {
-                    return callback();
-                }
-                return;
+                throw new Error('Cannot find connected game');
             }
 
             // send the updates to the other players

@@ -14,7 +14,7 @@ export default class Login extends BasePostRouter {
 
         const userId = req.body.userId.toLowerCase();
         const query = Person.findOne({userId: userId});
-        query.exec(function (err, person) {
+        query.exec((function (err, person) {
             if (err) {
                 return next(err);
             }
@@ -37,6 +37,6 @@ export default class Login extends BasePostRouter {
                 error: false,
                 person: PersonVM.mapToVM(person)
             });
-        });
+        }).bind(this));
     }
 }

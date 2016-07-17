@@ -27,7 +27,9 @@ export default class ConnectedGame extends Base {
                     person: false
                 });
             } else {
-                gameObject.playersVM.push(player.deserialize());
+                const newPlayer = player.deserialize();
+                newPlayer.turn = false;
+                gameObject.playersVM.push(newPlayer);
             }
         });
         if (gameVM.piles[4].cardPile.cardPile.length) {
