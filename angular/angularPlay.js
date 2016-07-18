@@ -426,7 +426,7 @@ angular.module('handAndFoot')
 					$scope.clearUndo($scope);
 
 				// player has moved into their foot
-				if (!wasInFoot && $scope.players[0].handCards.length === 0) {
+				if (!wasInFoot && $scope.players[0].handCards.length === 0 && !hasDrawnFromPile) {
 					player.sendGameMessage($scope, "went into their foot and is still playing");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
@@ -469,7 +469,7 @@ angular.module('handAndFoot')
 					$scope.clearUndo($scope);
 
 				// player has moved into their foot
-				if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0) {
+				if (!$scope.players[0].inFoot && $scope.players[0].handCards.length === 0 && !hasDrawnFromPile) {
 					player.sendGameMessage($scope, "went into their foot and is still playing");
 					player.sendUpdate($scope);
 					player.clearUndo($scope);
