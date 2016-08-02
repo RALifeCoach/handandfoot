@@ -939,7 +939,7 @@ GameVM.prototype.updateGame = function (gameId, playerVM, pilesVM, meldsVM, acti
                 break;
         }
 
-        if (!player.turn) {
+        if (!playerVM.turn) {
             _this.updateCards(playerVM, player, game, callback);
             return;
         }
@@ -960,7 +960,7 @@ GameVM.prototype.updateGame = function (gameId, playerVM, pilesVM, meldsVM, acti
         // handle actions
         if (action) {
             updatePlayers = true;
-            var cards = player.handCards.length === 0 ? player.footCards : player.handCards;
+            var cards = player.handCards.length === 0 && action.action !== "drawSevenCards" ? player.footCards : player.handCards;
 
             if (action.action === "drawCard") {
                 // draw a card
@@ -972,14 +972,14 @@ GameVM.prototype.updateGame = function (gameId, playerVM, pilesVM, meldsVM, acti
                 // set the new turn state
                 switch (control.turnState) {
                     case 'draw1':
-                        control.turnState = 'draw2'
+                        control.turnState = 'draw2';
                         break;
                     case 'draw2':
-                        control.turnState = 'play'
+                        control.turnState = 'play';
                         break;
                     case 'draw3':
                         if (--control.drawCards <= 0)
-                            control.turnState = 'play'
+                            control.turnState = 'play';
                         break;
                 }
                 // draw the card

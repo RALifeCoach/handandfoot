@@ -3,7 +3,8 @@ var ConnectedGame = function(pGameId) {
 	this.sockets = [];
 }
 ConnectedGame.prototype.sendMessages = function(gameVM, receiveSocket, results) {
-	var playersVM = [];
+	var playersVM = [],
+		playerIndex;
 	
 	for (playerIndex in gameVM.players) {
 		if (!gameVM.players[playerIndex])
